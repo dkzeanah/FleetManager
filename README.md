@@ -1,6 +1,7 @@
-# Blazor App for QRD / Over-All vehicle testing management.
+# Blazor Web App .net 8
 
 ## Features
 - Car tracker
-- Team Planner / Event Planner
-- Ticket Tracking 
+- Caldendar / Team Planner
+- Dashboard
+- Grand Exchange
