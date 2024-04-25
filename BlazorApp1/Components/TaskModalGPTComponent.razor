@@ -1,0 +1,30 @@
+﻿@inject ITaskModelService TMService
+
+@*TaskModalGPTComponent*@
+
+<button @onclick="SaveTask">Save Task</button>
+
+@code {
+    public class TaskInfo
+    {
+        public string TaskName { get; set; }
+        public string Information { get; set; }
+        public DateTime DateAssigned { get; set; }
+        public DateTime DateDue { get; set; }
+        // Add more fields as required
+    }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+    [Parameter]
+    public EventCallback<TaskModel> OnTaskSaved { get; set; }
+
+    private TaskModel currentTask { get; set; } = new TaskModel(); // Use a single TaskModel object
+
+    private async Task SaveTask()
+    {
+        await TMService.AddTaskModel(currentTask);
+        await OnTaskSaved.InvokeAsync(currentTask);
+        await OnClose.InvokeAsync();
+    }
+}

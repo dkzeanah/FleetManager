@@ -1,0 +1,1022 @@
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using Newtonsoft.Json.Linq;
+
+namespace BlazorApp1.Services
+{
+    using Microsoft.AspNetCore.Components.Forms;
+    using ClosedXML.Excel;
+    using System.IO;
+    using System.Collections.Generic;
+    using System.Text.Json;
+    using System.Threading.Tasks;
+    using global::BlazorApp1.Data;
+    using global::BlazorApp1.CarModels;
+    using System.Collections;
+    using global::BlazorApp1.Repositories.Interfaces;
+    using global::BlazorApp1.Repositories;
+    using Newtonsoft.Json;
+    using System.Text;
+    using System.Security.Cryptography;
+    using Microsoft.EntityFrameworkCore;
+    using DocumentFormat.OpenXml.Office2013.PowerPoint.Roaming;
+    using global::BlazorApp1.Services.Interfaces;
+
+    public class ExcelDataRecordService : IExcelDataRecordService
+    {
+
+        /* 
+            Excel Data:
+            1st row: Report Generated on Jul 10 2023 14:21 by Donovan Zeanah [ZEANAHD]
+            2nd row: Title    Status  Priority    Assigned To Modified by Modified at    Submitted by    Submitted At
+            3rd row: SXM Station art work not updating after going backwards from a favorite station    Open    High    Jens Koesling [JKOESLI]   Stephen Adcox [LADCOX]  Jul 08 2023 00:01    Stephen Adcox [LADCOX]  Jul 07 2023 23:59
+            4th row: Activate Parking Assist Searching on Zero Layer Open    High    Mahmoud Khalil [MAHKHAL]  Stephen Adcox [LADCOX]  Jul 07 2023 23:53    Stephen Adcox [LADCOX]  Jul 07 2023 23:51
+            5th row: SDS Command for SXM Station Name does not work Closed   High    Christian Michael Horn [HORNCH1] Technical Account STARC-JIRA Integration [te03005]    Jul 10 2023 13:36    Stephen Adcox [LADCOX]  Jul 07 2023 23:50
+
+           3: ELAM statons at Desert HillsPremium Outlets show incorrect status	New	High	Alexander Wong [ALEWONG]	Shannon Kelley [SKELLEY]	Jul 06 2023 08:50	Shannon Kelley [SKELLEY]	Jul 06 2023 08:49
+           4: MMC Charge: ELAM stations at Tucson Premium Outlets do not charge car	New	High	Alexander Wong [ALEWONG]	Shannon Kelley [SKELLEY]	Jul 06 2023 08:49	Shannon Kelley [SKELLEY]	Jul 06 2023 08:07
+           5: PNC failed at station 100119-04 in Benson AZ	New	Low	Alexander Wong [ALEWONG]	Shannon Kelley [SKELLEY]	Jul 06 2023 07:36	Shannon Kelley [SKELLEY]	Jul 06 2023 07:36
+
+        */
+       // private readonly ILogger<ExcelDataRecordService> _logger;
+        private readonly IExcelDataRecordRepository _context;
+        private HashSet<string> processedColumns = new HashSet<string>();
+
+        //Constructor
+        public ExcelDataRecordService(IExcelDataRecordRepository excelDataRecordRepository) //,ILogger<ExcelDataRecord> logger)
+        {
+            _context = excelDataRecordRepository;
+           // _logger = logger;
+        }
+        
+        private string ProcessTitle(string data)
+        {
+            //string value;
+            var value = data;
+            Console.WriteLine($"value is: {value}");
+            // Example: This method simply returns the original title.
+            // Update this according to your needs
+            return value;
+        }
+
+        private string GetHash(string data)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(data));
+                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            }
+        }
+        private string GetTitleHash(Dictionary<string, object> record)
+        {
+            var title = ProcessTitle(record);
+            return GetHash(title);
+        }
+
+        private string ProcessTitle(Dictionary<string, object> record)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string GetTitlePriorityStatusHash(Dictionary<string, object> record)
+        {
+            var title = ProcessTitle(record);
+            var priority = record["Priority"].ToString();
+            var status = record["Status"].ToString();
+
+            var combined = $"{title}-{priority}-{status}";
+            return GetHash(combined);
+        }
+        public async Task Add(ExcelDataRecord record)
+        {
+            await _context.AddAsync(record);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Update(ExcelDataRecord record)
+        {
+            //_context.AddChange(record).State = EntityState.Modified;
+           // _context.ExcelDataRecords.Update(record)
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task<ExcelDataRecord> GetByHash(string hash)
+        {
+            return await _context.GetByHash(hash);
+        }
+
+        public async Task AddChange(ExcelDataRecordChange change)
+        {
+            await _context.AddAsync(change);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<List<ExcelDataRecord>> ProcessExcelFileEAV(IBrowserFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+            }
+
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 512000).CopyToAsync(memoryStream);
+
+            var workbook = new XLWorkbook(memoryStream);
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RowsUsed();
+
+            var records = new List<ExcelDataRecord>();
+
+            foreach (var row in rows)
+            {
+                var attributes = new List<ExcelDataRecordAttribute>();
+
+                foreach (var cell in row.Cells())
+                {
+                    attributes.Add(new ExcelDataRecordAttribute
+                    {
+                        Name = cell.Address.ColumnLetter,
+                        Value = (string)cell.Value
+                    });
+                }
+
+                var dataHash = GetHash(attributes.ToString());
+
+                var existingRecord = await _context.GetByHash(dataHash);
+
+                if (existingRecord != null)
+                {
+                    // ... code to update the existing record ...
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    var newRecord = new ExcelDataRecord
+                    {
+                        DataHash = dataHash,
+                        UploadDate = DateTime.Now,
+                        LastModified = DateTime.Now,
+                        Attributes = attributes
+                    };
+
+                    await _context.Add(newRecord);
+                    records.Add(newRecord);
+                }
+            }
+
+            return records;
+        }
+
+        /*public async Task<List<Dictionary<string, object>>> ProcessExcelFile5(IBrowserFile file)
+        {
+            Console.WriteLine("Starting the processing of the Excel file...");
+
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+            }
+
+            Console.WriteLine("Converting the file to a stream...");
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 512000).CopyToAsync(memoryStream);
+
+            Console.WriteLine("Reading the Excel data...");
+            var workbook = new XLWorkbook(memoryStream);
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+            Console.WriteLine("Iterating through the rows of the Excel file...");
+            foreach (var row in rows)
+            {
+                Console.WriteLine("Processing a row...");
+
+                var rowData = new Dictionary<string, object>();
+                foreach (var cell in row.Cells())
+                {
+                    rowData[cell.Address.ColumnLetter] = cell.Value;
+                }
+
+                // Generate a hash from the title of the record
+                var dataHash = GetHash(rowData["Title"].ToString());
+
+                // Check if the record with this hash already exists in the repository
+                var existingRecord = await _context.GetByHash(dataHash);
+
+                if (existingRecord != null)
+                {
+                    Console.WriteLine("Record with the same hash found. Updating the existing record...");
+
+                    // Check each field for changes and save any changes
+                    foreach (var pair in rowData)
+                    {
+                        if (!existingRecord.Data.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                        {
+                            var change = new ExcelDataRecordChange
+                            {
+                                ColumnName = pair.Key,
+                                OldValue = oldValue?.ToString(),
+                                NewValue = pair.Value.ToString(),
+                                ChangeDate = DateTime.Now,
+                                ExcelDataRecord = existingRecord,
+                                ExcelDataRecordId = existingRecord.Id
+                            };
+
+                            await _context.AddChange(change);
+                        }
+                    }
+
+                    // Update the last modified date of the record
+                    existingRecord.LastModified = DateTime.Now;
+
+                    // Update the record in the repository
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    Console.WriteLine("No record with the same hash found. Adding a new record...");
+
+                    var newRecord = new ExcelDataRecord
+                    {
+                        Data = rowData,
+                        DataHash = dataHash,
+                        UploadDate = DateTime.Now,
+                        LastModified = DateTime.Now
+                    };
+
+                    await _context.Add(newRecord);
+                }
+
+                // Add the row data to the list
+                data.Add(rowData);
+            }
+
+            Console.WriteLine("Finished processing the Excel file. Returning the extracted data...");
+            return data;
+        }*/
+
+        //public async Task<List<Dictionary<string, object>>> ProcessExcelFileToJson(IBrowserFile file, Dictionary<string, XLCellValue> rowData)
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFileToJson(IBrowserFile file, Dictionary<string, XLCellValue>? initialRowData)
+        {
+            // Start processing and check for null input
+            Console.WriteLine("Starting the processing of the Excel file...");
+            if (file == null) throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+
+            // Convert file to stream
+            Console.WriteLine("Converting the file to a stream...");
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(512000).CopyToAsync(memoryStream);
+
+            // Read Excel data
+            Console.WriteLine("Reading the Excel data...");
+            var workbook = new XLWorkbook(memoryStream);
+            var rows = workbook.Worksheet(1).RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+
+            Console.WriteLine("Iterating through the rows of the Excel file...");
+            foreach (var row in rows)
+            {
+               // var rowData = row.Cells().ToDictionary(cell => cell.Address.ColumnLetter, cell => cell.Value);
+                var rowData = row.Cells().ToDictionary(cell => cell.Address.ColumnLetter, cell => (object)cell.Value);
+
+                Console.WriteLine("Processing a row...");
+                Console.WriteLine($"rowData pre-json converted: {rowData}");
+                var dataJson = JsonConvert.SerializeObject(rowData);
+                Console.WriteLine($"rowData post-json converted: {dataJson}");
+                var dataHash = GetHash(dataJson);
+                Console.WriteLine($"dataHash from getHash(dataJson): {dataHash}");
+                var dataHash1 = GetTitlePriorityStatusHash(rowData);
+                //var dataHash2 = GetTitlePriorityStatusHash(dataJson);
+                Console.WriteLine($"dataHash1 from GetTitlePriorityStatusHash(rowData): {dataHash1}");
+               // Console.WriteLine($"dataHash1 from GetTitlePriorityStatusHash(dataJson): {dataHash2}");
+
+                Console.WriteLine($"parsing {dataHash}");
+                var existingRecord = await _context.GetByHash(dataHash);
+
+                if (existingRecord != null)
+                {
+                    Console.WriteLine("Record with the same hash found. Updating the existing record...");
+                    var oldData = JsonConvert.DeserializeObject<Dictionary<string, object>>(existingRecord.JsonData);
+
+                    foreach (var pair in rowData)
+                    {
+                        if (!oldData.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                        {
+                            var change = new ExcelDataRecordChange
+                            {
+                                ColumnName = pair.Key,
+                                OldValue = oldValue?.ToString(),
+                                NewValue = pair.Value.ToString(),
+                                ChangeDate = DateTime.Now,
+                                ExcelDataRecord = existingRecord,
+                                ExcelDataRecordId = existingRecord.Id
+                            };
+
+                            await _context.AddChange(change);
+                        }
+                    }
+
+                    existingRecord.JsonData = dataJson;
+                    existingRecord.LastModified = DateTime.Now;
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    Console.WriteLine("No record with the same hash found. Adding a new record...");
+                    var newRecord = new ExcelDataRecord
+                    {
+                        JsonData = dataJson,
+                        DataHash = dataHash,
+                        UploadDate = DateTime.Now,
+                        LastModified = DateTime.Now
+                    };
+                    await _context.Add(newRecord);
+                }
+
+                data.Add(rowData);
+            }
+
+            Console.WriteLine("Finished processing the Excel file. Returning the extracted data...");
+            return data;
+        }
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFileToJson(IBrowserFile file)
+        {
+            // Start processing and check for null input
+            Console.WriteLine("Starting the processing of the Excel file...");
+            if (file == null) throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+
+            // Convert file to stream
+            Console.WriteLine("Converting the file to a stream...");
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(512000).CopyToAsync(memoryStream);
+
+            // Read Excel data
+            Console.WriteLine("Reading the Excel data...");
+            var workbook = new XLWorkbook(memoryStream);
+            var rows = workbook.Worksheet(1).RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+
+            Console.WriteLine("Iterating through the rows of the Excel file...");
+            foreach (var row in rows)
+            {
+                Console.WriteLine($"Processing a row...\n\n . {row}" );
+
+                // var rowData = row.Cells().ToDictionary(cell => cell.Address.ColumnLetter, cell => cell.Value);
+                var rowData = row.Cells().ToDictionary(cell => cell.Address.ColumnLetter, cell => (object)cell.Value);
+
+                Console.WriteLine("Processing a row...\n\n");
+                Console.WriteLine("Processing a row...\n\n");
+
+                Console.WriteLine("Processing a row...\n\n");
+
+                Console.WriteLine($"rowData pre-json converted: {rowData}");
+                var dataJson = JsonConvert.SerializeObject(rowData);
+                Console.WriteLine($"rowData post-json converted: {dataJson}");
+                var dataHash = GetHash(dataJson);
+                Console.WriteLine($"dataHash from getHash(dataJson): {dataHash}");
+                var dataHash1 = GetTitlePriorityStatusHash(rowData);
+                //var dataHash2 = GetTitlePriorityStatusHash(dataJson);
+                Console.WriteLine($"dataHash1 from GetTitlePriorityStatusHash(rowData): {dataHash1}");
+                // Console.WriteLine($"dataHash1 from GetTitlePriorityStatusHash(dataJson): {dataHash2}");
+
+                Console.WriteLine($"parsing {dataHash}");
+                var existingRecord = await _context.GetByHash(dataHash);
+
+                /*// var rowData = row.Cells().ToDictionary(cell => cell.Address.ColumnLetter, cell => cell.Value);
+                var rowData = row.Cells().ToDictionary(cell => cell.Address.ColumnLetter, cell => (object)cell.Value);
+                Console.WriteLine("Processing a row...");
+                var dataJson = JsonConvert.SerializeObject(rowData);
+                var dataHash = GetHash(dataJson);
+                var existingRecord = await _context.GetByHash(dataHash);*/
+
+                if (existingRecord != null)
+                {
+                    Console.WriteLine("Record with the same hash found. Updating the existing record...");
+                    var oldData = JsonConvert.DeserializeObject<Dictionary<string, object>>(existingRecord.JsonData);
+
+                    foreach (var pair in rowData)
+                    {
+                        if (!oldData.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                        {
+                            var change = new ExcelDataRecordChange
+                            {
+                                ColumnName = pair.Key,
+                                OldValue = oldValue?.ToString(),
+                                NewValue = pair.Value.ToString(),
+                                ChangeDate = DateTime.Now,
+                                ExcelDataRecord = existingRecord,
+                                ExcelDataRecordId = existingRecord.Id
+                            };
+
+                            await _context.AddChange(change);
+                        }
+                    }
+
+                    existingRecord.JsonData = dataJson;
+                    existingRecord.LastModified = DateTime.Now;
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    Console.WriteLine("No record with the same hash found. Adding a new record...");
+                    var newRecord = new ExcelDataRecord
+                    {
+                        JsonData = dataJson,
+                        DataHash = dataHash,
+                        UploadDate = DateTime.Now,
+                        LastModified = DateTime.Now
+                    };
+                    await _context.Add(newRecord);
+                }
+
+                data.Add(rowData);
+            }
+
+            Console.WriteLine("Finished processing the Excel file. Returning the extracted data...");
+            return data;
+        }
+
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFile3(IBrowserFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+            }
+
+            Console.WriteLine("Converting the file to a stream...");
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 512000).CopyToAsync(memoryStream);
+
+            Console.WriteLine("Reading the Excel data...");
+            var workbook = new XLWorkbook(memoryStream);
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+
+            Console.WriteLine("Iterating through the rows of the Excel file...");
+
+            foreach (var rowdata in rows)
+            {
+                var rowData = new Dictionary<string, object>();
+
+                foreach (var cell in rowdata.Cells())
+                {
+                    rowData[cell.Address.ColumnLetter] = cell.Value;
+                }
+
+                var dataHash = GetHash(rowData["Title"].ToString()); // Using the title for the hash
+
+                var existingRecord = await _context.GetByHash(dataHash);
+
+                if (existingRecord != null)
+                {
+                    var oldData = JsonConvert.DeserializeObject<Dictionary<string, object>>(existingRecord.JsonData);
+
+                    foreach (var pair in rowData)
+                    {
+                        if (!oldData.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                        {
+                            var change = new ExcelDataRecordChange
+                            {
+                                ColumnName = pair.Key,
+                                OldValue = oldValue?.ToString(),
+                                NewValue = pair.Value.ToString(),
+                                ChangeDate = DateTime.Now,
+                                ExcelDataRecord = existingRecord,
+                                ExcelDataRecordId = existingRecord.Id
+                            };
+                            await _context.AddChange(change);
+                        }
+                    }
+
+                    existingRecord.JsonData = JsonConvert.SerializeObject(rowData); // Update only the 'Data' field of the record
+                    existingRecord.LastModified = DateTime.Now;
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    var newRecord = new ExcelDataRecord
+                    {
+                        JsonData = JsonConvert.SerializeObject(rowData),
+                        DataHash = dataHash,
+                        UploadDate = DateTime.Now,
+                        LastModified = DateTime.Now
+                    };
+                    await _context.Add(newRecord);
+                }
+            }
+
+            return data;
+        }
+
+        // Method: ProcessExcelFile
+        // Summary: Reads an excel file, converts it into a list of dictionary objects and
+        // saves any new or changed data into a repository. 
+        // Example: Let's consider the above Excel data. After processing, the data will be stored 
+        // as 'normal' or 'regular' data in the repository. If the data is already present in the 
+        // repository, only the changes are stored. If it's a new record, the whole record is stored.       
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFileHashEntireRow(IBrowserFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+            }
+            
+            Console.WriteLine("Converting the file to a stream...");
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 512000).CopyToAsync(memoryStream);
+
+            Console.WriteLine("Reading the Excel data...");
+            var workbook = new XLWorkbook(memoryStream);
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+
+            Console.WriteLine("Iterating through the rows of the Excel file...");
+            foreach (var rowdata in rows)
+            {
+                var rowData = new Dictionary<string, object>();
+                
+                foreach (var cell in rowdata.Cells())
+                {
+                    rowData[cell.Address.ColumnLetter] = cell.Value;
+                }
+
+                Console.WriteLine("Serializing row data to JSON...");
+                var dataJson = JsonConvert.SerializeObject(rowData);
+
+                Console.WriteLine("Calculating hash of the serialized data...");
+                var dataHash = GetHash(dataJson); 
+
+                Console.WriteLine($"Checking for existing record with hash: {dataHash}");
+                var existingRecord = await _context.GetByHash(dataHash);
+
+                if (existingRecord != null)
+                {
+                    Console.WriteLine("Record with the same hash found. Comparing old and new data...");
+
+                    var oldData = JsonConvert.DeserializeObject<Dictionary<string, object>>(existingRecord.JsonData);
+                    var newData = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataJson);
+
+                    foreach (var pair in newData)
+                    {
+                        if (!oldData.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                        {
+                            Console.WriteLine($"Value has changed for column: {pair.Key}. Old value: {oldValue}, New value: {pair.Value}");
+
+                            var change = new ExcelDataRecordChange
+                            {
+                                ColumnName = pair.Key,
+                                OldValue = oldValue?.ToString(),
+                                NewValue = pair.Value.ToString(),
+                                ChangeDate = DateTime.Now,
+                                ExcelDataRecord = existingRecord,
+                                ExcelDataRecordId = existingRecord.Id
+                            };
+                            await _context.AddChange(change);
+                        }
+                    }
+                    existingRecord.JsonData = dataJson;
+                    existingRecord.LastModified = DateTime.Now;
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    Console.WriteLine("No record with the same hash found. Adding a new record...");
+
+                    var newRecord = new ExcelDataRecord { JsonData = dataJson, DataHash = dataHash, UploadDate = DateTime.Now, LastModified = DateTime.Now };
+                    await _context.Add(newRecord);
+                }
+            }
+
+            Console.WriteLine("Processing completed. Returning the extracted data...");
+            return data;
+        }
+
+
+        // Method: ProcessExcelFileToJson
+        // Summary: Reads an excel file, converts it into a list of dictionary objects and
+        // saves any new or changed data into a repository as JSON. It also hashes the title and
+        // checks for any duplicates before storing the data.
+        // Example: Let's consider the above Excel data. The data from the "Title" column is hashed
+        // and stored in the titleHash dictionary. Any duplicate data with the same hash is ignored. 
+        // Rest of the data is stored as JSON in the repository.
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFileToJson2(IBrowserFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+            }
+            // Convert the file to a stream.
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 512000).CopyToAsync(memoryStream);
+
+            // Use ClosedXML to read the Excel data.
+            var workbook = new XLWorkbook(memoryStream);
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+
+            // Create a dictionary to store the title and its corresponding hash
+
+            Dictionary<string, string> titleHash = new Dictionary<string, string>();
+
+            // Iterate through the rows of the Excel file.
+            foreach (var rowdata in rows)
+            {
+                var rowData = new Dictionary<string, object>();
+                string titleKey = string.Empty;
+                string titleHashKey = string.Empty;
+
+                foreach (var cell in rowdata.Cells())
+                {
+                    rowData[cell.Address.ColumnLetter] = cell.Value;
+
+                    // Update column data
+                    await _context.UpdateColumnData(cell.Address.ColumnLetter);
+
+                    // If the cell's column is the "Title", process it
+                    if (cell.Address.ColumnLetter == "Title")
+                    {
+                        titleKey = ProcessTitle((string)cell.Value).ToString();  // Implement a method to strip, tokenize and bucketize the title
+                        Console.WriteLine($"titleKey: {titleKey}");
+                        titleHashKey = GetHash(titleKey);
+                    }
+                }
+                var dataJson = JsonConvert.SerializeObject(rowData);
+                var dataHash = GetHash(dataJson); // Implement a method to generate a hash
+
+                // Check if a title with the same hash already exists
+                if (titleHash.ContainsKey(titleKey) && titleHash[titleKey] == titleHashKey)
+                {
+                    // The row is exactly the same as before, skip it
+                    Console.WriteLine("Hash Exist, no new record");
+                    continue;
+                }
+                else
+                {
+                    titleHash[titleKey] = titleHashKey;
+                    // Rest of your logic
+
+                }
+                var newRecord = new ExcelDataRecord { JsonData = dataJson, DataHash = dataHash, UploadDate = DateTime.Now, LastModified = DateTime.Now };
+                await _context.Add(newRecord);
+                Console.WriteLine("New record added");  
+                data.Add(rowData);
+
+            }
+            return data;
+        }
+
+        // Method: UpdateColumnData
+        // Summary: Prints a message if the provided column is being processed for the first time.
+        // Example: When we use this method with the "Title" column from the above Excel data,
+        // it will print "Processing column Title for the first time" if this is the first time we are processing the "Title" column.
+        public Task UpdateColumnData(string columnLetter)
+        {
+            // If the column has not been processed before, add it to the set and print a message
+            if (!processedColumns.Contains(columnLetter))
+            {
+                processedColumns.Add(columnLetter);
+                Console.WriteLine($"Processing column {columnLetter} for the first time");
+            }
+
+            return Task.CompletedTask;
+        }
+
+        // Method: ProcessExcelFileAndTrackChanges
+        // Summary: Reads an excel file, converts it into a list of dictionary objects and
+        // saves any new or changed data into a repository, tracking any changes.
+        // Example: Let's consider the above Excel data. If any data changes are detected compared
+        // to the stored data in the repository, the changes are saved and tracked.
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFileAndTrackChanges(IBrowserFile file)
+        {
+            var data = await ReadExcelFile(file);
+
+            foreach (var record in data)
+            {
+                var dataJson = JsonConvert.SerializeObject(record);
+                var dataHash = GetHash(dataJson);
+
+                var existingRecord = await _context.GetByHash(dataHash);
+                if (existingRecord != null)
+                {
+                    var oldData = JsonConvert.DeserializeObject<Dictionary<string, object>>(existingRecord.JsonData);
+                    foreach (var pair in record)
+                    {
+                        if (!oldData.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                        {
+                            var change = new ExcelDataRecordChange
+                            {
+                                ColumnName = pair.Key,
+                                OldValue = oldValue?.ToString(),
+                                NewValue = pair.Value.ToString(),
+                                ChangeDate = DateTime.Now,
+                                ExcelDataRecord = existingRecord,
+                                ExcelDataRecordId = existingRecord.Id
+                            };
+                            await _context.AddChange(change);
+                        }
+                    }
+
+                    existingRecord.JsonData = dataJson;
+                    existingRecord.LastModified = DateTime.Now;
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    var newRecord = new ExcelDataRecord { JsonData = dataJson, DataHash = dataHash, UploadDate = DateTime.Now, LastModified = DateTime.Now };
+                    await _context.Add(newRecord);
+                }
+            }
+
+            return data;
+        }
+
+        
+
+        // Method: GenerateExcelFile
+        // Summary: Generates an Excel file based on the provided data record ID.
+        // Example: If we provide a data record ID that corresponds to the first data record from
+        // the above Excel data, this method will generate an Excel file containing that data record.
+        public async Task<string> GenerateExcelFile(int id)
+        {
+            // Get the data record from the database.
+            var record = await _context.Get(id);
+
+            if (record == null)
+            {
+                throw new Exception($"Record with id {id} not found");
+            }
+
+            // Deserialize the JSON data.
+            var data = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(record.Data);
+
+            // Use ClosedXML to create a new Excel file.
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.AddWorksheet("Sheet1");
+
+            var rowIndex = 1;
+            foreach (var row in data)
+            {
+                var columnIndex = 1;
+                foreach (var cell in row)
+                {
+                    // Use the column letter as the header in the first row.
+                    if (rowIndex == 1)
+                    {
+                        worksheet.Cell(1, columnIndex).Value = cell.Key;
+                    }
+
+                    // Add the cell value.
+                    worksheet.Cell(rowIndex + 1, columnIndex).Value = (XLCellValue)cell.Value;
+
+                    columnIndex++;
+                }
+
+                rowIndex++;
+            }
+
+            // Convert the workbook to a base64 string.
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            var base64 = Convert.ToBase64String(stream.ToArray());
+
+            return base64;
+        }
+
+        // Method: ProcessExcelFileAndTrackChanges2
+        // Summary: Similar to the ProcessExcelFileAndTrackChanges method, but uses a slightly 
+        // different implementation.
+        // Example: When used with the above Excel data, it behaves similar to ProcessExcelFileAndTrackChanges.
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFileAndTrackChanges2(IBrowserFile file)
+        {
+            var data = await ReadExcelFile(file);
+
+            foreach (var record in data)
+            {
+                var dataJson = JsonConvert.SerializeObject(record);
+                var dataHash = GetHash(dataJson);
+
+                var existingRecord = await _context.GetByHash(dataHash);
+                if (existingRecord != null)
+                {
+                    var oldData = JsonConvert.DeserializeObject<Dictionary<string, object>>(existingRecord.Data);
+                    foreach (var pair in record)
+                    {
+                        if (!oldData.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                        {
+                            var change = new ExcelDataRecordChange
+                            {
+                                ColumnName = pair.Key,
+                                OldValue = oldValue?.ToString(),
+                                NewValue = pair.Value.ToString(),
+                                ChangeDate = DateTime.Now,
+                                ExcelDataRecord = existingRecord,
+                                ExcelDataRecordId = existingRecord.Id
+                            };
+                            await _context.AddChange(change);
+                        }
+                    }
+                    existingRecord.Data = dataJson;
+                    existingRecord.LastModified = DateTime.Now;
+                    await _context.Update(existingRecord);
+                }
+                else
+                {
+                    var newRecord = new ExcelDataRecord { Data = dataJson, DataHash = dataHash, UploadDate = DateTime.Now, LastModified = DateTime.Now };
+                    await _context.Add(newRecord);
+                }
+            }
+            return data;
+        }
+
+        // Method: ProcessExcelFileBasedOnTitle
+        // Summary: Reads an excel file, converts it into a list of dictionary objects and
+        // processes the data based on the "Title" column.
+        // Example: When used with the above Excel data, it processes the data in a way that
+        // is defined by your implementation of the 'based on title' logic.
+        public async Task<List<Dictionary<string, object>>> ProcessExcelFileBasedOnTitle(IBrowserFile file)
+        {
+            var data = await ReadExcelFile(file);
+            // You need to define what 'based on title' means in this context and implement your logic here
+            return data;
+        }
+
+        // Method: ReadExcelFile
+        // Summary: Reads an excel file and converts it into a list of dictionary objects.
+        // Example: When used with the above Excel data, it converts each row into a dictionary
+        // where the keys are the column headers and the values are the cell values.
+        private async Task<List<Dictionary<string, object>>> ReadExcelFile(IBrowserFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+            }
+
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 512000).CopyToAsync(memoryStream);
+
+            var workbook = new XLWorkbook(memoryStream);
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+
+            foreach (var row in rows)
+            {
+                var rowData = new Dictionary<string, object>();
+                foreach (var cell in row.Cells())
+                {
+                    rowData[cell.Address.ColumnLetter] = cell.Value;
+                }
+                data.Add(rowData);
+            }
+            return data;
+        }
+
+        public Task<List<Dictionary<string, object>>> ProcessExcelFile(IBrowserFile file)
+        {
+            throw new NotImplementedException();
+        }
+    }
+    /*
+      public async Task<List<Dictionary<string, object>>> ProcessExcelFile3(IBrowserFile file)
+        {
+            var data = await ReadExcelFile(file);
+
+            foreach (var record in data)
+            {
+                // In this case, you'll need to modify your ExcelDataRecord class to store data in a different format
+                // Also, you need to modify your IExcelDataRecordRepository to support this operation
+                var newRecord = new ExcelDataRecord
+                {
+                    JsonData = JsonConvert.SerializeObject(record)
+                };
+                await _context.Add(newRecord);
+            }
+
+            return data;
+        }
+     */
+    /*public async Task<List<Dictionary<string, object>>> ProcessExcelFile(IBrowserFile file)
+{
+    ...
+// Iterate through the rows of the Excel file.
+foreach (var rowdata in rows)
+    {
+        var rowData = new Dictionary<string, object>();
+
+        foreach (var cell in rowdata.Cells())
+        {
+            rowData[cell.Address.ColumnLetter] = cell.Value;
+
+            // Update column data
+            await _context.UpdateColumnData(cell.Address.ColumnLetter);
+        }
+
+        var dataJson = JsonConvert.SerializeObject(rowData);
+        var dataHash = GetHash(dataJson); // Implement a method to generate a hash
+
+        // Check if a record with the same hash already exists
+        var existingRecord = await _context.GetByHash(dataHash);
+
+        if (existingRecord != null)
+        {
+            var oldData = JsonConvert.DeserializeObject<Dictionary<string, object>>(existingRecord.Data);
+            var newData = JsonConvert.DeserializeObject<Dictionary<string, object>>(dataJson);
+
+            bool hasChanged = false;
+
+            // Compare old and new data
+            foreach (var pair in newData)
+            {
+                if (!oldData.TryGetValue(pair.Key, out var oldValue) || !pair.Value.Equals(oldValue))
+                {
+                    hasChanged = true;
+                    break;
+                }
+            }
+
+            if (hasChanged)
+            {
+                // Add a new version of the existing record
+                var newRecord = new ExcelDataRecord { Data = dataJson, DataHash = dataHash, UploadDate = DateTime.Now, LastModified = DateTime.Now, OriginalRecordId = existingRecord.Id };
+                await _context.Add(newRecord);
+            }
+        }
+        else
+        {
+            // Add new record
+            var newRecord = new ExcelDataRecord { Data = dataJson, DataHash = dataHash, UploadDate = DateTime.Now, LastModified = DateTime.Now };
+            await _context.Add(newRecord);
+        }
+    }*/
+    /*public async Task<List<Dictionary<string, object>>> ProcessExcelFileEAV(IBrowserFile file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException(nameof(file), "The input file cannot be null.");
+            }
+
+            // Convert the file to a stream.
+            await using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 512000).CopyToAsync(memoryStream);
+
+            // Use ClosedXML to read the Excel data.
+            var workbook = new XLWorkbook(memoryStream);
+            var worksheet = workbook.Worksheet(1);
+            var rows = worksheet.RowsUsed();
+
+            var data = new List<Dictionary<string, object>>();
+
+            // Iterate through the rows of the Excel file.
+            foreach (var row in rows)
+            {
+                var rowData = new Dictionary<string, object>();
+
+                foreach (var cell in row.Cells())
+                {
+                    rowData[cell.Address.ColumnLetter] = cell.Value;
+                }
+
+                data.Add(rowData);
+
+                // Create a new entity for this row.
+                var newEntity = new Entity { Name = "NewEntity" }; // Use a suitable name for your entities
+                _context.Entities.Add(newEntity);
+                await _context.SaveChangesAsync();
+
+                // Add each cell value as an entity-attribute-value record.
+                foreach (var pair in rowData)
+                {
+                    var attribute = await _context.FirstOrDefaultAsync(a => a.Name == pair.Key);
+
+                    if (attribute == null)
+                    {
+                        attribute = new Attribute { Name = pair.Key };
+                        _context.Attributes.Add(attribute);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    var entityAttributeValue = new EntityAttributeValue
+                    {
+                        EntityId = newEntity.EntityId,
+                        AttributeId = attribute.AttributeId,
+                        Value = pair.Value.ToString()
+                    };
+
+                    _context.EntityAttributeValues.Add(entityAttributeValue);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            // Return the extracted data
+            return data;
+        }*/
+}

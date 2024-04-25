@@ -1,0 +1,31 @@
+﻿
+
+<style>
+    .grid 
+    {
+        display: grid;
+        grid-template-columns: repeat(30, 1fr);
+    }
+</style>
+
+<div class="grid">
+    @foreach (var block in Blocks)
+    {
+        <Block UserName="@block.UserName" Position="@block.Position" Span="@block.Span" Color="@block.Color" />
+    }
+</div>
+
+
+
+
+@code{
+        [Parameter]
+    public List<Block> Blocks { get; set; } = new List<Block>();
+    [Parameter]
+    public List<string> Users { get; set; } = new List<string>();
+
+    //[Parameter]
+    //public string 
+    //public List<Block> Blocks { get; set; } = new List<Block>();
+}
+

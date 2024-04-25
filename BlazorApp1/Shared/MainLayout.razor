@@ -1,0 +1,58 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject NavbarService NavbarService
+
+<PageTitle>BlazorApp1</PageTitle>
+
+<div class="page">
+@*     @if (!NavigationManager.Uri.Contains("/cars"))
+ *@
+    @if (NavbarService.IsNavbarVisible)
+
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+        <div>
+        <LoginDisplay />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+    }
+    <div class="@(!NavigationManager.Uri.Contains("/cars") ? "main" : "main-fullwidth")">
+        <div class="top-row px-4">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </div>
+</div>
+@* <div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4 auth">
+            <LoginDisplay />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div> *@
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavbarService.OnChangeAsync += async () => await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NavbarService.OnChangeAsync -= async () => await InvokeAsync(StateHasChanged);
+    }
+}

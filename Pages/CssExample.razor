@@ -1,0 +1,446 @@
+﻿@page "/css"
+
+
+<p>//================================\\</p>
+<style>
+
+     Bootstrap modal classes will handle most of the styling,
+    .my-custom-modal-content {
+        background-color: rgba(0, 0, 0, 0.3); /* semi-transparent black 
+    }
+</style>
+
+<div class="alt-grid-7x1">
+    @foreach (var item in sevenItems)
+    {
+        <div class="alt-grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+
+@if (isModalVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content my-custom-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You clicked on: @selectedItem</p>
+                    <hr>
+                    <p>CSS Showcase:</p>
+                    <div style="color: red;">Text with red color</div>
+                    <div style="font-weight: bold;">Bold text</div>
+                    <div style="text-decoration: underline;">Underlined text</div>
+                    <div style="font-size: 24px;">Large font size</div>
+                    <div style="text-align: right;">Right-aligned text</div>
+                    <div style="margin: 10px;">Text with margin</div>
+                    <div style="padding: 10px;">Text with padding</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+<p>////</p>
+<style>
+    /* Your existing and opposite styles here... */
+
+    /* Custom backdrop style */
+    .custom-modal-backdrop.show {
+        background-color: rgba(0, 0, 0, 0.3); /* semi-transparent black */
+    }
+
+
+</style>
+
+<!-- Your existing HTML code for grids ... -->
+<!-- Alternative 7x1 Grid -->
+<div class="alt-grid-7x1">
+    @foreach (var item in sevenItems)
+    {
+        <div class="alt-grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+@* 
+<!-- Bootstrap Modal -->
+@if (isModalVisible)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content my-custom-modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Your modal content -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop custom-modal-backdrop fade show"></div>
+}
+ *@
+<style>
+    /* Existing styles for grid rows, task items, etc. */
+    /* ... */
+
+    /* Opposite and additional styles */
+    .alt-grid-7x1 {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        border: 3px solid blue;
+        gap: 10px;
+    }
+
+    .alt-grid-1x7 {
+        display: grid;
+        grid-template-rows: repeat(7, 1fr);
+        border: 3px solid red;
+        gap: 10px;
+    }
+
+    .alt-grid-item {
+        border: 2px solid black;
+        padding: 15px;
+        text-align: center;
+    }
+
+    /* Modal styles */
+    .modal-bg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .modal {
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 20px;
+        border-radius: 8px;
+    }
+</style>
+
+@if (showModal)
+{
+    <div class="modal-bg" @onclick="CloseModal">
+        <div class="modal" @onclick:stopPropagation="true">
+            <p>You clicked on @selectedItem</p>
+        </div>
+    </div>
+}
+
+<!-- ... your previous HTML code ... -->
+<!-- Alternative 7x1 Grid -->
+<div class="alt-grid-7x1">
+    @foreach (var item in sevenItems)
+    {
+        <div class="alt-grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+
+<!-- Alternative 1x7 Grid -->
+<div class="alt-grid-1x7">
+    @foreach (var item in sevenItems)
+    {
+        <div class="alt-grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+
+<style>
+    .alt-grid-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 2px solid green;
+        margin: 5px;
+        padding: 10px;
+    }
+
+    .alt-day-label {
+        grid-column: 1;
+        font-weight: normal;
+        padding: 10px;
+        background-color: rgba(0, 100, 120, 0.7);
+    }
+
+    .alt-user-column {
+        grid-column: 2;
+        padding-right: 20px;
+    }
+
+    .alt-user-name {
+        font-weight: normal;
+    }
+
+    .alt-task-item {
+        margin: 3px;
+        padding: 4px 8px;
+        border-radius: 0px;
+        background-color: rgba(50, 50, 150, 0.7);
+    }
+
+    .alt-user-badge {
+        font-size: 1em;
+        padding: 4px 16px;
+        border-radius: 0px;
+        background-color: #dc3545;
+        color: rgba(50, 255, 255, 0.7);
+        margin-right: 3px;
+    }
+
+
+</style>
+<style>
+
+    .alt-grid-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 2px solid green;
+    }
+</style>
+
+<div>
+    <!-- Grid Row -->
+    <div>
+        <!-- Day Label -->
+        <div>Monday</div>
+
+        <!-- User Column -->
+        <div>
+            <!-- User Name -->
+            <div>John</div>
+
+            <!-- Task Items -->
+            <div>Task 1</div>
+            <div>Task 2</div>
+
+            <!-- User Badge -->
+            <div>Admin</div>
+        </div>
+    </div>
+</div>
+
+<!-- Section with Original CSS -->
+<div class="grid-row">
+    <div class="day-label">Monday</div>
+    <div class="user-column">
+        <div class="user-name">John</div>
+        <div class="task-item">Task 1</div>
+        <div class="task-item">Task 2</div>
+        <div class="user-badge">Admin</div>
+    </div>
+</div>
+
+<!-- Section with Alternative CSS -->
+<div class="alt-grid-row">
+    <div class="alt-day-label">Tuesday</div>
+    <div class="alt-user-column">
+        <div class="alt-user-name">Doe</div>
+        <div class="alt-task-item">Alt Task 1</div>
+        <div class="alt-task-item">Alt Task 2</div>
+        <div class="alt-user-badge">Member</div>
+    </div>
+</div>
+
+<!-- Initial layout using existing styles -->
+<div class="grid-row">
+    <div class="day-label">Monday</div>
+    <div class="user-column">
+        <div class="user-name">John</div>
+        <div class="task-item">Task 1</div>
+        <div class="task-item">Task 2</div>
+        <div class="user-badge">Admin</div>
+    </div>
+</div>
+
+<!-- Alternative layout using alternative styles -->
+<div class="alt-grid-row">
+    <div class="alt-day-label">Tuesday</div>
+    <div class="alt-user-column">
+        <div class="alt-user-name">Doe</div>
+        <div class="alt-task-item">Alt Task 1</div>
+        <div class="alt-task-item">Alt Task 2</div>
+        <div class="alt-user-badge">Member</div>
+    </div>
+</div>
+<p>//======================</p>
+
+
+<style>
+    /* Grid 7x1 example */
+    .grid-7x1 {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    /* Grid 1x7 example */
+    .grid-1x7 {
+        display: grid;
+        grid-template-rows: repeat(7, 1fr);
+    }
+
+    .flex-row {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .flex-row-center {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .flex-col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .flex-3 {
+        flex: 3;
+    }
+
+    .flex-1 {
+        flex: 1;
+    }
+
+    .fixed-flex {
+        flex: 0 0 100px;
+    }
+
+    .inline-block {
+        display: inline-block;
+    }
+
+    .grid-item:hover {
+        background-color: #e74c3c;
+        transform: scale(1.1);
+        transition: all 0.3s ease;
+    }
+
+</style>
+
+
+
+<!-- Original Example -->
+<div class="grid-7x1">
+    <div class="flex-row">Content A1</div>
+    <div class="flex-row-center">Content A2</div>
+    <div class="flex-col">Content A3</div>
+    <div class="flex-3">Content A4</div>
+    <div class="flex-1">Content A5</div>
+    <div class="fixed-flex">Content A6</div>
+    <div class="inline-block">Content A7</div>
+</div>
+
+<div class="grid-1x7">
+    <div class="flex-row">Content B1</div>
+    <div class="flex-row-center">Content B2</div>
+    <div class="flex-col">Content B3</div>
+    <div class="flex-3">Content B4</div>
+    <div class="flex-1">Content B5</div>
+    <div class="fixed-flex">Content B6</div>
+    <div class="inline-block">Content B7</div>
+</div>
+
+<!-- Alternative Example -->
+<div class="alt-grid-7x1">
+    <!-- Alternative Content here -->
+</div>
+
+<div class="alt-grid-1x7">
+    <!-- Alternative Content here -->
+</div>
+
+
+
+
+
+
+<!-- Original 7x1 Grid -->
+<div class="grid-7x1">
+    @foreach (var item in sevenItems)
+    {
+        <div class="grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+
+<!-- Original 1x7 Grid -->
+<div class="grid-1x7">
+    @foreach (var item in sevenItems)
+    {
+        <div class="grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+
+<!-- Alternative 7x1 Grid -->
+<div class="alt-grid-7x1">
+    @foreach (var item in sevenItems)
+    {
+        <div class="alt-grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+
+<!-- Alternative 1x7 Grid -->
+<div class="alt-grid-1x7">
+    @foreach (var item in sevenItems)
+    {
+        <div class="alt-grid-item" @onclick="() => OnBoxClick(item)">
+            @item
+        </div>
+    }
+</div>
+
+
+@code {
+
+
+    private string[] sevenItems = new string[] { "A", "B", "C", "D", "E", "F", "G" };
+    private bool showModal = false;
+    private string selectedItem = "";
+    private bool isModalVisible = false;
+
+
+    private void OnBoxClick(string item)
+    {
+        selectedItem = item;
+        showModal = true;
+        isModalVisible = true;
+
+        Console.WriteLine($"Box {item} was clicked.");
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+        isModalVisible = false;
+
+    }
+}
+

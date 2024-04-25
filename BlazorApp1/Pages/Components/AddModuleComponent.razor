@@ -1,0 +1,135 @@
+﻿@* AddModuleComponent.razor *@
+@using BlazorApp1.Data
+@using BlazorApp1.Interfaces
+@using BlazorApp1.Services
+
+
+@inject ICarService CarService
+
+@inject IModuleService ModuleService
+@inject ILoggerService LoggerService
+
+
+<button class="btn btn-primary" @onclick="ShowAddModuleModal">Add Module</button>
+
+<ModalComponent IsOpen="@showModal" ModalSize="medium" Title="Add New Module" CloseButtonClicked="HideAddModuleModal">
+    <ChildContent>
+        <!-- Form for adding a new module -->
+        <EditForm Model="@newModule" OnValidSubmit="HandleValidModuleSubmit">
+            <div class="form-group">
+                <label for="moduleName">Module Name</label>
+                <InputText id="moduleName" class="form-control" @bind-Value="newModule.Name" />
+            </div>
+
+            <div class="form-group">
+                <label for="moduleDescription">Description</label>
+                <InputTextArea id="moduleDescription" class="form-control" @bind-Value="newModule.Description" />
+            </div>
+
+            <div class="form-group">
+                <label for="currentSoftwareVersion">Current Software Version</label>
+                <InputNumber id="currentSoftwareVersion" class="form-control" @bind-Value="newModule.CurrentSoftwareVersion" />
+            </div>
+
+            <div class="form-group">
+                <label for="nextSoftwareVersion">Next Software Version</label>
+                <InputNumber id="nextSoftwareVersion" class="form-control" @bind-Value="newModule.NextSoftwareVersion" />
+            </div>
+
+             <div class="form-group">
+                <label for="lastUpdated">Last Updated</label>
+                <InputDate id="lastUpdated" class="form-control" @bind-Value="newModule.LastUpdated" />
+            </div>
+
+            <div class="form-group">
+                <label for="projectedRelease">Projected Release</label>
+                <InputDate id="projectedRelease" class="form-control" @bind-Value="newModule.ProjectedRelease" />
+            </div> 
+
+            <button type="submit" class="btn btn-success">Save Module</button>
+        </EditForm>
+    </ChildContent>
+</ModalComponent>
+
+
+
+
+
+@code {
+    [Parameter]
+    public List<BlazorApp1.CarModels.Module> ExistingModules { get; set; }
+
+    [Parameter]
+    public EventCallback<Module> OnAddModule { get; set; }
+    [Parameter]
+    public int CarId { get; set; }
+
+    private BlazorApp1.CarModels.Module newModule = new BlazorApp1.CarModels.Module();
+    private bool showModal = false;
+    private bool isModuleSuccess = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine($" CarId {CarId}");
+    }
+    private void ShowAddModuleModal()
+    {
+        newModule.CarId = CarId; // Set CarId for the new module
+
+        showModal = true;
+    }
+
+    private void HideAddModuleModal()
+    {
+        showModal = false;
+    }
+
+   // private async Task HandleValidModuleSubmit()
+    //{
+    private async Task HandleValidModuleSubmit()
+    {
+        Console.WriteLine("Save Module button clicked in last modal."); // Log a message
+
+        try
+        {
+            newModule.LastUpdated = DateTime.Now;
+            newModule.ProjectedRelease = newModule.LastUpdated.Value.AddDays(7);
+
+            await ModuleService.AddModuleAsync(newModule);
+
+            // *** Notify the parent component of new module added ***
+            await OnAddModule.InvokeAsync();
+
+
+            // Reset the form and hide the modal
+            newModule = new BlazorApp1.CarModels.Module();
+            isModuleSuccess = true;
+            HideAddModuleModal();
+
+            // Log a success message
+            Console.WriteLine("Module added successfully!");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error adding module: {ex.Message}");
+            isModuleSuccess = false; // Set flag to false in case of error
+        }
+    }
+      /*
+        newModule.LastUpdated = DateTime.Now; // Set the LastUpdated date to now
+        newModule.ProjectedRelease = newModule.LastUpdated.Value.AddDays(7); // Set ProjectedRelease to one week after LastUpdated
+        if (newModule != null)
+        {
+            Console.WriteLine("Adding Module method of ModuleService... Aka good");
+            await ModuleService.AddModuleAsync(newModule);
+        }
+        Console.WriteLine("Something went wrong...Bad");
+
+        newModule = new Module(); // Reset the model to allow further additions
+        isModuleSuccess = true;
+        HideAddModuleModal();
+      */
+    }
+    
+

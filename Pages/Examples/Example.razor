@@ -1,0 +1,36 @@
+﻿@page "/example"
+@using BlazorApp1.Pages.Components
+
+<MyGrid TItem="MyItem" Items="@myItems">
+    <HeaderTemplate>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Value</th>
+    </HeaderTemplate>
+    <RowTemplate Context="item">
+        <td>@item.Id</td>
+        <td>@item.Name</td>
+        <td>@item.Value</td>
+    </RowTemplate>
+</MyGrid>
+
+@code {
+    private List<MyItem> myItems;
+
+    protected override void OnInitialized()
+    {
+        myItems = new List<MyItem>
+        {
+            new MyItem { Id = 1, Name = "Item 1", Value = 100 },
+            new MyItem { Id = 2, Name = "Item 2", Value = 200 },
+            // add more items...
+        };
+    }
+
+    private class MyItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Value { get; set; }
+    }
+}

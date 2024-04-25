@@ -1,0 +1,231 @@
+﻿@page "/Cal"
+@using BlazorApp1.Data
+@using BlazorApp1.CarModels
+@inject IJSRuntime jsRuntime
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+
+<h1>Calendar</h1>
+
+<!-- Add this above your <div class="grid-container"> -->
+<div class="toolbar">
+    <input type="color" @bind="selectedColor" />
+    <button @onclick="CreateOverlay">Create Overlay</button>
+</div>
+
+
+
+ <div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+    {
+        int day = i;
+        <div @onclick="() => OpenDayTasks(day)" class="grid-item day-box">
+            @day
+            @foreach (var overlay in overlays.Where(o => o.Day == day))
+            {
+                <div id="@overlay.Id" @onclick="() => OpenOverlayModal(overlay)" class="overlay" style="background-color: @overlay.Color;">
+                    <input type="text" placeholder="Task..." @bind="overlay.Task" />
+                </div>
+            }
+            <!-- ... (rest of your code) -->
+        </div>
+    }
+</div> 
+
+ <div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+    {
+        int day = i;  // Capture the loop variable
+        <div @onclick="() => OpenDayTasks(day)" class="grid-item day-box">
+            @day
+            @foreach (var overlay in overlays.Where(o => o.Day == day))
+            {
+                <!-- Add a unique ID to each overlay -->
+                <div id="@($"overlay-{overlay.Id}")" class="overlay" style="background-color: @overlay.Color;"></div>
+            }
+        </div>
+    }
+</div> 
+
+ <div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+    {
+        int day = i;  // Capture the loop variable
+        <div @onclick="() => OpenDayTasks(day)" class="grid-item day-box">
+            @day
+            @foreach (var overlay in overlays.Where(o => o.Day == day))
+            {
+                <div class="overlay" style="background-color: @overlay.Color;"></div>
+            }
+            @foreach (var user in users)
+            {
+                <input class="form-control mb-1 user-input"
+                @onfocus="() => OpenDayTasksForUser(day, user)"
+                       placeholder="@user.UserName" />
+            }
+        </div>
+    }
+</div> 
+ <div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+    {
+        int day = i;  // Capture the loop variable
+        <div @onclick="() => OpenDayTasks(day)" class="grid-item day-box">
+            @day
+            @foreach (var user in users)
+            {
+                <input class="form-control mb-1 user-input"
+                @onfocus="() => OpenDayTasksForUser(day, user)"
+                       placeholder="@user.UserName" />
+            }
+        </div>
+    }
+</div> 
+
+
+
+
+
+
+
+
+@if (isDayTasksModalOpen && selectedUser != null)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay for @selectedUser.UserName</h2>
+
+            <EditForm Model="@newTaskModel" OnValidSubmit="AddTaskForUser">
+                <InputText @bind-Value="newTaskModel.Task" placeholder="Enter new task..." />
+                <button type="submit" class="btn btn-sm btn-secondary ml-2">Add Task</button>
+            </EditForm>
+
+            <TaskListComponent taskList="@GetTasksForSelectedUserAndDay()" UserId="@selectedUser.Id" />
+        </div>
+    </div>
+}
+
+
+@code {
+
+
+    private IJSObjectReference _module;
+   // private string selectedColor = "red";
+
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private List<TaskModel> taskModels = new List<TaskModel>();
+    private TaskModel newTaskModel = new TaskModel();
+    private ApplicationUser selectedUser;
+    private int selectedDay;
+    private bool isDayTasksModalOpen = false;
+    private OverlayModel selectedOverlay;  // Add this line
+                                           //public string Task { get; set; }  // Add this line
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUsersAsync();
+        //taskModels = await TaskModelService.GetAll();
+        taskModels = (await TaskModelService.GetAllTaskModels()).ToList();
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./scheduler.js");
+            await _module.InvokeVoidAsync("addEventListeners", "calendarContainer", DotNetObjectReference.Create(this));
+        }
+    }
+    private void OpenOverlayModal(OverlayModel overlay)
+    {
+        selectedOverlay = overlay;
+        isDayTasksModalOpen = true;
+    }
+
+    private void OpenDayTasksForUser(int day, ApplicationUser user)
+    {
+        selectedDay = day;
+        selectedUser = user;
+        isDayTasksModalOpen = true;
+    }
+
+    private void CloseDayTasks()
+    {
+        isDayTasksModalOpen = false;
+    }
+
+    private async void AddTaskForUser(ApplicationUser user)
+    {
+        // Logic to add a task for the specific user
+    }
+
+    private List<TaskModel> GetTasksForSelectedUserAndDay()
+    {
+        // Assuming TaskModel has a DateAssigned property of type DateTime
+        return taskModels.Where(t => t.UserId == selectedUser.Id && t.DateAssigned.Day == selectedDay).ToList();
+    }
+    private void OpenDayTasks(int day)
+    {
+        selectedDay = day;
+        isDayTasksModalOpen = true;
+    }
+
+
+    private async void AddTaskForUser()
+    {
+        if (selectedDay > 0 && selectedDay <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+        {
+            newTaskModel.UserId = selectedUser.Id;
+            newTaskModel.UserName = selectedUser.FriendlyName; // Assuming FriendlyName is a property on ApplicationUser
+            newTaskModel.DateAssigned = new DateTime(DateTime.Now.Year, DateTime.Now.Month, selectedDay);
+            newTaskModel.Importance = 1;
+            newTaskModel.DateExpired = newTaskModel.DateAssigned.AddDays(7); // One week from DateAssigned
+
+            await TaskModelService.AddTaskModel(newTaskModel);
+            taskModels = (await TaskModelService.GetAllTaskModels()).ToList(); // Refresh the task list
+            newTaskModel = new TaskModel(); // Clear the input field
+            StateHasChanged(); // Update the UI
+        }
+        else
+        {
+            // Handle invalid day here, perhaps log an error or show a message to the user
+        }
+
+    }
+    private string selectedColor = "#ff0000";
+    private List<OverlayModel> overlays = new List<OverlayModel>();
+    [JSInvokable]
+    private async Task CreateOverlay()
+    {
+        var newOverlay = new OverlayModel { Id = Guid.NewGuid(), Day = selectedDay, Color = selectedColor };
+        overlays.Add(newOverlay);
+        StateHasChanged();
+
+        await Task.Delay(100);  // Wait for 100ms
+
+        // Call the JavaScript function to enable drag-and-drop and resizing
+        await jsRuntime.InvokeVoidAsync("enableDragAndResize", newOverlay.Id);
+    }
+    
+
+
+
+    public class OverlayModel
+    {
+        public Guid Id { get; set; }  // Add a unique identifier
+        public int Day { get; set; }
+        public string Color { get; set; }
+        public string? Task { get; set; }
+    }
+   
+}
+
+
+
+
+

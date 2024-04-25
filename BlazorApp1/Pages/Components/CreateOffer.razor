@@ -1,0 +1,46 @@
+﻿@* @page "/createoffer"
+ *@
+ 
+ @inject ExchangeService ExchangeService
+
+<h3>Create Offer</h3>
+
+<EditForm Model="@offer" OnValidSubmit="HandleValidSubmit">
+    <InputSelect @bind-Value="offer.UserId">
+        @foreach (var user in users)
+        {
+            <option value="@user.Id">@user.Username</option>
+        }
+    </InputSelect>
+
+    <InputSelect @bind-Value="offer.ItemId">
+        @foreach (var item in items)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </InputSelect>
+
+    <InputNumber id="offerQuantity" @bind-Value="offer.Quantity" />
+    <InputNumber id="offerPrice" @bind-Value="offer.Price" />
+    <InputCheckbox id="isBuyOffer" @bind-Value="offer.IsBuyOffer" />
+
+    <button type="submit">Submit Offer</button>
+</EditForm>
+
+@code {
+    ExchangeOffer offer = new ExchangeOffer();
+    List<RsUser> users = new List<RsUser>();
+    List<Item> items = new List<Item>();
+
+    private void OnInitializedAsync()
+    {
+    users = ExchangeService.GetUsers();
+    items = ExchangeService.GetItems();
+    }
+
+    private void HandleValidSubmit()
+    {
+        ExchangeService.AddOffer(offer);
+        offer = new ExchangeOffer(); // Reset the form
+    }
+}

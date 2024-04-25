@@ -1,0 +1,90 @@
+﻿@typeparam TModel
+
+<style>
+    /* Your existing styles here */
+</style>
+
+@if (IsVisible)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <EditForm Model="modelInstance" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                @if (FormTemplate != null)
+                {
+                    @FormTemplate(modelInstance)
+                }
+                else
+                {
+                    @foreach (var propertyInfo in modelInstance.GetType().GetProperties())
+                    {
+                        <div>
+                            <label>@propertyInfo.Name:</label>
+                            <InputText Value="@propertyInfo.GetValue(modelInstance)?.ToString()"
+                                       ValueChanged="@(v => UpdateProperty(propertyInfo, v.ToString()))" />
+                        </div>
+                    }
+                }
+                <button type="submit">Submit</button>
+                <button type="button" @onclick="Cancel">Cancel</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment<TModel> FormTemplate { get; set; }
+    [Parameter] public EventCallback<TModel> OnSubmit { get; set; }
+    private TModel modelInstance;
+    public bool IsVisible { get; private set; } = false;
+
+    private void UpdateProperty(System.Reflection.PropertyInfo propertyInfo, string value)
+    {
+        if (propertyInfo.PropertyType == typeof(string))
+        {
+            propertyInfo.SetValue(modelInstance, value);
+        }
+        // Add more type checks and conversions here if needed
+    }
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("FormModal initialized");
+        modelInstance = Activator.CreateInstance<TModel>();
+    }
+
+    public void Show(TModel model)
+    {
+        modelInstance = model;
+        Console.WriteLine($"Show method invoked for model: {model.ToString()}");
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    public void Show()
+    {
+        Console.WriteLine("Show method invoked");
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    public void Hide()
+    {
+        Console.WriteLine("Hide method invoked");
+        IsVisible = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        Console.WriteLine("HandleValidSubmit invoked");
+        await OnSubmit.InvokeAsync(modelInstance);
+        Hide();
+    }
+
+    private void Cancel()
+    {
+        Console.WriteLine("Cancel button clicked");
+        Hide();
+    }
+}

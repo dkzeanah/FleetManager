@@ -1,0 +1,443 @@
+﻿@page "/cars2"
+@inject ICarService CarService
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize(Roles = "Admin,Organizer,Driver,Technician")]
+
+<ModalComponent @ref="addCarModal" IsOpen="isAddCarModalOpen" Title="Add Car">
+    <ModalContent>
+        <AddCarComponent OnCarAdded="RefreshCars" />
+    </ModalContent>
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseAddCarModal">Close</button>
+    </ModalFooter>
+</ModalComponent>
+
+
+<h3>Car List</h3>
+<button class="btn btn-primary" @onclick="ToggleAddCarModal">Add Car</button>
+
+@*<th><button @onclick="SortCarsByFinas">By Finas</button></th>
+<th><button @onclick="SortCarsByTag">By Tag</button></th>
+<th><button @onclick="SortCarsByTeleGen">By Telegen</button></th>*@
+
+@*@if (showAddCarModal)
+{
+    <EditForm Model="newCar" OnValidSubmit="SubmitNewCar">
+        <label>Make: <InputText @bind-Value="newCar.Make" /></label>
+        <label>Model: <InputText @bind-Value="newCar.Model" /></label>
+        <!-- include other fields here -->
+        <button type="submit">Submit</button>
+    </EditForm>
+}*@
+
+@if (showDeleteConfirmation)
+{
+    <div>
+        Are you sure you want to delete this car?
+        <button @onclick="() => ConfirmDelete(true)">Yes</button>
+        <button @onclick="() => ConfirmDelete(false)">No</button>
+    </div>
+}
+
+<ModalComponent @ref="modal" IsOpen="isModalOpen" Title="Car Details">
+    <ModalContent>
+        <div>
+            @if (selectedCar != null && selectedCar.CarDetail != null)
+            {
+                <div class="form-group">
+                        <label>Finas</label>
+                        <input class="form-control" @bind="@selectedCar.CarDetail.Finas" />
+                    </div>
+                    <div class="form-group">
+                        <label>TeleGeneration</label>
+                        <input class="form-control" @bind="@selectedCar.TeleGeneration" />
+                    </div>
+                    <div class="form-group">
+                        <label>Miles</label>
+                        <input class="form-control" @bind="@selectedCar.Miles" />
+
+                    <div class="form-group">
+                        <label>VinLast4</label>
+                        <input class="form-control" @bind="@selectedCar.CarDetail.VinLast4" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Full Vin</label>
+                        <input class="form-control" @bind="@selectedCar.CarDetail.FullVin" />
+                    </div>
+                    <div class="form-group">
+                        <label>Harness Status</label>
+                        <input class="form-control" @bind="@selectedCar.CarDetail.HarnessStatus" />
+                    </div>
+                    <div class="form-group">
+                        <label>Software Version</label>
+                        <input class="form-control" @bind="@selectedCar.CarDetail.SoftwareVersion" />
+                    </div>
+                    <div class="form-group">
+                        <label>Adas</label>
+                        <input class="form-control" @bind="@selectedCar.CarDetail.Adas" />
+                    </div>
+                </div>
+            }
+        </div>
+    </ModalContent>
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+        <button class="btn btn-primary" @onclick="SaveCar">Save</button>
+    </ModalFooter>
+</ModalComponent>
+<ModalComponent @ref="userModal" IsOpen="isUserModalOpen" Title="Assign User">
+    <ModalContent>
+        <div>
+            @if (users != null)
+            {
+                <div class="form-group">
+                    <label>Select User</label>
+                    <select class="form-control" @bind="selectedUser">
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.UserName">@user.UserName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <InputDate class="form-control" @bind-Value="startDate" />
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <InputDate class="form-control" @bind-Value="startDate" />
+                </div>
+
+            }
+        </div>
+    </ModalContent>
+
+
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseUserModal">Close</button>
+        <button class="btn btn-primary" @onclick="AssignUser">Assign</button>
+    </ModalFooter>
+</ModalComponent>
+
+@if (cars == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+        
+                <th><button @onclick="SortCarsByFinas">By Finas</button></th>
+                <th><button @onclick="SortCarsByTag">By Tag</button></th>
+                <th><button @onclick="SortCarsByTeleGen">By Telegen</button></th>
+                <!-- Other columns -->
+                <th>Finas</th>
+                <th>Tag</th>
+                <th>TeleGeneration</th>
+                <th>Location</th>
+                <th>Miles</th>
+                <th>Assigned User</th>
+            </tr>
+        </thead>
+        @*Add Car Code here*@
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr>
+                    <td>@car.CarDetail.Finas </td>
+                    <td>@car.CarDetail.Tag</td>
+                    <td>@car.TeleGeneration</td>
+                    <td>@car.Location</td>
+                    <td>@car.Miles</td>
+                    <td>@car.Location</td>
+                    <td>@(car.UserId != null && userIdToUserName.ContainsKey(car.UserId) ? userIdToUserName[car.UserId] : "d@d.com")</td>
+@*                    <td>@(userIdToUserName.ContainsKey(car.UserId) ? userIdToUserName[car.UserId] : "d@d.com")</td>
+*@
+@*                    <td>@(userIdToUserName?.ContainsKey(car.UserId) == true ? userIdToUserName[car.UserId] : "Unknown")</td>
+*@@*                    <td>@(userIdToUserName.ContainsKey(car.UserId) ? userIdToUserName[car.UserId] : "Unknown")</td>
+*@                @* Add Buttons for car management *@
+
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => OpenUserModal(car))">Assign User</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => OpenModal(car))">View Details</button>
+                    </td>
+                    <td>
+                        @if (isAdminOrOrganizer)
+                        {
+                            <button class="btn btn-secondary" @onclick="() => DeleteCar(car.CarId)">Delete</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    int carIdToBeDeleted;
+    private int startHour;
+    private int startMinute;
+    private int endHour;
+    private int endMinute;
+    private DateTime startDate = DateTime.Now;
+    private DateTime endDate;
+
+    private string searchTerm;
+    private string selectedUser;
+    private string errorMessage = "";
+
+    private ModalComponent modal;
+    private ModalComponent userModal;
+    private ModalComponent addCarModal;
+
+    Car newCar = new Car();
+    private Car? selectedCar;
+    private List<Car>? cars;
+    private List<Car> filteredCars = new List<Car>();  // Initialize filteredCars to avoid NullReferenceException
+    private List<ApplicationUser>? users;
+
+    private bool showDeleteConfirmation = false;
+    private bool showAddCarModal = false;
+    private bool isUserModalOpen = false;
+    private bool isModalOpen = false;
+    private bool isAdminOrOrganizer = false;
+    private bool isAddCarModalOpen = false;
+    private bool showError = false;
+    private Dictionary<string, string> userIdToUserName;
+ 
+    void ToggleAddCarModal()
+    {
+        isAddCarModalOpen = !isAddCarModalOpen;
+    }
+    void CloseAddCarModal()
+    {
+        isAddCarModalOpen = false;
+    }
+    async Task RefreshCars()
+    {
+        cars = await CarService.GetAllCarsAsync();
+        CloseAddCarModal();
+        //cars = await CarService.GetAllCarsAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user.IsInRole("Admin") || user.IsInRole("Organizer"))
+            {
+                isAdminOrOrganizer = true;
+            }
+
+            users = await UserService.GetAllUsersAsync();
+            userIdToUserName = users.ToDictionary(u => u.Id, u => u.UserName);
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while loading the cars: {ex.Message}");
+        }
+        finally
+        {
+            cars = await CarService.GetAllCarsWithDetailsAsync();
+        }
+        if (cars == null)
+        {
+            Console.WriteLine("WTF");
+            return;
+        }
+
+    }
+
+    //private ApplicationUser? selectedUser; - select a string/Id , not a whole (complex object of) applicationuser
+
+    #region //=====[ Add Cars ]==========================================================
+
+    void AddCar()
+    {
+        showAddCarModal = true;
+    }
+    void ToggleAddCarModal2()
+    {
+        showAddCarModal = !showAddCarModal;
+    }
+    void SubmitNewCar()
+    {
+        // Validation logic here
+        CarService.AddCarAsync(newCar);
+        showAddCarModal = false;
+    }
+    private async Task SaveCar()
+    {
+        try
+        {
+            // Check if the selected car and car detail are not null
+            if (selectedCar != null && selectedCar.CarDetail != null)
+            {
+                // Update the car detail in the database
+                await CarService.UpdateCarDetailAsync(selectedCar.CarDetail);
+
+                // Reload cars to reflect the changes
+                cars = await CarService.GetAllCarsWithDetailsAsync();
+                // Update filteredCars as well
+                //await SearchCars(searchTerm);
+
+                // Close the modal after saving
+                CloseModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions that occur during the saving process
+            // You can log the error or display an error message to the user
+            Console.WriteLine($"An error occurred while saving the car: {ex.Message}");
+        }
+
+        // Close the modal after saving
+        CloseModal();
+    }
+    #endregion
+    #region //=====[ Delete Cars ]=======================================================
+    void DeleteCar(int carId)
+    {
+        if (!isAdminOrOrganizer)
+        {
+            showError = true;
+            //showDeleteConfirmation = true;
+            errorMessage = "You must be an Admin or Organizer to delete a car.";
+            return;
+        }
+
+        try
+        {
+            CarService.DeleteCarAsync(carId);
+            RefreshCars();
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            showError = true;
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+        //showDeleteConfirmation = true;
+        //carIdToBeDeleted = carId;
+    }
+    void ConfirmDelete(bool confirm)
+    {
+        if (confirm)
+        {
+            // Delete the car
+            CarService.DeleteCarAsync(carIdToBeDeleted);
+        }
+
+        showDeleteConfirmation = false;
+    }
+    #endregion=======
+    #region //=====[ Open/Close Modals ] ================================================
+    private void OpenModal(Car car)
+    {
+        selectedCar = car;
+        isModalOpen = true;
+    }
+    private void OpenUserModal(Car car)
+    {
+        selectedCar = car;
+        isUserModalOpen = true;
+    }
+    private void CloseModal()
+    {
+        selectedCar = null;
+        isModalOpen = false;
+    }
+    private void CloseUserModal()
+    {
+        selectedUser = null;
+        isUserModalOpen = false;
+    }
+    #endregion
+    #region //=====[ Sort Methods ]======================================================
+    //private void SortCarsById() => SortCars("CarId");
+    private void SortCarsByTeleGen() => SortCars("TeleGeneration");
+    private void SortCarsByFinas() => SortCars("Finas");
+    private void SortCarsByTag() => SortCars("Tag");
+    private void SortCars(string column) //switch statement
+    {
+        bool ascending = columnSortDirections[column];
+        switch (column)
+        {
+            case "Finas":
+                cars = ascending ? cars.OrderBy(c => c.CarDetail.Finas).ToList() : cars.OrderByDescending(c => c.CarDetail.Finas).ToList();
+                break;
+            case "Make":
+                cars = ascending ? cars.OrderBy(c => c.Make).ToList() : cars.OrderByDescending(c => c.Make).ToList();
+                break;
+            case "Model":
+                cars = ascending ? cars.OrderBy(c => c.Model).ToList() : cars.OrderByDescending(c => c.Model).ToList();
+                break;
+            case "Year":
+                cars = ascending ? cars.OrderBy(c => c.Year).ToList() : cars.OrderByDescending(c => c.Year).ToList();
+                break;
+            case "TeleGeneration":
+                cars = ascending ? cars.OrderBy(c => c.TeleGeneration).ToList() : cars.OrderByDescending(c => c.TeleGeneration).ToList();
+                break;
+            case "Miles":
+                cars = ascending ? cars.OrderBy(c => c.Miles).ToList() : cars.OrderByDescending(c => c.Miles).ToList();
+                break;
+            case "Location":
+                cars = ascending ? cars.OrderBy(c => c.Location).ToList() : cars.OrderByDescending(c => c.Location).ToList();
+                break;
+        }
+
+        // Toggle the sort direction for the column
+        columnSortDirections[column] = !ascending;
+    }
+    private Dictionary<string, bool> columnSortDirections = new Dictionary<string, bool>
+    {
+        { "CarId", true },
+        { "Make", true },
+        { "Model", true },
+        { "Year", true },
+        { "TeleGeneration", true },
+        { "Miles", true },
+        { "Location", true },
+        { "Finas", true },
+        { "Tag", true }
+    };
+    #endregion
+    #region //=====[ User ]==============================================================
+    private async Task AssignUser()
+    {
+        if (selectedUser != null && selectedCar != null)
+        {
+
+            DateTime startDateTime = new DateTime(startDate.Year, startDate.Month, startDate.Day);
+            DateTime endDateTime = new DateTime(endDate.Year, endDate.Month, endDate.Day);
+            // Assign the selected user to the selected car
+            // You'll need to implement this in your CarService
+
+            @if (!await CarService.AssignUserToCarAsync(selectedCar.CarId, selectedUser, startDateTime, endDateTime))
+            {
+                <UserNotFoundPopup />
+            }
+
+    //await CarService.AssignUserToCarAsync(selectedCar.CarId, selectedUser.UserName, selectedDateTime);
+
+            // Close the modal after assigning
+            CloseUserModal();
+        }
+    }
+    private ApplicationUser GetUserByUserName(string userName)
+    {
+        return users.FirstOrDefault(u => u.UserName == selectedUser);
+    }
+    #endregion
+   
+}

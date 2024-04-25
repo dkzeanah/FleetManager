@@ -1,0 +1,128 @@
+﻿@inject IJSRuntime JSRuntime
+
+
+<div class="toolbar" style="width: 100%; background-color: lightgray;">
+    <button @onclick="EnableMoveMode">Move</button>
+    <button @onclick="EnableResizeMode">Resize</button>
+</div>
+
+<div class="myDraggableItem"
+     style="width: 100px; height: 100px; position: absolute; background-color: @Color;"
+     data-id="@Id"
+     @ref=Self
+     @onmousedown="(_isMoveMode ? (Action<MouseEventArgs>)MouseDown : (Action<MouseEventArgs>)null)"
+     @onmousemove="(_isMoveMode ? (Action<MouseEventArgs>)MouseMove : (Action<MouseEventArgs>)null)"
+     @onmouseup="(_isMoveMode ? (Action<MouseEventArgs>)MouseUp : (Action<MouseEventArgs>)null)">
+
+    <div class="resizeHandle"
+         style="width: 10px; height: 10px; position: absolute; right: 0; bottom: 0; cursor: nwse-resize;"
+         @onmousedown="(IsResizeMode ? (Action<MouseEventArgs>)ResizeMouseDown : (Action<MouseEventArgs>)null)"
+         @onmousemove="(IsResizeMode ? (Action<MouseEventArgs>)ResizeMouseMove : (Action<MouseEventArgs>)null)"
+         @onmouseup="(IsResizeMode ? (Action<MouseEventArgs>)ResizeMouseUp : (Action<MouseEventArgs>)null)">
+    </div>
+</div>
+
+
+@code {
+    bool _isMoveMode = false;
+    bool resizing = false;
+    bool dragging = false;
+    void EnableMoveMode()
+    {
+        _isMoveMode = true;
+        IsResizeMode = false;
+    }
+
+    void EnableResizeMode()
+    {
+        _isMoveMode = false;
+        IsResizeMode = true;
+    }
+    bool IsResizeMode = false;
+
+    void ToggleMode()
+    {
+        IsResizeMode = !IsResizeMode;
+    }
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string Color { get; set; }
+
+    ElementReference Self;
+    double initialX, initialY, currentX, currentY, xOffset, yOffset;
+    double initialWidth, initialHeight, currentWidth, currentHeight;
+  
+
+ 
+
+    void ResizeMouseDown(MouseEventArgs e)
+    {
+        resizing = true;
+        initialX = e.ClientX;
+        initialY = e.ClientY;
+        initialWidth = currentWidth;
+        initialHeight = currentHeight;
+    }
+
+    void ResizeMouseUp(MouseEventArgs e)
+    {
+        resizing = false;
+    }
+
+    async void ResizeMouseMove(MouseEventArgs e)
+    {
+        if (resizing)
+        {
+            var dx = e.ClientX - initialX;
+            var dy = e.ClientY - initialY;
+
+            currentWidth = initialWidth + dx;
+            currentHeight = initialHeight + dy;
+
+            await JSRuntime.InvokeVoidAsync("setResize", currentWidth, currentHeight, Self);
+        }
+    }
+
+    void MouseDown(MouseEventArgs e)
+    {
+        if (!resizing)
+        {
+            dragging = true;
+            initialX = (e.ClientX - xOffset);
+            initialY = (e.ClientY - yOffset);
+        }
+    }
+
+    void MouseUp(MouseEventArgs e)
+    {
+        dragging = false;
+        initialX = currentX;
+        initialY = currentY;
+    }
+
+    async void MouseMove(MouseEventArgs e)
+    {
+        if (dragging)
+        {
+            currentX = (e.ClientX - initialX);
+            currentY = (e.ClientY - initialY);
+            xOffset = currentX;
+            yOffset = currentY;
+
+            await JSRuntime.InvokeVoidAsync("setTranslate", currentX, currentY, Self);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initDraggableItem", Self);
+        }
+    }
+}
+
+
+

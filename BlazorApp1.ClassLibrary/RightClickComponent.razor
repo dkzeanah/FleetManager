@@ -1,0 +1,14 @@
+@using Microsoft.JSInterop;
+@inject IJSRuntime JSRuntime
+
+
+@code {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/ClassLibrary/interactions.js");
+      await module.InvokeVoidAsync("showCustomMenu", "myElement");
+    }
+  }
+}

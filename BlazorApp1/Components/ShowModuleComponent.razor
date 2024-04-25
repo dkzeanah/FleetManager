@@ -1,0 +1,136 @@
+﻿@inject IModuleService ModuleService
+
+@if (modules == null || !modules.Any())
+{
+    <AddModuleComponent ExistingModules="@existingModules" CarId="CarId" OnAddModule="HandleModuleAdded"/>
+}
+else
+{
+    @foreach (var module in modules)
+    {
+        if (!module.IsEditing)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Module Name:</strong> <span class="text-primary">@module.Name</span></h5>
+                    <p class="card-text"><strong>Current Software Version:</strong> <span class="text-info">@module.CurrentSoftwareVersion</span></p>
+                    <p class="card-text"><strong>Last Updated:</strong> <span class="text-success">@module.LastUpdated</span></p>
+                    
+                    <button class="btn btn-primary" @onclick="() => ToggleEditMode(module)">Edit</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <input type="text" @bind="module.Name" />
+                    <input type="number" @bind="module.CurrentSoftwareVersion" />
+                    <input type="date" @bind="module.LastUpdated" />
+
+                    <button class="btn btn-success" @onclick="() => SaveModule(module)">Save</button>
+                    <button class="btn btn-secondary" @onclick="() => ToggleEditMode(module)">Cancel</button>
+                </div>
+            </div>
+        }
+    }
+    <AddModuleComponent ExistingModules="@existingModules" CarId="CarId" OnAddModule="HandleModuleAdded"/>
+}
+
+@code {
+    [Parameter]
+    public int CarId { get; set; }
+
+    private List<Module> modules = new List<Module>();
+    private List<Module> existingModules = new List<Module>();
+
+    private Module newModule = new Module();
+    private bool showModal = false;
+    private bool isModuleSuccess = false;
+    
+
+    
+    private void ToggleEditMode(Module module)
+    {
+        module.IsEditing = !module.IsEditing;
+    }
+
+    private async Task SaveModule(Module module)
+    {
+
+        module.LastUpdated = DateTime.Now; // Set LastUpdated to the current date and time
+        await ModuleService.UpdateModuleAsync(module.ModuleId, module);
+
+        module.IsEditing = false; // Exit edit mode
+        await HandleModuleAdded(); // Refresh the module list
+    }
+    private async Task HandleModuleAdded()
+    {
+        // Refresh the modules data when a module is added
+        if (CarId > 0)
+        {
+            modules = await ModuleService.GetModulesByCarIdAsync(CarId);
+        }
+        StateHasChanged(); // Trigger a re-render of the component
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine($" CarId {CarId}");
+
+        Console.WriteLine($"{newModule.CarId} is the newModule.CarId being set from CarId {CarId}");
+
+        if (CarId > 0)
+        {
+             modules = await ModuleService.GetModulesByCarIdAsync(CarId);
+        }
+
+        if (modules != null)
+        {
+
+            foreach (var module in modules)
+                {
+                    Console.WriteLine($"Module ID: {module.CarId}, Module Name: {module.Name}");
+                }
+    
+
+
+             existingModules = modules;
+         }
+    }
+
+    private void ShowAddModuleModal()
+    {
+        newModule.CarId = CarId; // Set CarId for the new module
+        Console.WriteLine($"{newModule.CarId} is the newModule.CarId being set from CarId {CarId}");
+        showModal = true;
+    }
+
+    private void HideAddModuleModal()
+    {
+        showModal = false;
+    }
+    private async Task HandleValidModuleSubmit()
+    {
+            Console.WriteLine($"{newModule.CarId} is the newModule.CarId being set from CarId {CarId}");
+
+        try
+        {
+            newModule.LastUpdated = DateTime.Now; // Set the LastUpdated date to now
+            newModule.ProjectedRelease = newModule.LastUpdated.Value.AddDays(7); // Set ProjectedRelease to one week after LastUpdated
+
+            await ModuleService.AddModuleAsync(newModule);
+
+            newModule = new Module(); // Reset the model to allow further additions
+            isModuleSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            //Logger.LogError(ex, "Error adding module");
+            isModuleSuccess = false; // Set flag to false in case of error
+        }
+        finally
+        {
+            HideAddModuleModal();
+        }
+    }
+}

@@ -1,0 +1,20 @@
+﻿
+
+
+<!-- ... rest of your ModalHeader HTML -->
+<!-- Make sure there is a button or some UI element that calls OnCloseButtonClicked -->
+<button @onclick="OnCloseButtonClicked">X</button>
+
+@code {
+    // ModalHeader.razor
+
+
+
+    [Parameter]
+    public EventCallback CloseButtonClicked { get; set; }
+
+    private void OnCloseButtonClicked()
+    {
+        CloseButtonClicked.InvokeAsync(null);
+    }
+}

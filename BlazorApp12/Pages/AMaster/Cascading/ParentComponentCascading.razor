@@ -1,0 +1,15 @@
+﻿<div>
+    <h4>Parent Component</h4>
+    @if (GrandParent != null)
+    {
+        <p>Property: @GrandParent.GrandParentProperty</p>
+        <ChildComponentCascading />
+    }
+</div>
+
+@code {
+    [CascadingParameter(Name = "GrandParent")]
+    public GrandParentComponent GrandParent { get; set; }
+}
+
+

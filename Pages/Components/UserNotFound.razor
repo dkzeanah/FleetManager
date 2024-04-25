@@ -1,0 +1,16 @@
+﻿<div id="userNotFoundModal" style="display: none;">
+    <h3>User Not Found</h3>
+    <p>The specified user could not be found.</p>
+    <button onclick="hideModal()">Close</button>
+</div>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Show the modal using JavaScript when the component is first rendered
+            JSRuntime.InvokeVoidAsync("showModal");
+        }
+    }
+}

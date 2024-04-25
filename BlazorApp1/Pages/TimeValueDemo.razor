@@ -1,0 +1,76 @@
+﻿@page "/time-value-demo"
+
+<h3>Time Value Calculator Demo</h3>
+
+<div>
+    <h4>Individual 1:</h4>
+    <input type="number" @bind="salary1" placeholder="Salary (Annual)" />
+    <input type="number" @bind="freeTime1" placeholder="Free Time (Hours)" />
+
+    <h4>Individual 2:</h4>
+    <input type="number" @bind="salary2" placeholder="Salary (Annual)" />
+    <input type="number" @bind="freeTime2" placeholder="Free Time (Hours)" />
+
+    <h4>Task:</h4>
+    <input type="number" @bind="taskValue" placeholder="Task Value" />
+    <input type="number" @bind="taskDuration" placeholder="Task Duration (Seconds)" />
+
+    <button @onclick="Calculate">Calculate</button>
+</div>
+
+@if (results != null)
+{
+    <div>
+        <p><strong>Opportunity Cost Comparison:</strong></p>
+        <p>Person 1: @oppCost1 (Worth per second: @worthPerSecond1)</p>
+        <p>Person 2: @oppCost2 (Worth per second: @worthPerSecond2)</p>
+        <p><strong>Theoretical Gain Comparison:</strong></p>
+        <p>Person 1: @theoreticalGain1</p>
+        <p>Person 2: @theoreticalGain2</p>
+        <p><strong>Analysis:</strong></p>
+        <p>@analysis</p>
+        <!-- Add graphical representation here if applicable -->
+    </div>
+}
+
+@code {
+    private double salary1, salary2;
+    private double freeTime1, freeTime2;
+    private double taskValue, taskDuration;
+    private string results, analysis;
+    private string oppCost1, oppCost2, worthPerSecond1, worthPerSecond2, theoreticalGain1, theoreticalGain2;
+
+    private void Calculate()
+    {
+        var person1 = new TimeValueCalculator(salary1, freeTime1);
+        var person2 = new TimeValueCalculator(salary2, freeTime2);
+
+        oppCost1 = person1.CalculateOpportunityCost(taskDuration).ToString("F2");
+        oppCost2 = person2.CalculateOpportunityCost(taskDuration).ToString("F2");
+        worthPerSecond1 = person1.worthPerSecond.ToString("F6");
+        worthPerSecond2 = person2.worthPerSecond.ToString("F6");
+        theoreticalGain1 = person1.CalculateTheoreticalGain(taskValue, taskDuration).ToString("F2");
+        theoreticalGain2 = person2.CalculateTheoreticalGain(taskValue, taskDuration).ToString("F2");
+
+        double oppCostPercent1 = (person1.CalculateOpportunityCost(taskDuration) / salary1) * 100;
+        double oppCostPercent2 = (person2.CalculateOpportunityCost(taskDuration) / salary2) * 100;
+
+        double gainPercent1 = (person1.CalculateTheoreticalGain(taskValue, taskDuration) / salary1) * 100;
+        double gainPercent2 = (person2.CalculateTheoreticalGain(taskValue, taskDuration) / salary2) * 100;
+
+        results = $@"
+            Opportunity Cost Comparison:
+            Person 1 Opportunity Cost: {oppCost1} ({oppCostPercent1:F2}% of annual salary)
+            Person 2 Opportunity Cost: {oppCost2} ({oppCostPercent2:F2}% of annual salary)
+
+            Theoretical Gain Comparison:
+            Person 1 Theoretical Gain: {theoreticalGain1} ({gainPercent1:F2}% of annual salary)
+            Person 2 Theoretical Gain: {theoreticalGain2} ({gainPercent2:F2}% of annual salary)";
+
+        analysis = @"
+            Note: Opportunity Cost indicates how much potential income is lost per second by engaging in the task. Theoretical Gain represents the net benefit of performing the task, considering its value and the opportunity cost.";
+    }
+}
+
+
+

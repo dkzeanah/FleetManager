@@ -1,0 +1,19 @@
+﻿@page "/addrsuser"
+@inject ExchangeService ExchangeService
+
+<h3>Add User</h3>
+
+<EditForm Model="@user" OnValidSubmit="HandleValidSubmit">
+    <InputText id="username" @bind-Value="user.Username" />
+    <button type="submit">Add User</button>
+</EditForm>
+
+@code {
+    RsUser user = new RsUser();
+
+    private void HandleValidSubmit()
+    {
+        ExchangeService.AddRsUser(user);
+        user = new RsUser(); // Reset the form
+    }
+}

@@ -1,0 +1,17 @@
+﻿@if (showDeleteConfirmation)
+{
+    <div>
+        Are you sure you want to delete this car?
+        <button @onclick="() => ConfirmDelete(true)">Yes</button>
+        <button @onclick="() => ConfirmDelete(false)">No</button>
+    </div>
+}
+
+@code {
+    private bool showDeleteConfirmation;
+
+    void ConfirmDelete(bool confirm)
+    {
+        // Logic to confirm deletion
+    }
+}

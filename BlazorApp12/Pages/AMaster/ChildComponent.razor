@@ -1,0 +1,19 @@
+﻿<div>
+    <h5>Child Component</h5>
+    <input type="text" value="@ChildProperty" @oninput="InputChange" />
+</div>
+
+@code {
+    [Parameter]
+    public string Property { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnValueChanged { get; set; }
+
+    private string ChildProperty => Property;
+
+    private async Task InputChange(ChangeEventArgs e)
+    {
+        await OnValueChanged.InvokeAsync(e.Value.ToString());
+    }
+}

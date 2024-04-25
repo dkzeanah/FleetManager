@@ -1,0 +1,296 @@
+﻿
+@using BlazorApp1.Data
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ICarService CarService
+@inject IModuleService ModuleService
+@inject ILoggerService LoggerService
+@inject NavigationManager NavigationManager
+@inject ILogger<AddCarComponent> Logger  // Injecting ASP.NET Core Logger
+
+
+
+<style>
+    .form-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px; /* Provides a consistent gap between items */
+    }
+    /* .form-container will be aligned in a row by default.
+    Flex items will wrap onto the next line when they run out of space in the container.
+    A gap of 16px will be maintained between each flex item. */
+
+    .form-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    /* .form-container will be arranged in a 2-column grid layout.
+    If there are more items, they will automatically move to the next row while maintaining a 2-column format.
+    A gap of 16px will be maintained between each grid item, both horizontally and vertically. */
+    }
+</style>
+
+<h3>Add Car</h3>
+
+@if (!string.IsNullOrEmpty(feedbackMessage))
+{
+    <div class="alert @(isOperationSuccessful ? "alert-success" : "alert-danger")">
+        @feedbackMessage
+    </div>
+}
+
+<EditForm Model="razorCarModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-container">
+
+        <div class="form-group">
+            <label for="Make">Make:</label>
+            <InputText id="Make" class="form-control" @bind-Value="razorCarModel.Car.Make" />
+        </div>
+
+        <div class="form-group">
+            <label for="Model">Model:</label>
+            <InputText id="Model" class="form-control" @bind-Value="razorCarModel.Car.Model" />
+        </div>
+    </div>
+
+    <div class="form-container">
+        <div class="form-group">
+            <label for="Year">Year:</label>
+            <InputNumber id="Year" class="form-control" @bind-Value="razorCarModel.Car.Year" />
+        </div>
+
+        <div class="form-group">
+            <label for="TeleGeneration">TeleGeneration:</label>
+            <InputText id="TeleGeneration" class="form-control" @bind-Value="razorCarModel.Car.TeleGeneration" />
+        </div>
+    </div>
+
+    <div class="form-container">
+        <div class="form-group">
+            <label for="Miles">Miles:</label>
+            <InputNumber id="Miles" class="form-control" @bind-Value="razorCarModel.Car.Miles" />
+        </div>
+
+        <div class="form-group">
+            <label for="Location">Location:</label>
+            <InputText id="Location" class="form-control" @bind-Value="razorCarModel.Car.Location" />
+        </div>
+    </div>
+    <!-- Here starts the CarDetail form part -->
+    <div class="form-container">
+        <div class="form-group">
+            <label for="Tag">Tag:</label>
+            <InputText id="Tag" class="form-control" @bind-Value="razorCarModel.CarDetail.Tag" />
+        </div>
+
+        <div class="form-group">
+            <label for="Finas">Finas:</label>
+            <InputText id="Finas" class="form-control" @bind-Value="razorCarModel.CarDetail.Finas" />
+        </div>
+    </div>
+
+   
+    <div class="form-container">
+        <div class="form-group">
+            <label for="FullVin">Vin:</label>
+            <InputText id="FullVin" class="form-control" @bind-Value="razorCarModel.CarDetail.FullVin" />
+        </div>
+
+        <div class="form-group">
+            <label for="SoftwareVersion">SoftwareVersion:</label>
+            <InputText id="SoftwareVersion" class="form-control" @bind-Value="razorCarModel.CarDetail.SoftwareVersion" />
+        </div>
+    </div>
+
+
+    <!-- ...other input fields remain the same... -->
+
+    
+    <button type="submit" class="btn btn-primary">Add Car</button>
+</EditForm> 
+
+
+
+
+
+<h3>InComponentTitle: Add Car</h3>
+
+
+   
+<div class="form-container">
+    <div class="form-group">
+        <label>Logger:</label>
+        <select class="form-control" @bind="selectedLoggerId">
+            @foreach (var logger in loggers)
+            {
+                <option value="@logger.Id">@logger.TypeLogger</option>
+            }
+        </select>
+    </div>
+
+
+    <div class="form-group">
+        <label>Module:</label>
+        <select class="form-control" @bind="selectedModuleId">
+            @foreach (var module in modules)
+            {
+                <option value="@module.ModuleId">@module.Name</option>
+            }
+        </select>
+    </div>
+</div>
+
+
+
+@*     <div class="form-container">
+
+        <div class="form-group">
+            <label for="UserId">User Id:</label>
+            <InputText id="UserId" class="form-control" @bind-Value="razorCarModel.Car.UserId" />
+        </div>
+    </div>
+
+    <div class="form-container">
+        <div class="form-group">
+            <label for="HasLogger">Has Logger:</label>
+            <InputCheckbox id="HasLogger" @bind-Value="HasLoggerValue" />
+        </div>
+
+        <div class="form-group">
+            <label for="HasHarness">Has Harness:</label>
+            <InputCheckbox id="HasHarness" @bind-Value="HasHarnessValue" />
+        </div>
+    </div>
+
+
+
+    <div class="form-container">
+        <div class="form-group">
+            <label for="HasTag">Has Tag:</label>
+            <InputCheckbox id="HasTag" @bind-Value="HasTagValue" />
+        </div>
+
+        <div class="form-group">
+            <label for="IsAdas">Is ADAS:</label>
+            <InputCheckbox id="IsAdas" @bind-Value="IsAdasValue" />
+        </div>
+    </div> *@
+
+  
+
+@code {
+
+    private class RazorCarModel
+    {
+        public Car Car { get; set; } = new Car { Year = 2023.0, Location = "Tuscaloosa", Miles = 1000, SourceId = 1, HasHarness = false, HasLogger = false, IsAdas = true, HasTag = false, Make = "Mercedes", ParkingSpace = 100, UserId = "3de00zzz-2828-0000-0000-3de000000000" };
+
+        public CarDetail CarDetail { get; set; } = new CarDetail { HarnessStatus = "Not harnessed", FullVin = "17xxxxxxxxxxxxxxx", Finas = "4xxx-5xxxx", Tag = "MJ5xxxx" }; //();
+    }
+    [Parameter]
+    public EventCallback OnCarAdded { get; set; }
+    RazorCarModel razorCarModel = new RazorCarModel();
+
+
+    private bool isOperationSuccessful = false; // for UI feedback
+    private string feedbackMessage = ""; // for displaying a message to the user
+
+
+    private int selectedLoggerId = 1;
+    private int selectedModuleId = 1;  // New field for Module
+    private List<Logger> loggers = new List<Logger>();
+    private List<Module> modules = new List<Module>();  // New field for Module
+    private List<Source> sources;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Logger.LogInformation("Initializing the car component."); // Logging
+
+        sources = (await CarService.GetAllSourcesAsync()).ToList();
+
+        // Fetch all loggers
+        var allLoggers = await LoggerService.GetAllLoggerAsync();
+
+        // Filter loggers based on CarId
+        int? unassignedCarIdValue = null; // for now, set it to null // This can be adjusted later when you decide on a default value
+
+        //example expclusion- loggers = allLoggers.Where(l => l.TypeLogger != Logger.LoggerType.BluePirate && l.TypeLogger != Logger.LoggerType.BluePirateRapid).ToList();
+
+        loggers = allLoggers.Where(l => l.CarId == null || l.CarId == 0 || l.CarId == unassignedCarIdValue).ToList();
+        modules = (await ModuleService.GetAllModulesAsync()).ToList();  // Assuming you have a GetAllModulesAsync method
+
+    }
+
+
+    //
+    private bool HasLoggerValue
+    {
+        get => razorCarModel.Car.HasLogger ?? false;
+        set => razorCarModel.Car.HasLogger = value;
+    }
+
+    private bool HasHarnessValue
+    {
+        get => razorCarModel.Car.HasHarness ?? false;
+        set => razorCarModel.Car.HasHarness = value;
+    }
+
+    private bool HasTagValue
+    {
+        get => razorCarModel.Car.HasTag ?? false;
+        set => razorCarModel.Car.HasTag = value;
+    }
+
+    private bool IsAdasValue
+    {
+        get => razorCarModel.Car.IsAdas ?? false;
+        set => razorCarModel.Car.IsAdas = value;
+    }
+
+
+
+    private async void HandleValidSubmit()
+    {
+        Logger.LogInformation("Valid form submitted."); // Logging
+        try
+        {
+            razorCarModel.Car.CarDetail = razorCarModel.CarDetail;
+
+            // Step 1: Save the car first
+            await CarService.AddCarAsync(razorCarModel.Car);
+
+            // Step 2 & 3: Update logger's CarId and then update the logger in database
+            var selectedLogger = loggers.FirstOrDefault(l => l.Id == selectedLoggerId);
+            if (selectedLogger != null)
+            {
+                selectedLogger.CarId = razorCarModel.Car.CarId; // Assign the Car's Id to Logger's CarId
+                selectedLogger.isAssigned = true;
+                await LoggerService.UpdateLoggerAsync(selectedLogger); // Save the updated Logger
+            }
+            // Step 4: Update module's CarId and then update the module in database
+            var selectedModule = modules.FirstOrDefault(m => m.ModuleId == selectedModuleId);
+            if (selectedModule != null)
+            {
+                selectedModule.CarId = razorCarModel.Car.CarId; // Assign the Car's Id to Module's CarId
+                await ModuleService.UpdateModuleAsync(selectedModule.ModuleId, selectedModule); // Save the updated Module
+            }
+
+            razorCarModel = new RazorCarModel();
+            selectedLoggerId = 1;
+            isOperationSuccessful = true;
+            Logger.LogInformation("Car added successfully."); // Logging
+            feedbackMessage = "Car added successfully!";
+            await OnCarAdded.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            isOperationSuccessful = false;
+            Logger.LogError(ex, "Error while adding car."); // Logging
+            feedbackMessage = $"Error: {ex.Message}";
+        }
+    }
+
+
+}

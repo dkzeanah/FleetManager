@@ -1,0 +1,18 @@
+﻿@*<ModalComponent @ref="userModal" IsOpen="isUserModalOpen" Title="Assign User to Car">
+    <ModalContent>
+        <div class="form-group">
+            <label>Select User</label>
+            <select class="form-control" @bind="selectedUser">
+                @foreach (var user in users)
+                {
+                    <option value="@user.UserId">@user.Username</option>
+                }
+            </select>
+        </div>
+    </ModalContent>
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseUserModal">Close</button>
+        <button class="btn btn-primary" @onclick="AssignUser">Assign User</button>
+    </ModalFooter>
+</ModalComponent>
+*@

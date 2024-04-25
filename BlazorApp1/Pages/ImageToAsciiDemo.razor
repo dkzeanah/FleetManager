@@ -1,0 +1,27 @@
+﻿@page "/image-to-ascii-demo"
+@using BlazorApp1.CarModels.Utils;
+@inject IImageToAsciiConverter ImageToAsciiConverter
+@inject IHttpClientFactory HttpClientFactory
+
+<h3>Image to ASCII Art Converter Demo</h3>
+
+@if (!string.IsNullOrEmpty(asciiArt))
+{
+    <pre>@asciiArt</pre>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private string asciiArt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var imageUrl = "https://picsum.photos/200/300"; // Replace with a public image URL
+        using var client = HttpClientFactory.CreateClient();
+        var response = await client.GetStreamAsync(imageUrl);
+        asciiArt = ImageToAsciiConverter.ConvertImageToAscii(response);
+    }
+}

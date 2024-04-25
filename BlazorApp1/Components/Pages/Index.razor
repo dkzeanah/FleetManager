@@ -1,0 +1,110 @@
+﻿@page "/index1"
+@using BlazorApp1.Components
+ 
+@inject IJSRuntime JS
+
+
+<h3>Send us feedback!</h3>
+
+<EditForm Model="@FeedbackModel" OnValidSubmit="SendFeedback" FormName="feedbackForm" method="POST">
+    <InputText class="form-control" @bind-Value="FeedbackModel.Email" />
+    <InputTextArea class="form-control" @bind-Value="FeedbackModel.Message"></InputTextArea>
+    <button type="submit">
+        Send
+    </button>
+</EditForm>
+
+
+
+@page "/calendars"
+
+<ExtractedCalendarComponent ShowHeader="true" ContainerStyle="border: 5px solid blue;" />
+<ExtractedCalendarComponent ShowHeader="false" ContainerStyle="border: 5px solid red; background-color: lightgray;" />
+<ExtractedCalendarComponent ShowHeader="true" ContainerStyle="border: 5px solid green; padding: 10px;" CurrentDate="@(new DateTime(2023, 12, 1))" />
+
+
+@* <p>6</p>
+<Calendar6Component></Calendar6Component> *@
+<p>4</p>
+ @*    <p>5</p>
+    <Calendar5Component></Calendar5Component> 
+
+<h3>Index</h3>
+*@
+
+<Calendar4Component></Calendar4Component>
+
+
+
+<style>
+    .container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+    .heading {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .button-style {
+        color: white;
+        background-color: #007bff;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    .list-style {
+        list-style-type: disc;
+        padding-left: 40px;
+    }
+
+        .list-style li {
+            color: #555;
+            font-size: 16px;
+        }
+
+    .modal {
+        display: block; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+    }
+</style>
+
+
+    @code {
+    [SupplyParameterFromForm]
+
+    public Feedback FeedbackModel { get; set; } = new Feedback();
+
+    public class Feedback
+    {
+        public string Email { get; set; }
+        public string Message { get; set; }
+    }
+
+    private void SendFeedback()
+    {
+        Console.WriteLine("Feedback received from: " + FeedbackModel.Email + "message: " + FeedbackModel.Message);
+    }
+}

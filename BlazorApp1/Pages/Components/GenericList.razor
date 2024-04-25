@@ -1,0 +1,13 @@
+﻿@typeparam TItem
+
+<ul>
+  @foreach (var item in Items)
+  {
+    <li>@item.ToString()</li>
+  }
+</ul>
+
+@code {
+  [Parameter]
+  public List<TItem> Items { get; set; }
+}

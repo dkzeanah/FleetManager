@@ -1,0 +1,403 @@
+
+ngrok http --domain=verified-porpoise-humorous.ngrok-free.app https://localhost:7148 -host-header="localhost:7148"
+
+
+BlazorApp1.CarModels.Car.DbModel.ToString() / Serialize();
+
+When creating square, add a 'canvas modal' to act as a container of the square, preventing its interaction with page content itself.
+
+On save, all cars hit database again - is this necessary?
+
+
+[Register]
+* password invalidation reason shown
+
+
+[dashboard]
+* display email, friendlyname, Role
+* no car booked ondashboard for carlist.razor - works for carsdirect.razor - 
+ (showing names per car remedy / provision)
+* current car information display packaged cleaner and
+more relevant information
+
+* (perform event (on car))
+* If date is within last day or two of scheduled checkout - start prompting for closing information updating of the current car.
+
+[master dashboard]
+* like the user dashboard,  only elements to augment whats happening in the lower levels of regular dashboard from single user standpoint (admin). 
+
+* utilizing a car list, user list, Events list, list of days to serve as 'directors' of the view - aka determines the rest of the page content depending on selected items.
+
+[orderdelivery]
+* submitting 2 back to back doesnt result in 2 records, 2nd record has same id as first, which should be immutable / warrant enumeration of Id value.
+
+
+
+use the autohotkey version 2 language. do not use the old version. newer version doesnt use commands, or % ... etc.
+
+
+write a function that takes a file and parses it, identifies all of the methods, and for each method, place a dynamic console.writeline using the method name and also the return keywords in each method.
+
+write a function that takes a file and parses it, classes, methods, properties based on similarity of type, alphabetical in name, or by number of lines.
+
+write a function that takes a file and parses it, changes out entity/model for another
+
+write a function that takes a file and parses it, strips the comments 
+
+
+write a function that takes a file and parses it, extracts the <style> </style> tags and everything in between it, then create a file with the same filename with '.css' at the end with the pasted <style> code.
+
+
+function that accepts strings as 'configurations' -> checks if new or previous,
+if new adds it to total list being tracked... 
+
+here is some example code that parses a folder for the names of files and shows them. adapt this / use it for example / integrate it into a comprehensive class that does the above.
+
+Scrollable(text, width := 400, height := 300) {
+    Gui1 := Gui() ; Create a new GUI object
+    Gui1.OnEvent("Close", guiclose) ;"GuiClose") ; Set up an event handler for closing the GUI
+
+    ; Set up a multi-line, read-only, scrollable Edit control that fills the GUI:
+    Gui1.Add("Edit", "ReadOnly -Wrap vMyEdit w" width " h" height, text)
+
+    Gui1.Show() ; Show the GUI
+}
+
+; Function to close the GUI when the user clicks the close button:
+GuiClose(*) {
+    Gui.Destroy()
+    ExitApp
+}
+
+
+getFileType2(fileName) {
+    ; Define the file types and their corresponding labels
+    static fileTypes := {
+        cs: "C#",
+        json: "JSON",
+        xml: "XML",
+        config: "Config"
+    }
+
+    ; Get the file extension
+    fileExtension := SubStr(fileName, InStr(fileName, ".") + 1)
+
+    ; Return the corresponding label for the file type, or the file extension if no label is defined
+    return fileTypes.HasKey(fileExtension) ? fileTypes[fileExtension] : fileExtension
+}
+
+/* getFileType3(fileName) {
+ *     ; Define the file types and their corresponding functions
+ *     static fileTypes := {
+ *         "cs": Func("getTypeLabel").Bind("C#"),
+ *         "json": Func("getTypeLabel").Bind("JSON"),
+ *         "xml": Func("getTypeLabel").Bind("XML"),
+ *         "config": Func("getTypeLabel").Bind("Config")
+ *     }
+    ; Get the file extension
+    fileExtension := SubStr(fileName, InStr(fileName, ".") + 1)
+
+    ; Return the corresponding function for the file type, or a default function that returns the file extension
+    return fileTypes[fileExtension] ?? Func("getTypeLabel").Bind(fileExtension)
+}
+ */
+    getFileType(fileName) {
+    ; Define the file types and their corresponding labels
+    static fileTypes := { cs: "C#", json: "JSON", xml: "XML", config: "Config" }
+
+    ; Get the file extension
+    fileExtension := SubStr(fileName, InStr(fileName, ".") + 1)
+
+    ; Return the corresponding label for the file type, or the file extension if no label is defined
+    return fileTypes.HasKey(fileExtension) ? fileTypes[fileExtension] : fileExtension
+}
+
+
+
+
+; Function to return a label for a file type
+getTypeLabel(label) {
+    return label
+}
+
+
+
+arrayToString(arr) {
+    str := ""
+    for each, item in arr {
+        str .= item . "`n"
+    }
+    return str
+}
+;[]==============================[]=================================[]
+root := "C:\Dev\BlazorApplication-master\BlazorApp1\Pages\Components\"
+
+; Initialize the array to store skipped directories
+global skippedDirectories := []
+
+; Then you can call it like this:
+;Scrollable("Your very long text goes here.")
+
+; Call the recursive function to traverse the directory
+output := recurseDirectory(root)
+
+; Output the entire project structure
+scrollable(output)
+;MsgBox output
+
+skippeddirectories := arraytostring(skippeddirectories)
+; Output the skipped directories
+MsgBox "Skipped directories:`n" . skippedDirectories
+
+; Recursive function to traverse the directory
+recurseDirectory(path, indent := "") {
+
+    ; Define the list of patterns to exclude from the output
+    static excludePatterns := [".git", ".vs", "/bin", "/obj", "bin", "obj"]
+
+    ; Initialize the output string
+    output := "    "
+
+    ; Loop through each file in the directory
+    Loop Files, path . "\*", "FRD"
+    {
+         fileAttributes := A_LoopFileAttrib
+
+        ; Switch on the file attributes
+        switch fileAttributes
+        {
+            case "D":
+            case "HD":
+            case "H":
+                ; If the file is a directory, call this function recursively
+                ; Get the directory path
+                directoryPath := A_LoopFileFullPath
+
+                ; If the directory path matches an exclude pattern, skip it
+                skip := false
+                for each, pattern in excludePatterns {
+                    if (InStr(directoryPath, pattern) > 0) {
+                        skip := true
+                        break
+                    }
+                }
+                if (skip) {
+                    ; Store the skipped directory in the global array
+                    skippedDirectories.push(directoryPath)
+                    continue
+                }
+
+                ; Get the directory name
+                directoryName := SubStr(A_LoopFileName, InStr(A_LoopFileName, "\") + 1)
+
+                ; Append the directory name to the output string, indented appropriately for its level in the tree
+                output .= indent . directoryName . "`n"
+
+                ; Call this function recursively for the subdirectory
+                output .= recurseDirectory(directoryPath, indent . "    ")
+            case "R":
+            case "S":
+                ; read only and system file, skip it
+                continue
+
+            default:
+                ; Otherwise, append the file name to the output string
+                ; Get the file name
+                fileName := SubStr(A_LoopFileName, InStr(A_LoopFileName, "\") + 1)
+
+              skip := false
+
+               for each, pattern in excludePatterns {
+                   if (InStr(A_LoopFileFullPath, pattern)) {
+                       skip := true
+                       break
+                   }
+               }
+               if (skip) {
+                   ; Store the skipped directory in the global array
+                    skippedDirectories.push(A_LoopFileFullPath)
+                   continue
+               }
+
+                ; Get the file type
+                fileType := SubStr(fileName, InStr(fileName, ".") + 1)
+                output .= indent . fileType . " " . SubStr(fileName, 1, InStr(fileName, ".") - 1) . "`n"
+
+                ; moved to func
+/*                 switch fileType
+ *                 {
+ *                     case "cs":
+ *                     case "json":
+ *                     case "xml":
+ *                     case "config":
+ *                         ; Remove the file extension and any path information
+ *                         fileName := SubStr(fileName, 1, InStr(fileName, ".") - 1)
+ *
+ *                         ; Append the file name to the output string, indented appropriately for its level in the tree
+ *                         output .= indent . "â””â”€â”€ " . fileName . "`n"
+ *                 }
+ */
+        }
+    }
+
+    ; Return the output string for this directory
+    return output
+}
+
+
+
+
+show me a c# class that delmonstrates the opposite of dependancy injection.
+ Id like to understand why dependency injection is so popular, 
+to me it seems that maybe if, for example, a service had a repository built-in
+ (always present) this would be even more desirable that injecting one,
+ because you could never forget to do so, since its inherent. what is wrong with 
+this approach?
+
+
+recognition - 
+jpg to ascii representation of a window / layout graphically
+
+
+
+
+window is the first top layer
+
+controls within window
+key shortcuts, menu items, etc
+
+main active - working area - canvas of window
+
+auxillary gui possibilities - detection / handling procedures 
+
+external application calling /
+
+
+click / keyboard input / touch input  
+
+
+/////
+toggling the navbar on one client effects the ui state in another client browser -
+i.e. accidentally I made the navbar toggle a 'not-localized' -- what nuance is enabling this behavior in my blazor server application. is it because im using a singleton service to achieve the toggle? can it happen without it being a singleton service if so? how do i make it a localized feature where individual instances of the blazor server app running only toggles for each use case basis.
+
+I can tell there is some nuance i need to understand to effictively manage an application that can handle 1000+ users at any time. what are some considerations i need to make in this real in the context of a blazor server application in .net 7 c#(c sharp) .net app?
+
+as a side, when i  close the edge instance that running via visual studio has created - the application also quits 'serving' or running. but in theory, I want it to run regardless if edge instance is active / running all the same in a background and minimized application in my windows environment. in a sense, it should run on start-up and continue to run until prompted for exiting.
+
+
+on a side, side note - when submitting a change in one client - that hits the database and updates the value and shows in the client that made the entry - the other clients do not see the updated value instantly ( it should show the update in real-time so a hub is necessary for that?) -- or more succinctly, what are all the ways to make the other clients have the updated value when it is submitted from a different client, but the extra clients (ongoing signalr connections), havent made any changes to 're-fetch' the entity and new value from the database.
+
+
+i want to utilize the signalr of my blazor server application to impliment a real-time hub, but the example projects come pre-wired up or pre configured. My project I will need to manually wire up the necessary steps to achieve the same functionality. can you walk me through the necessary additions from implimenting the signalr real-time hub feature from scratch in an existing blazor server project
+
+
+ ;//=== followups
+
+utilizing the cache mechanism effectively in blazor server.
+how can i impliment a self-created 'load-balancer' working example? Can achieve using 2 seperate laptops, is that even necessary?
+
+
+obtaining a specific laptops windows liscence for use on a virtual environment vice the hardware its currently attached to -- some bios application tool?
+
+
+
+hirens bootcd
+diskinternals
+adventure ide
+windows 10 iso
+silktest
+https://www.mediawiki.org/wiki/MediaWiki
+https://web.archive.org/web/20130301222155/http://en.wikipedia.org/wiki/Category:Emulation_software
+https://web.archive.org/web/20130523165503/http://en.wikipedia.org/wiki/Category:Free_emulation_software
+https://web.archive.org/web/20101221085718/http://www.opensourcetesting.org/functional.php
+*running c++, python, c in,from a  c# application
+8
+
+
+USBView: USBView is a Windows-based utility provided by Microsoft that allows you to view detailed information about connected USB devices. It provides information about the device descriptors, configurations, interfaces, and endpoints. You can use USBView to inspect the USB topology and gather information about your USB flash drive.
+
+USBlyzer: USBlyzer is a commercial USB analysis tool for Windows that provides advanced monitoring and analyzing capabilities for USB devices. It allows you to capture and analyze USB traffic, monitor USB device events, and explore the USB device hierarchy. USBlyzer can help you gain deeper insights into the USB communication and behavior of your USB flash drive.
+
+Wireshark: Wireshark is a powerful open-source network protocol analyzer that can also be used to analyze USB traffic. By capturing USB packets with Wireshark, you can examine the USB communication between your computer and the USB flash drive. However, note that capturing USB traffic with Wireshark typically requires additional hardware or software drivers.
+
+USB Forensic Tools: There are specialized forensic tools available, such as USBPcap and USB Detective, that focus on USB device analysis and investigation. These tools are primarily used in forensic and security-related contexts to examine USB devices for potential malicious activities or data breaches.
+
+USB Device Libraries and APIs: If you have programming skills, you can utilize USB device libraries and APIs to interact with USB devices at a lower level. Libraries like libusb or pyusb provide programming interfaces that allow you to communicate with USB devices, send commands, and retrieve data from them.
+
+
+
+1: diskpart
+2: list disk
+3: clean
+4: create partition primary
+5: format fs=fat32 quick
+5: active
+6: assign
+
+
+
+
+toggling the navbar on one client effects the ui state in another client browser -
+i.e. accidentally I made the navbar toggle a 'not-localized' -- what nuance is enabling this behavior in my blazor server application. is it because im using a singleton service to achieve the toggle? can it happen without it being a singleton service if so? how do i make it a localized feature where individual instances of the blazor server app running only toggles for each use case basis.
+
+I can tell there is some nuance i need to understand to effictively manage an application that can handle 1000+ users at any time. what are some considerations i need to make in this real in the context of a blazor server application in .net 7 c#(c sharp) .net app?
+
+as a side, when i  close the edge instance that running via visual studio has created - the application also quits 'serving' or running. but in theory, I want it to run regardless if edge instance is active / running all the same in a background and minimized application in my windows environment. in a sense, it should run on start-up and continue to run until prompted for exiting.
+
+
+on a side, side note - when submitting a change in one client - that hits the database and updates the value and shows in the client that made the entry - the other clients do not see the updated value instantly ( it should show the update in real-time so a hub is necessary for that?) -- or more succinctly, what are all the ways to make the other clients have the updated value when it is submitted from a different client, but the extra clients (ongoing signalr connections), havent made any changes to 're-fetch' the entity and new value from the database.
+
+
+i want to utilize the signalr of my blazor server application to impliment a real-time hub, but the example projects come pre-wired up or pre configured. My project I will need to manually wire up the necessary steps to achieve the same functionality. can you walk me through the necessary additions from implimenting the signalr real-time hub feature from scratch in an existing blazor server project
+
+
+ ;//=== followups
+
+utilizing the cache mechanism effectively in blazor server.
+how can i impliment a self-created 'load-balancer' working example? Can achieve using 2 seperate laptops, is that even necessary?
+
+
+obtaining a specific laptops windows liscence for use on a virtual environment vice the hardware its currently attached to -- some bios application tool?
+
+
+
+hirens bootcd
+diskinternals
+adventure ide
+windows 10 iso
+silktest
+https://www.mediawiki.org/wiki/MediaWiki
+https://web.archive.org/web/20130301222155/http://en.wikipedia.org/wiki/Category:Emulation_software
+https://web.archive.org/web/20130523165503/http://en.wikipedia.org/wiki/Category:Free_emulation_software
+https://web.archive.org/web/20101221085718/http://www.opensourcetesting.org/functional.php
+*running c++, python, c in,from a  c# application
+8
+
+
+USBView: USBView is a Windows-based utility provided by Microsoft that allows you to view detailed information about connected USB devices. It provides information about the device descriptors, configurations, interfaces, and endpoints. You can use USBView to inspect the USB topology and gather information about your USB flash drive.
+
+USBlyzer: USBlyzer is a commercial USB analysis tool for Windows that provides advanced monitoring and analyzing capabilities for USB devices. It allows you to capture and analyze USB traffic, monitor USB device events, and explore the USB device hierarchy. USBlyzer can help you gain deeper insights into the USB communication and behavior of your USB flash drive.
+
+Wireshark: Wireshark is a powerful open-source network protocol analyzer that can also be used to analyze USB traffic. By capturing USB packets with Wireshark, you can examine the USB communication between your computer and the USB flash drive. However, note that capturing USB traffic with Wireshark typically requires additional hardware or software drivers.
+
+USB Forensic Tools: There are specialized forensic tools available, such as USBPcap and USB Detective, that focus on USB device analysis and investigation. These tools are primarily used in forensic and security-related contexts to examine USB devices for potential malicious activities or data breaches.
+
+USB Device Libraries and APIs: If you have programming skills, you can utilize USB device libraries and APIs to interact with USB devices at a lower level. Libraries like libusb or pyusb provide programming interfaces that allow you to communicate with USB devices, send commands, and retrieve data from them.
+
+
+
+1: diskpart
+2: list disk
+3: clean
+4: create partition primary
+5: format fs=fat32 quick
+5: active
+6: assign
+
+C:\Users\zeanahd> 
+curl -X POST -k -H "Content-Type: multipart/form-data" -F "file=@c:/dev/file2.txt" https://llq9gqvx-7148.use.devtunnels.ms/api/sensordata/upload
+{"message":"File uploaded successfully!"}
+
+C:\Users\zeanahd>
+curl -X POST -H "Content-Type: multipart/form-data" -F "file=@c:/dev/file3.txt" https://localhost:7148/api/sensordata/upload
+{"message":"File uploaded successfully!"}

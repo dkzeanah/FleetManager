@@ -1,0 +1,20 @@
+﻿@page "/additem"
+@inject ExchangeService ExchangeService
+
+<h3>Add Item</h3>
+
+<EditForm Model="@item" OnValidSubmit="HandleValidSubmit">
+    <InputText id="itemName" @bind-Value="item.Name" />
+    <InputNumber id="itemPrice" @bind-Value="item.Price" />
+    <button type="submit">Add Item</button>
+</EditForm>
+
+@code {
+    Item item = new Item();
+
+    private void HandleValidSubmit()
+    {
+        ExchangeService.AddItem(item);
+        item = new Item(); // Reset the form
+    }
+}

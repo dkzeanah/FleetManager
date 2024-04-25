@@ -1,0 +1,56 @@
+﻿@page "/toolcalculatordynamic"
+
+<h3>Dynamic Efficiency Calculator</h3>
+
+<div>
+    <label>Number of Screws:</label>
+    <input @bind="numberOfScrews" type="number" />
+
+    <label>Time Taken Without Tool (hours):</label>
+    <input @bind="timeTakenWithoutTool" type="number" step="0.01" />
+
+    <button @onclick="AddJob">Add Job</button>
+</div>
+
+@if (jobs.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Number of Screws</th>
+                <th>Original Time (hrs)</th>
+                <th>Time with Drill (hrs)</th>
+                <th>Time Saved (hrs)</th>
+                <th>New Hourly Rate ($)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var job in jobs)
+            {
+                <tr>
+                    <td>@job.NumberOfScrews</td>
+                    <td>@job.TimeTakenWithoutTool</td>
+                    <td>@job.TimeTakenWithTool</td>
+                    <td>@(job.TimeTakenWithoutTool - job.TimeTakenWithTool)</td>
+                    <td>@(worker.CalculateEarnings(job.TimeTakenWithoutTool) / job.TimeTakenWithTool)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Worker worker = new Worker { HourlyRate = 20 };
+    private Tool drill = new Tool("Drill", 60, 0.67m); // Efficiency multiplier
+    private List<Job<int>> jobs = new List<Job<int>>();
+
+    private int numberOfScrews;
+    private decimal timeTakenWithoutTool;
+
+    private void AddJob()
+    {
+        var newJob = new Job<int>(numberOfScrews, timeTakenWithoutTool);
+        newJob.CalculateTimeSaved(drill);
+        jobs.Add(newJob);
+    }
+}

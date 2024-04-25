@@ -1,0 +1,28 @@
+﻿
+
+<div @onclick="Clicked" class="grid-item day-box @(IsCurrentDay ? "current-day" : "")">
+    @Day
+    @foreach (var user in Users)
+    {
+        <UserInput User="@user" OnFocusDay="Clicked" />
+    }
+</div>
+@code {
+    [Parameter] public int Day { get; set; }
+    [Parameter] public bool IsCurrentDay { get; set; }
+    [Parameter] public EventCallback<int> OnDayClick { get; set; }
+    [Parameter] public IEnumerable<ApplicationUser> Users { get; set; }
+
+    private void Clicked()
+    {
+        try
+        {
+            OnDayClick.InvokeAsync(Day);
+        }
+        catch (Exception ex)
+        {
+            // Handle error logging here
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+}

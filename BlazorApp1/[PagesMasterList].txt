@@ -1,0 +1,143 @@
+
+[x]		calendarmaintwo -- user columns , day rows(365)
+		calendarmaintwoview -- day columns, weekly rows -- change boxes from black to something else
+[x]		calendarpreserve -- 395 Error: Cannot create a JSObjectReference from the value 'undefined'.
+[x]		carsdirect -- (* assignuser works) add module breaks app
+[x]		carmanagement --- update on a logger breaks (from the All section)
+
+
+
+[*]		cal2
+[*]		-calendar
+		blankpage
+		blanks
+[*]		calendargpt -- createsquare method w/ auto enumeration
+		calendarmain -- square overlay, resizable, change-color (textual, make guiable), add input button 
+[*]		calendarmaintwoviewpreserve -- 
+[*]		calendarmaintwoviewpreserve2 -- 5. example use for next month
+-[*]	cars - needs visual on user
+[*]		consume - additionalStyles in Raz lib.
+[*]		css   --- hover popout, modal bluring, grids
+
+[*x]		-masterdashboard -- ugly
+[*x]		orderdelivery
+
+
+
+[pages]
+-adminpanel - auto fail at foreach role in roles
+-dashboard
+-dashboard3 -- ugly
+-d
+/download/{id:int}
+-edit/ContactId:Int
+-/
+-issueinput -- non functioning
+squarey
+squareyy
+teamcalendar(chessy)
+reports
+-register
+-tasks
+-timeline
+toastrwrapper
+toastrwrapper.razor.cs
+upload
+-view/ContactId:Int
+your-page
+
+[examplepages]
+blazor-rocks
+calljs
+example
+fetchdata
+gpanel(component)
+gpan
+nestedchild(component)
+nestedgrandchild(component)
+mycomponent
+master
+mastercascading
+
+[text]
+calstyles.txt
+carmap.txt
+debuggerdisplay.txt
+strippedcomments.md
+strippedcomments.txt
+
+[empty]
+carstaticdetailcomponent
+eventvisualizer
+reports
+calendar.cs
+
+[components]
+Add
+View
+Show
+List
+Update
+Cal
+Car
+grid
+List
+Modal
+Search
+
+User
+Admin
+
+AddCarComponent 
+AddModuleComponent - Copy 
+AddModuleComponent 
+CalComponent 
+CalendarComponent 
+CalendarGridGPTComponent 
+CalendarTwoComponent 
+CalGipComponent 
+CarDetailComponent - /cardetailcomponent
+CarSelectComponent - /carselectcomponent
+CarStaticDetailComponent 
+Culture - /culture-example-1
+Dash  - /dash
+DashboardParent 
+DraggableItemComponent 
+DynamicFormComponent 
+EventFormComponent 
+EventVisualizerComponent 
+* FormModalComponent 
+GPTDayBox 
+GPTDayModal 
+GPTUserInput 
+
+* HybridFormModalComponent 
+ListComponent 
+ListItemComponent 
+LoggerUpdateModalComponent 
+MainGipCalComponent 
+ModalComponent-User 
+ModalComponent 
+ModalHeaderComponent 
+ModuleAddComponent 
+ModulesViewComponent 
+ModuleUpdateModalComponent 
+* MyGrid 
+NoteModalComponent 
+Reports 
+SearchBar 
+ShowLoggerComponent 
+ShowModuleComponent 
+StarShip - /new-ship-entry
+TaskListComponent 
+TaskModalGPTComponent 
+TBGipComponent 
+TimelineVisualizerComponent 
+ToolbarComponent 
+UserEventDetailComponent  - /detailcomponent
+UserEventListComponent - /usereventlistcomponent
+UserNotFound 
+UserTask 
+UserTaskListComponent 
+
+

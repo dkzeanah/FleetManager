@@ -1,0 +1,27 @@
+@using Microsoft.JSInterop;
+@inject IJSRuntime JSRuntime
+
+
+@code {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/YourAssemblyName/interactions.js");
+      await module.InvokeVoidAsync("setupGlobalRightClick", "HandleRightClick");
+    }
+  }
+
+  [JSInvokable]
+  public static Task HandleRightClick(MousePosition position)
+  {
+    // Logic to show context menu at position.x, position.y
+    return Task.CompletedTask;
+  }
+
+  public class MousePosition
+  {
+    public int X { get; set; }
+    public int Y { get; set; }
+  }
+}

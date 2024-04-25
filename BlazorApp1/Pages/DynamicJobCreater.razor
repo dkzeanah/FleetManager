@@ -1,0 +1,82 @@
+﻿@page "/dynamic-job-creator"
+
+<h3>Dynamic Job Creator</h3>
+
+<div>
+    <h4>Create Job with Integer Attribute (e.g., Number of Screws)</h4>
+    <input @bind="intAttribute" type="number" placeholder="Number of Screws" />
+    <input @bind="timeWithoutTool" type="number" placeholder="Time Without Tool (hours)" />
+    <button @onclick="() => CreateJobWithIntAttribute()">Create Job</button>
+
+    <h4>Create Job with String Attribute (e.g., Job Description)</h4>
+    <input @bind="stringAttribute" placeholder="Job Description" />
+    <button @onclick="() => CreateJobWithStringAttribute()">Create Job</button>
+
+    <h4>Create Job with List Attribute (e.g., List of Materials)</h4>
+    <input @bind="materialInput" placeholder="Material" />
+    <button @onclick="AddMaterial">Add Material</button>
+    <button @onclick="() => CreateJobWithListAttribute()">Create Job</button>
+
+    <h4>Created Jobs</h4>
+    @if (createdJobs.Any())
+    {
+        <ul>
+            @foreach (var job in createdJobs)
+            {
+                <li>@job.Description</li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private int intAttribute;
+    private string stringAttribute = "";
+    private decimal timeWithoutTool;
+    private string materialInput = "";
+    private List<string> materials = new List<string>();
+    private List<DynamicJob> createdJobs = new List<DynamicJob>();
+
+    private void CreateJobWithIntAttribute()
+    {
+        var job = new DynamicJob($"Job with {intAttribute} screws, {timeWithoutTool} hrs",
+                                 new Job<int>(intAttribute, timeWithoutTool));
+        createdJobs.Add(job);
+    }
+
+    private void CreateJobWithStringAttribute()
+    {
+        var job = new DynamicJob($"Job: {stringAttribute}",
+                                 new Job<string>(stringAttribute, timeWithoutTool));
+        createdJobs.Add(job);
+    }
+
+    private void AddMaterial()
+    {
+        if (!string.IsNullOrWhiteSpace(materialInput))
+        {
+            materials.Add(materialInput);
+            materialInput = ""; // Reset input
+        }
+    }
+
+    private void CreateJobWithListAttribute()
+    {
+        var job = new DynamicJob($"Job with materials: {string.Join(", ", materials)}",
+                                 new Job<List<string>>(new List<string>(materials), timeWithoutTool));
+        materials.Clear(); // Clear the list after creating the job
+        createdJobs.Add(job);
+    }
+
+    private class DynamicJob
+    {
+        public string Description { get; }
+        public object Job { get; }
+
+        public DynamicJob(string description, object job)
+        {
+            Description = description;
+            Job = job;
+        }
+    }
+}

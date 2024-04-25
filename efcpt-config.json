@@ -1,0 +1,196 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/ErikEJ/EFCorePowerTools/master/samples/efcpt-schema.json",
+  "code-generation": {
+    "enable-on-configuring": false,
+    "type": "all",
+    "use-database-names": false,
+    "use-data-annotations": false,
+    "use-nullable-reference-types": true,
+    "use-inflector": false,
+    "use-legacy-inflector": false,
+    "use-many-to-many-entity": false,
+    "use-t4": false,
+    "t4-template-path": null,
+    "remove-defaultsql-from-bool-properties": false,
+    "soft-delete-obsolete-files": false,
+    "discover-multiple-stored-procedure-resultsets-preview": false,
+    "use-alternate-stored-procedure-resultset-discovery": false
+  },
+  "names": {
+    "root-namespace": "BlazorApp1",
+    "dbcontext-name": "dbfromQRDContext",
+    "dbcontext-namespace": null,
+    "model-namespace": null
+  },
+  "file-layout": {
+    "output-path": "Models",
+    "output-dbcontext-path": null
+  },
+  "tables": [
+    {
+      "name": "[dbo].[ApplicationUser]"
+    },
+    {
+      "name": "[dbo].[ApplicationUserDetail]"
+    },
+    {
+      "name": "[dbo].[Blank]"
+    },
+    {
+      "name": "[dbo].[CarDetails]"
+    },
+    {
+      "name": "[dbo].[Cars]"
+    },
+    {
+      "name": "[dbo].[CarStaticDetail]"
+    },
+    {
+      "name": "[dbo].[CarStatus_New]"
+    },
+    {
+      "name": "[dbo].[CarStatuses]"
+    },
+    {
+      "name": "[dbo].[Category]"
+    },
+    {
+      "name": "[dbo].[Detail]"
+    },
+    {
+      "name": "[dbo].[DetailType]"
+    },
+    {
+      "name": "[dbo].[Drivers]"
+    },
+    {
+      "name": "[dbo].[ErrorLog]"
+    },
+    {
+      "name": "[dbo].[Event]"
+    },
+    {
+      "name": "[dbo].[EventDetail]"
+    },
+    {
+      "name": "[dbo].[EventType]"
+    },
+    {
+      "name": "[dbo].[ExcelDataRecord]"
+    },
+    {
+      "name": "[dbo].[ExcelDataRecordAttribute]"
+    },
+    {
+      "name": "[dbo].[ExcelDataRecordChange]"
+    },
+    {
+      "name": "[dbo].[Issues]"
+    },
+    {
+      "name": "[dbo].[Log]"
+    },
+    {
+      "name": "[dbo].[NewCar]"
+    },
+    {
+      "name": "[dbo].[NewCar_Loggers]"
+    },
+    {
+      "name": "[dbo].[Order]"
+    },
+    {
+      "name": "[dbo].[PlaceholderUser]"
+    },
+    {
+      "name": "[dbo].[PlaceholderUserRole]"
+    },
+    {
+      "name": "[dbo].[Posts]"
+    },
+    {
+      "name": "[dbo].[PostTag]"
+    },
+    {
+      "name": "[dbo].[RoleClaims]"
+    },
+    {
+      "name": "[dbo].[Roles]"
+    },
+    {
+      "name": "[dbo].[SimpleEvent]"
+    },
+    {
+      "name": "[dbo].[SimpleEventType]"
+    },
+    {
+      "name": "[dbo].[Software]"
+    },
+    {
+      "name": "[dbo].[Source]"
+    },
+    {
+      "name": "[dbo].[Status]"
+    },
+    {
+      "name": "[dbo].[Tags]"
+    },
+    {
+      "name": "[dbo].[Team]"
+    },
+    {
+      "name": "[dbo].[TeamTimeline]"
+    },
+    {
+      "name": "[dbo].[TicketAttachment]"
+    },
+    {
+      "name": "[dbo].[TicketComment]"
+    },
+    {
+      "name": "[dbo].[TicketHistory]"
+    },
+    {
+      "name": "[dbo].[Tickets]"
+    },
+    {
+      "name": "[dbo].[TicketTag]"
+    },
+    {
+      "name": "[dbo].[Truck]"
+    },
+    {
+      "name": "[dbo].[Truck_Loggers]"
+    },
+    {
+      "name": "[dbo].[TruckDetail]"
+    },
+    {
+      "name": "[dbo].[TruckStaticDetail]"
+    },
+    {
+      "name": "[dbo].[TruckStatus]"
+    },
+    {
+      "name": "[dbo].[UserCarEvent]"
+    },
+    {
+      "name": "[dbo].[UserClaims]"
+    },
+    {
+      "name": "[dbo].[UserDetail]"
+    },
+    {
+      "name": "[dbo].[UserEvents]"
+    },
+    {
+      "name": "[dbo].[UserLogins]"
+    },
+    {
+      "name": "[dbo].[UserRoles]"
+    },
+    {
+      "name": "[dbo].[UserTokens]"
+    }
+  ]
+}

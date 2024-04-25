@@ -1,0 +1,25 @@
+@page "/detailcomponent"
+@switch (Detail.DetailType.Name)
+{
+    case "UserEventDetail":
+        <p>User UserCarEvent Detail: @Detail.Id</p>
+        break;
+    case "NoteEventDetail":
+        <p>Note UserCarEvent Detail: @Detail.Id</p>
+        break;
+    case "ErrorEventDetail":
+        <p>Error UserCarEvent Detail: @Detail.Id</p>
+        break;
+    case "ContactEventDetail":
+        <p>Contact UserCarEvent Detail: @Detail.Id</p>
+        break;
+    default:
+        <p>No matching detail was found</p>
+        break;
+}
+
+
+@code {
+    [Parameter]
+    public Detail Detail { get; set; }
+}

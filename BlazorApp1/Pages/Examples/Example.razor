@@ -1,0 +1,146 @@
+﻿@page "/example"
+@using BlazorApp1.Data
+@using BlazorApp1.Pages.Components
+@using BlazorApp1.CarModels.Utils
+@using System.Reflection 
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+
+
+    
+
+<FormModalComponent @ref="FormModalRef" TModel="Person" OnSubmit="SaveChanges">
+    <FormTemplate Context="person">
+        <InputText @bind-Value="person.FirstName" />
+        <InputText @bind-Value="person.LastName" />
+    </FormTemplate>
+</FormModalComponent>
+
+<button @onclick="ShowModal">Show Modal</button>
+
+
+
+
+<EditForm Model="@newCar">
+    <h3>Add a New Car</h3>
+    <label for="Make">Make:</label>
+    <InputText id="Make" @bind-Value="newCar.Make" /><br>
+
+    <label for="Model">Model:</label>
+    <InputText id="Model" @bind-Value="newCar.Model" /><br>
+
+    <label for="Year">Year:</label>
+    <InputNumber id="Year" @bind-Value="newCar.Year" /><br>
+
+    <!-- Add more input fields here... -->
+
+    <button type="button" @onclick="CheckModelState">Check Model State</button>
+</EditForm>
+
+
+
+
+
+
+<MyGrid TItem="MyItem" Items="@myItems">
+    <HeaderTemplate>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Value</th>
+    </HeaderTemplate>
+    <RowTemplate Context="item">
+        <td>@item.Id</td>
+        <td>@item.Name</td>
+        <td>@item.Value</td>
+    </RowTemplate>
+</MyGrid>
+
+@code {
+    private FormModalComponent<Person> FormModalRef;
+
+    private async Task SaveChanges(Person person)
+    {
+        // Save the changes here
+    }
+
+    private void ShowModal()
+    {
+        // Here, we should open the modal, but for simplicity,
+        // let's assume the modal opens automatically for now.
+    }
+    //for PropertyInfo... @using System.Reflection
+
+
+    private Car newCar;
+    private List<MyItem> myItems;
+
+
+
+ /*
+  * This line iterates over all properties of the Car class. typeof(Car).GetProperties() is using reflection to obtain an array of PropertyInfo objects, each of which contains metadata about a property in the Car class.
+Here, property.GetValue(newCar) is using reflection to get the current value of the property in the instance newCar. This is stored in the variable value.
+This condition checks whether the property's value is either null or equal to its default value. For instance, for a bool, the default value would be false, for an int, it would be 0, and so on.
+GetDefault(property.PropertyType) returns the default value of the property's type, which is then compared with value.
+*/
+    private void CheckModelState()
+    {
+        // Log the model's current state
+        newCar.LogModelState();
+
+        // Also, log all properties that are null or have default values
+        foreach (PropertyInfo property in typeof(Car).GetProperties())
+        {
+            var value = property.GetValue(newCar);
+            if (value == null || value.Equals(GetDefault(property.PropertyType)))
+            {
+                Console.WriteLine($"Property {property.Name} is not set.");
+            }
+        }
+    }
+
+    private object GetDefault(Type type)
+    {
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
+    }
+    protected override void OnInitialized()
+    {
+
+        newCar = new Car();  // Or populate it from the database
+
+        // Log the model's current state using the extension method
+        newCar.LogModelState();
+        using var context = DbContextFactory.CreateDbContext();
+
+        // Initialize your model (either from the database or create a new instance)
+        myModel = context.MyModels.Find(1) ?? new MyModel();
+
+        // Log the model's current state to the console for debugging
+        LogModelState(myModel);
+        myItems = new List<MyItem>
+        {
+            new MyItem { Id = 1, Name = "Item 1", Value = 100 },
+            new MyItem { Id = 2, Name = "Item 2", Value = 200 },
+            // add more items...
+        };
+    }
+
+    private class MyItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Value { get; set; }
+    }
+
+    private MyModel myModel;
+
+
+
+    private void LogModelState(object model)
+    {
+        // Serialize the object to JSON for easy readability
+        var serializedModel = System.Text.Json.JsonSerializer.Serialize(model, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+
+        // Log the model's state to the console
+        Console.WriteLine($"Model state: {serializedModel}");
+    }
+    }

@@ -1,0 +1,111 @@
+﻿@page "/orderdelivery"
+@using BlazorApp1.CarModels;
+@using BlazorApp1.Repositories;
+@using System.Text.Json;
+@inject IOrderRepository OrderRepository
+@inject JsonSerializerOptions JsonSerializerOptions
+
+
+<h3>Add Order and Delivery</h3>
+
+<EditForm Model="NewOrder" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <!-- Order Fields -->
+    <InputText id="customerName" @bind-Value="NewOrder.CustomerName" placeholder="Customer Name" required />
+    <InputText id="address" @bind-Value="NewOrder.ShippingInfo.Address" placeholder="Address" required />
+    <!-- Shipping Info Fields -->
+    <InputText id="address" @bind-Value="NewOrder.ShippingInfo.Address" placeholder="Address" required />
+    <InputText id="city" @bind-Value="NewOrder.ShippingInfo.City" placeholder="City" required />
+    <InputText id="state" @bind-Value="NewOrder.ShippingInfo.State" placeholder="State" required />
+    <InputText id="postalCode" @bind-Value="NewOrder.ShippingInfo.PostalCode" placeholder="Postal Code" required />
+    <!-- Delivery Fields -->
+    <InputText id="receiverName" @bind-Value="NewDelivery.ReceiverName" placeholder="Receiver Name" required />
+    <InputDate id="deliveryDate" @bind-Value="NewDelivery.DeliveryDate" required />
+    <InputText id="signature" @bind-Value="NewDelivery.Signature" placeholder="Signature" required /> <!-- Signature field -->
+    <!-- Add other delivery fields as needed -->
+
+    <button type="submit">Add Order and Delivery</button>
+</EditForm>
+
+<p>@Message</p>
+<!-- Display the C# object hierarchy -->
+<h4>C# Object Hierarchy:</h4>
+<pre>@ObjectHierarchy</pre>
+
+<!-- Display the JSON representation -->
+<h4>JSON Representation:</h4>
+<pre>@JsonRepresentation</pre>
+
+    @foreach (var order in Orders)
+    {
+<HxAccordion>
+        <HxPanel HeaderText="Order Details" IsCollapsible="true" IsInitiallyCollapsed="true">
+            <p>Hx Components</p>
+@*            <pre>@JsonSerializer.Serialize(order, JsonSerializerOptions)</pre>
+*@
+</HxPanel>
+        <HxAccordionItem>
+            <HeaderTemplate>Order: @order.CustomerName</HeaderTemplate>
+            <BodyTemplate>
+@*                @JsonSerializer.Serialize(order, JsonSerializerOptions)*@
+                <pre>@JsonSerializer.Serialize(order, JsonSerializerOptions)</pre>
+            </BodyTemplate>
+        </HxAccordionItem>
+</HxAccordion>
+    }
+
+
+
+<p>@AddedOrderDetails</p> <!-- Display the details of the added order and delivery -->
+@code {
+    public Order NewOrder { get; set; } = new Order { ShippingInfo = new ShippingInfo() };
+    public Delivery NewDelivery { get; set; } = new Delivery();
+
+    public List<Order> Orders { get; set; } = new List<Order>(); // Collection of submitted orders (accordian loop)
+
+    public string Message { get; set; }
+    public string ObjectHierarchy { get; set; } // To display the C# object hierarchy
+    public string JsonRepresentation { get; set; } // To display the JSON representation
+    public string AddedOrderDetails { get; set; } // To display the details of the added order and delivery
+
+    private async Task HandleValidSubmit()
+    {
+        // Convert the order and delivery to JSON
+        #region =====[ Configured version ]========================================
+        //JsonRepresentation = JsonSerializer.Serialize(NewOrder, JsonSerializerOptions);
+        /*var options = new JsonSerializerOptions
+    {
+    WriteIndented = true, // Pretty-print the JSON
+    // Other options as needed...
+    };
+    JsonRepresentation = JsonSerializer.Serialize(NewOrder, options);*/
+        #endregion
+        //Default version
+        JsonRepresentation = JsonSerializer.Serialize(NewOrder);
+
+
+        // Build the C# object hierarchy as a string (you can customize this as needed)
+        ObjectHierarchy = $"Order: Id = {NewOrder.Id}, CustomerName = {NewOrder.CustomerName}, OrderDate = {NewOrder.OrderDate}\n" +
+                          $"Shipping Info: Address = {NewOrder.ShippingInfo.Address}, City = {NewOrder.ShippingInfo.City}, State = {NewOrder.ShippingInfo.State}, PostalCode = {NewOrder.ShippingInfo.PostalCode}\n" +
+                          $"Delivery: ReceiverName = {NewDelivery.ReceiverName}, DeliveryDate = {NewDelivery.DeliveryDate}, Signature = {NewDelivery.Signature}";
+
+        // Add the delivery to the order's deliveries
+        NewOrder.ShippingInfo.Deliveries.Add(NewDelivery);
+
+        // Add the order to the database
+        var addedOrder = await OrderRepository.AddOrder(NewOrder);
+        if (addedOrder != null)
+        {
+            Orders.Add(addedOrder); // Add the order to the collection for accordian/loop impliment
+
+            Message = "Order and delivery added successfully!";
+            AddedOrderDetails = $"Added Order: CustomerName = {addedOrder.CustomerName}, Address = {addedOrder.ShippingInfo.Address}, ReceiverName = {addedOrder.ShippingInfo.Deliveries.First().ReceiverName}, DeliveryDate = {addedOrder.ShippingInfo.Deliveries.First().DeliveryDate}";
+        }
+        else
+        {
+            Message = "Failed to add order and delivery!";
+        }
+    }
+}

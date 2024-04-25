@@ -1,0 +1,57 @@
+﻿/*.task-entry {
+    border: 1px solid #ccc;
+    margin: 2px;
+    padding: 2px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+}
+
+.calendar-day {
+     ... your existing styles ... 
+    display: flex;  Use flex layout to organize content within a day cell 
+    flex-direction: column;  Stack content vertically 
+    justify-content: start;  Align content to the start 
+    align-items: center;  Center content horizontally 
+    min-height: 150px;  Adjust the height as needed 
+}
+
+.user-name {
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;  Adjust the margin as needed 
+    z-index: 2;  Above the strips 
+    font-weight: bold;  Make the text bold 
+}
+
+.user-task {
+    width: 100%;
+    text-align: left;
+    margin-top: 2px;  Space between tasks 
+    z-index: 2;  Above the strips 
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    min-height: 150px;
+}
+
+.calendar-day {
+    padding: 5px;
+    border: 10px solid rgb(238, 238, 238);
+}
+
+.calendar-header, .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+
+.calendar-header, .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}*/

@@ -1,0 +1,133 @@
+﻿@page "/dynamic-calculator"
+
+@* <h3>Dynamic Efficiency Calculator</h3>
+
+<div>
+    <h4>Equip Tools to Worker</h4>
+    @foreach (var tool in availableTools)
+    {
+        <button @onclick="() => EquipTool(tool)">@tool.Name</button>
+    }
+
+    <h4>Create and Perform Job</h4>
+    <input @bind="jobAttributeString" placeholder="Job Attribute (e.g., number of units)" />
+
+     <input @bind="jobAttribute" placeholder="Job Attribute (e.g., number of units)" />
+ 
+ <input @bind="timeWithoutTool" type="number" placeholder="Time Without Tool (hours)" />
+    <button @onclick="AddAndPerformJob">Add and Perform Job</button>
+
+    <h4>Job Results</h4>
+    @if (jobs.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Job Attribute</th>
+                    <th>Original Time (hrs)</th>
+                    <th>Time with Tools (hrs)</th>
+                    <th>Running Average Time (hrs)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var job in jobs)
+                {
+                    <tr>
+                        <td>@job.JobAttribute</td>
+                        <td>@job.TimeTakenWithoutTool</td>
+                        <td>@job.TimeTakenWithTool</td>
+                        <td>@job.CalculateRunningAverage()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div> *@
+<h3>Dynamic Efficiency Calculator</h3>
+
+<div>
+    <h4>Equip Tools to Worker</h4>
+    @foreach (var tool in availableTools)
+    {
+        <button @onclick="() => EquipTool(tool)">@tool.Name</button>
+    }
+
+    <h4>Create and Perform Job</h4>
+    <input @bind="jobAttributeString" placeholder="Job Attribute (e.g., number of units)" />
+    <input @bind="timeWithoutTool" type="number" placeholder="Time Without Tool (hours)" />
+    <button @onclick="AddAndPerformJob">Add and Perform Job</button>
+
+    <h4>Job Results</h4>
+    @if (jobs.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Job Attribute</th>
+                    <th>Original Time (hrs)</th>
+                    <th>Time with Tools (hrs)</th>
+                    <th>Running Average Time (hrs)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var job in jobs)
+                {
+                    <tr>
+                        <td>@job.JobAttribute</td>
+                        <td>@job.TimeTakenWithoutTool</td>
+                        <td>@job.TimeTakenWithTool</td>
+                        <td>@job.CalculateRunningAverage()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+
+    private Worker worker = new Worker { Name = "John", HourlyRate = 20 };
+    private List<Tool> availableTools = new List<Tool>
+    {
+        new Tool("Drill", 100, 0.80m),
+        new Tool("Hammer", 50, 0.90m)
+        // Other tools
+    };
+
+    private string jobAttributeString; // Declare the variable for binding
+    private List<Job<string>> jobs = new List<Job<string>>();
+    private dynamic jobAttribute;
+    private decimal timeWithoutTool;
+
+    private void EquipTool(Tool tool)
+    {
+        try
+        {
+            worker.EquipTool(tool);
+            Console.WriteLine($"Equipped {tool.Name} to worker {worker.Name}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error equipping tool: {ex.Message}");
+        }
+    }
+
+    private void AddAndPerformJob()
+    {
+        try
+        {
+            // Convert jobAttributeString to the dynamic jobAttribute if needed
+            jobAttribute = jobAttributeString; // Adjust this conversion based on expected data type
+
+            var job = new Job<string>(jobAttribute, timeWithoutTool);
+            job.PerformJob(worker);
+            jobs.Add(job);
+
+            Console.WriteLine($"Job added and performed. Attribute: {jobAttribute}, Time without tool: {timeWithoutTool} hours");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error performing job: {ex.Message}");
+        }
+    }
+}

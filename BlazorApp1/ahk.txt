@@ -1,0 +1,221 @@
+
+use the autohotkey version 2 language. do not use the old version. newer version doesnt use commands, or % ... etc.
+
+
+write a function that takes a file and parses it, identifies all of the methods, and for each method, place a dynamic console.writeline using the method name and also the return keywords in each method.
+
+write a function that takes a file and parses it, classes, methods, properties based on similarity of type, alphabetical in name, or by number of lines.
+
+write a function that takes a file and parses it, changes out entity/model for another
+
+write a function that takes a file and parses it, strips the comments 
+
+
+write a function that takes a file and parses it, extracts the <style> </style> tags and everything in between it, then create a file with the same filename with '.css' at the end with the pasted <style> code.
+
+
+function that accepts strings as 'configurations' -> checks if new or previous,
+if new adds it to total list being tracked... 
+
+here is some example code that parses a folder for the names of files and shows them. adapt this / use it for example / integrate it into a comprehensive class that does the above.
+
+Scrollable(text, width := 400, height := 300) {
+    Gui1 := Gui() ; Create a new GUI object
+    Gui1.OnEvent("Close", guiclose) ;"GuiClose") ; Set up an event handler for closing the GUI
+
+    ; Set up a multi-line, read-only, scrollable Edit control that fills the GUI:
+    Gui1.Add("Edit", "ReadOnly -Wrap vMyEdit w" width " h" height, text)
+
+    Gui1.Show() ; Show the GUI
+}
+
+; Function to close the GUI when the user clicks the close button:
+GuiClose(*) {
+    Gui.Destroy()
+    ExitApp
+}
+
+
+getFileType2(fileName) {
+    ; Define the file types and their corresponding labels
+    static fileTypes := {
+        cs: "C#",
+        json: "JSON",
+        xml: "XML",
+        config: "Config"
+    }
+
+    ; Get the file extension
+    fileExtension := SubStr(fileName, InStr(fileName, ".") + 1)
+
+    ; Return the corresponding label for the file type, or the file extension if no label is defined
+    return fileTypes.HasKey(fileExtension) ? fileTypes[fileExtension] : fileExtension
+}
+
+/* getFileType3(fileName) {
+ *     ; Define the file types and their corresponding functions
+ *     static fileTypes := {
+ *         "cs": Func("getTypeLabel").Bind("C#"),
+ *         "json": Func("getTypeLabel").Bind("JSON"),
+ *         "xml": Func("getTypeLabel").Bind("XML"),
+ *         "config": Func("getTypeLabel").Bind("Config")
+ *     }
+    ; Get the file extension
+    fileExtension := SubStr(fileName, InStr(fileName, ".") + 1)
+
+    ; Return the corresponding function for the file type, or a default function that returns the file extension
+    return fileTypes[fileExtension] ?? Func("getTypeLabel").Bind(fileExtension)
+}
+ */
+    getFileType(fileName) {
+    ; Define the file types and their corresponding labels
+    static fileTypes := { cs: "C#", json: "JSON", xml: "XML", config: "Config" }
+
+    ; Get the file extension
+    fileExtension := SubStr(fileName, InStr(fileName, ".") + 1)
+
+    ; Return the corresponding label for the file type, or the file extension if no label is defined
+    return fileTypes.HasKey(fileExtension) ? fileTypes[fileExtension] : fileExtension
+}
+
+
+
+
+; Function to return a label for a file type
+getTypeLabel(label) {
+    return label
+}
+
+
+
+arrayToString(arr) {
+    str := ""
+    for each, item in arr {
+        str .= item . "`n"
+    }
+    return str
+}
+;[]==============================[]=================================[]
+root := "C:\Dev\BlazorApplication-master\BlazorApp1\Pages\Components\"
+
+; Initialize the array to store skipped directories
+global skippedDirectories := []
+
+; Then you can call it like this:
+;Scrollable("Your very long text goes here.")
+
+; Call the recursive function to traverse the directory
+output := recurseDirectory(root)
+
+; Output the entire project structure
+scrollable(output)
+;MsgBox output
+
+skippeddirectories := arraytostring(skippeddirectories)
+; Output the skipped directories
+MsgBox "Skipped directories:`n" . skippedDirectories
+
+; Recursive function to traverse the directory
+recurseDirectory(path, indent := "") {
+
+    ; Define the list of patterns to exclude from the output
+    static excludePatterns := [".git", ".vs", "/bin", "/obj", "bin", "obj"]
+
+    ; Initialize the output string
+    output := "    "
+
+    ; Loop through each file in the directory
+    Loop Files, path . "\*", "FRD"
+    {
+         fileAttributes := A_LoopFileAttrib
+
+        ; Switch on the file attributes
+        switch fileAttributes
+        {
+            case "D":
+            case "HD":
+            case "H":
+                ; If the file is a directory, call this function recursively
+                ; Get the directory path
+                directoryPath := A_LoopFileFullPath
+
+                ; If the directory path matches an exclude pattern, skip it
+                skip := false
+                for each, pattern in excludePatterns {
+                    if (InStr(directoryPath, pattern) > 0) {
+                        skip := true
+                        break
+                    }
+                }
+                if (skip) {
+                    ; Store the skipped directory in the global array
+                    skippedDirectories.push(directoryPath)
+                    continue
+                }
+
+                ; Get the directory name
+                directoryName := SubStr(A_LoopFileName, InStr(A_LoopFileName, "\") + 1)
+
+                ; Append the directory name to the output string, indented appropriately for its level in the tree
+                output .= indent . directoryName . "`n"
+
+                ; Call this function recursively for the subdirectory
+                output .= recurseDirectory(directoryPath, indent . "    ")
+            case "R":
+            case "S":
+                ; read only and system file, skip it
+                continue
+
+            default:
+                ; Otherwise, append the file name to the output string
+                ; Get the file name
+                fileName := SubStr(A_LoopFileName, InStr(A_LoopFileName, "\") + 1)
+
+              skip := false
+
+               for each, pattern in excludePatterns {
+                   if (InStr(A_LoopFileFullPath, pattern)) {
+                       skip := true
+                       break
+                   }
+               }
+               if (skip) {
+                   ; Store the skipped directory in the global array
+                    skippedDirectories.push(A_LoopFileFullPath)
+                   continue
+               }
+
+                ; Get the file type
+                fileType := SubStr(fileName, InStr(fileName, ".") + 1)
+                output .= indent . fileType . " " . SubStr(fileName, 1, InStr(fileName, ".") - 1) . "`n"
+
+                ; moved to func
+/*                 switch fileType
+ *                 {
+ *                     case "cs":
+ *                     case "json":
+ *                     case "xml":
+ *                     case "config":
+ *                         ; Remove the file extension and any path information
+ *                         fileName := SubStr(fileName, 1, InStr(fileName, ".") - 1)
+ *
+ *                         ; Append the file name to the output string, indented appropriately for its level in the tree
+ *                         output .= indent . "â””â”€â”€ " . fileName . "`n"
+ *                 }
+ */
+        }
+    }
+
+    ; Return the output string for this directory
+    return output
+}
+
+
+
+
+show me a c# class that delmonstrates the opposite of dependancy injection.
+ Id like to understand why dependency injection is so popular, 
+to me it seems that maybe if, for example, a service had a repository built-in
+ (always present) this would be even more desirable that injecting one,
+ because you could never forget to do so, since its inherent. what is wrong with 
+this approach?

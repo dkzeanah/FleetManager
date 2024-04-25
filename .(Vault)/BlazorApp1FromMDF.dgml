@@ -1,0 +1,614 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" ZoomLevel="0.637023116833093" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="Database" Category="Database" Bounds="-138.604385804677,240.727309855734,1405.8445155624,649.126286273761" Group="Expanded" Label="Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Dev\aspnet-BlazorApp1-DB.mdf;Integrated Security=True;Connect Timeout=30" UseManualLocation="True" />
+    <Node Id="dbo" Category="Schema" Bounds="-118.604385804677,280.727409855734,1365.8445155624,589.126086273761" Group="Expanded" Label="dbo" />
+    <Node Id="dbo.ApplicationUser" Category="Table" Bounds="861.605678908384,496.02262168873,147.64,25" Group="Collapsed" Label="dbo.ApplicationUser" />
+    <Node Id="dbo.ApplicationUserDetail" Category="Table" Bounds="943.061020251377,441.02252168873,178.316666666667,25" Group="Collapsed" Label="dbo.ApplicationUserDetail" />
+    <Node Id="dbo.ApplicationUserDetail_UserId" Category="Field Primary" Description="nvarchar(450)" Label="UserId" />
+    <Node Id="dbo.ApplicationUser_AccessFailedCount" Category="Field" Description="int" Label="AccessFailedCount" />
+    <Node Id="dbo.ApplicationUser_ApplicationUserDetailId" Category="Field" Description="int" Label="ApplicationUserDetailId" />
+    <Node Id="dbo.ApplicationUser_ConcurrencyStamp" Category="Field Optional" Description="ntext" Label="ConcurrencyStamp" />
+    <Node Id="dbo.ApplicationUser_Email" Category="Field Optional" Description="ntext" Label="Email" />
+    <Node Id="dbo.ApplicationUser_EmailConfirmed" Category="Field" Description="bit" Label="EmailConfirmed" />
+    <Node Id="dbo.ApplicationUser_FirstName" Category="Field Optional" Description="ntext" Label="FirstName" />
+    <Node Id="dbo.ApplicationUser_FriendlyName" Category="Field Optional" Description="ntext" Label="FriendlyName" />
+    <Node Id="dbo.ApplicationUser_Id" Category="Field Primary" Description="nvarchar(450)" Label="Id" />
+    <Node Id="dbo.ApplicationUser_LastName" Category="Field Optional" Description="ntext" Label="LastName" />
+    <Node Id="dbo.ApplicationUser_LockoutEnabled" Category="Field" Description="bit" Label="LockoutEnabled" />
+    <Node Id="dbo.ApplicationUser_LockoutEnd" Category="Field Optional" Description="datetime" Label="LockoutEnd" />
+    <Node Id="dbo.ApplicationUser_NormalizedEmail" Category="Field Optional" Description="ntext" Label="NormalizedEmail" />
+    <Node Id="dbo.ApplicationUser_NormalizedUserName" Category="Field Optional" Description="ntext" Label="NormalizedUserName" />
+    <Node Id="dbo.ApplicationUser_PasswordHash" Category="Field Optional" Description="ntext" Label="PasswordHash" />
+    <Node Id="dbo.ApplicationUser_PhoneNumber" Category="Field Optional" Description="ntext" Label="PhoneNumber" />
+    <Node Id="dbo.ApplicationUser_PhoneNumberConfirmed" Category="Field" Description="bit" Label="PhoneNumberConfirmed" />
+    <Node Id="dbo.ApplicationUser_SecurityStamp" Category="Field Optional" Description="ntext" Label="SecurityStamp" />
+    <Node Id="dbo.ApplicationUser_TwoFactorEnabled" Category="Field" Description="bit" Label="TwoFactorEnabled" />
+    <Node Id="dbo.ApplicationUser_UserName" Category="Field Optional" Description="ntext" Label="UserName" />
+    <Node Id="dbo.AspNetRoles" Category="Table" Bounds="-64.1866027890244,733.334561197512,131.09,25" Group="Collapsed" Label="dbo.AspNetRoles" UseManualLocation="True" />
+    <Node Id="dbo.AspNetRoles_ConcurrencyStamp" Category="Field Optional" Description="ntext" Label="ConcurrencyStamp" />
+    <Node Id="dbo.AspNetRoles_Id" Category="Field Primary" Description="nvarchar(450)" Label="Id" />
+    <Node Id="dbo.AspNetRoles_Name" Category="Field Optional" Description="ntext" Label="Name" />
+    <Node Id="dbo.AspNetRoles_NormalizedName" Category="Field Optional" Description="ntext" Label="NormalizedName" />
+    <Node Id="dbo.BlankModels" Category="Table" Bounds="536.501519281444,776.303240477082,131.546666666666,25" Group="Collapsed" Label="dbo.BlankModels" UseManualLocation="True" />
+    <Node Id="dbo.BlankModels_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.CarDetail" Category="Table" Bounds="121.870049406781,468.706225259627,112.136666666667,25" Group="Collapsed" Label="dbo.CarDetail" />
+    <Node Id="dbo.CarDetail_CarDetailId" Category="Field Primary" Description="int" Label="CarDetailId" />
+    <Node Id="dbo.CarDetail_CarId" Category="Field Foreign" Description="int" Label="CarId" />
+    <Node Id="dbo.CarDetail_Color" Category="Field" Description="ntext" Label="Color" />
+    <Node Id="dbo.CarDetail_DetailId" Category="Field Foreign" Description="int" Label="DetailId" />
+    <Node Id="dbo.CarDetail_Make" Category="Field" Description="ntext" Label="Make" />
+    <Node Id="dbo.CarDetail_Model" Category="Field" Description="ntext" Label="Model" />
+    <Node Id="dbo.CarDetail_Vin" Category="Field" Description="ntext" Label="Vin" />
+    <Node Id="dbo.CarDetail_Year" Category="Field" Description="ntext" Label="Year" />
+    <Node Id="dbo.CarEvent" Category="Table" Bounds="264.006816073447,485.733421571818,110.41,25" Group="Collapsed" Label="dbo.CarEvent" />
+    <Node Id="dbo.CarEventDetail" Category="Table" Bounds="365.002157416439,430.733321571818,141.086666666667,25" Group="Collapsed" Label="dbo.CarEventDetail" />
+    <Node Id="dbo.CarEventDetail_CarDetailId" Category="Field Foreign" Description="int" Label="CarDetailId" />
+    <Node Id="dbo.CarEventDetail_CarEventDetailId" Category="Field Primary" Description="int" Label="CarEventDetailId" />
+    <Node Id="dbo.CarEventDetail_CarEventId" Category="Field Foreign" Description="int" Label="CarEventId" />
+    <Node Id="dbo.CarEventDetail_Note" Category="Field" Description="ntext" Label="Note" />
+    <Node Id="dbo.CarEvent_CarEventId" Category="Field Primary" Description="int" Label="CarEventId" />
+    <Node Id="dbo.CarEvent_CarId" Category="Field Foreign" Description="int" Label="CarId" />
+    <Node Id="dbo.CarEvent_EventId" Category="Field" Description="int" Label="EventId" />
+    <Node Id="dbo.CarStaticDetails" Category="Table" Bounds="554.685478908384,496.022606304103,145.906666666667,25" Group="Collapsed" Label="dbo.CarStaticDetails" />
+    <Node Id="dbo.CarStaticDetails_Adas" Category="Field Optional" Description="ntext" Label="Adas" />
+    <Node Id="dbo.CarStaticDetails_CarId" Category="Field Foreign" Description="int" Label="CarId" />
+    <Node Id="dbo.CarStaticDetails_CarStaticDetailId" Category="Field Primary" Description="int" Label="CarStaticDetailId" />
+    <Node Id="dbo.CarStaticDetails_Finas" Category="Field" Description="ntext" Label="Finas" />
+    <Node Id="dbo.CarStaticDetails_FullVin" Category="Field Optional" Description="ntext" Label="FullVin" />
+    <Node Id="dbo.CarStaticDetails_HarnessStatus" Category="Field Optional" Description="ntext" Label="HarnessStatus" />
+    <Node Id="dbo.CarStaticDetails_SoftwareVersion" Category="Field Optional" Description="ntext" Label="SoftwareVersion" />
+    <Node Id="dbo.CarStaticDetails_Tag" Category="Field" Description="ntext" Label="Tag" />
+    <Node Id="dbo.CarStaticDetails_VinLast4" Category="Field" Description="ntext" Label="VinLast4" />
+    <Node Id="dbo.CarStatus" Category="Table" Bounds="-21.7000505932196,468.706225259626,113.57,25" Group="Collapsed" Label="dbo.CarStatus" />
+    <Node Id="dbo.CarStatus_CarID" Category="Field Foreign" Description="int" Label="CarID" />
+    <Node Id="dbo.CarStatus_New" Category="Table" Bounds="536.521385933188,716.002671840476,142.476666666667,25" Group="Collapsed" Label="dbo.CarStatus_New" />
+    <Node Id="dbo.CarStatus_New_StatusID" Category="Field Primary" Description="int" Label="StatusID" />
+    <Node Id="dbo.CarStatus_New_StatusName" Category="Field" Description="nvarchar(50)" Label="StatusName" />
+    <Node Id="dbo.CarStatus_StatusID" Category="Field Foreign" Description="int" Label="StatusID" />
+    <Node Id="dbo.CarStatus_StatusTime" Category="Field Optional" Description="datetime" Label="StatusTime" />
+    <Node Id="dbo.Cars" Category="Table" Bounds="401.221146766596,551.009700822865,86.5533333333333,25" Group="Collapsed" Label="dbo.Cars" />
+    <Node Id="dbo.Cars_CarId" Category="Field Primary" Description="int" Label="CarId" />
+    <Node Id="dbo.Cars_Location" Category="Field Optional" Description="ntext" Label="Location" />
+    <Node Id="dbo.Cars_Make" Category="Field Optional" Description="ntext" Label="Make" />
+    <Node Id="dbo.Cars_Miles" Category="Field Optional" Description="int" Label="Miles" />
+    <Node Id="dbo.Cars_Model" Category="Field Optional" Description="ntext" Label="Model" />
+    <Node Id="dbo.Cars_SourceId" Category="Field Optional" Description="int" Label="SourceId" />
+    <Node Id="dbo.Cars_TeleGeneration" Category="Field Optional" Description="ntext" Label="TeleGeneration" />
+    <Node Id="dbo.Cars_UserId" Category="Field Optional" Description="ntext" Label="UserId" />
+    <Node Id="dbo.Cars_Year" Category="Field Optional" Description="int" Label="Year" />
+    <Node Id="dbo.Detail" Category="Table" Bounds="448.512373992622,375.733221571818,94.4266666666672,25" Group="Collapsed" Label="dbo.Detail" />
+    <Node Id="dbo.DetailType" Category="Table" Bounds="215.812057416439,390.644214197949,119.19,25" Group="Collapsed" Label="dbo.DetailType" />
+    <Node Id="dbo.DetailType_CarDetailId" Category="Field Foreign" Description="int" Label="CarDetailId" />
+    <Node Id="dbo.DetailType_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.DetailType_Name" Category="Field" Description="ntext" Label="Name" />
+    <Node Id="dbo.Detail_ApplicationUserId" Category="Field Foreign" Bounds="252.805628666667,286.901208827728,114.15,25.96" Description="nvarchar(450)" Label="ApplicationUserId" UseManualLocation="True" />
+    <Node Id="dbo.Detail_DetailTypeId" Category="Field Foreign" Bounds="365.779696,175.003592827728,85.7,25.96" Description="int" Label="DetailTypeId" UseManualLocation="True" />
+    <Node Id="dbo.Detail_Discriminator" Category="Field" Bounds="252.805628666667,230.952400827728,90.4466666666667,25.96" Description="ntext" Label="Discriminator" UseManualLocation="True" />
+    <Node Id="dbo.Detail_Id" Category="Field Primary" Bounds="252.805628666667,119.054784827728,50,25.96" Description="int" Label="Id" UseManualLocation="True" />
+    <Node Id="dbo.Detail_Note" Category="Field Optional" Bounds="412.773628666667,119.054784827728,50,25.96" Description="ntext" Label="Note" UseManualLocation="True" />
+    <Node Id="dbo.Detail_UserEventDetailId" Category="Field Foreign" Bounds="373.228206,230.952400827728,113.673333333333,25.96" Description="int" Label="UserEventDetailId" UseManualLocation="True" />
+    <Node Id="dbo.Detail_UserEventId" Category="Field Optional" Bounds="252.805628666667,175.003592827728,82.9966666666667,25.96" Description="int" Label="UserEventId" UseManualLocation="True" />
+    <Node Id="dbo.Detail_UserId" Category="Field Optional" Bounds="492.757628666667,119.054784827728,54.0466666666666,25.96" Description="ntext" Label="UserId" UseManualLocation="True" />
+    <Node Id="dbo.Detail_Value" Category="Field" Bounds="332.789628666667,119.054784827728,50,25.96" Description="ntext" Label="Value" UseManualLocation="True" />
+    <Node Id="dbo.Drivers" Category="Table" Bounds="698.125848353322,605.22049456676,100.533333333333,25" Group="Collapsed" Label="dbo.Drivers" />
+    <Node Id="dbo.Drivers_DriverId" Category="Field Primary" Description="int" Label="DriverId" />
+    <Node Id="dbo.Drivers_DrivingHours" Category="Field" Description="numeric(18,2)" Label="DrivingHours" />
+    <Node Id="dbo.ErrorLog" Category="Table" Bounds="830.98735913072,605.220534951411,109.116666666667,25" Group="Collapsed" Label="dbo.ErrorLog" />
+    <Node Id="dbo.ErrorLog_CarID" Category="Field" Description="int" Label="CarID" />
+    <Node Id="dbo.ErrorLog_ErrorDetails" Category="Field Optional" Description="nvarchar(255)" Label="ErrorDetails" />
+    <Node Id="dbo.ErrorLog_ErrorID" Category="Field Primary" Description="int" Label="ErrorID" />
+    <Node Id="dbo.ErrorLog_ErrorNotes" Category="Field Optional" Description="nvarchar(255)" Label="ErrorNotes" />
+    <Node Id="dbo.ErrorLog_ErrorPriority" Category="Field Optional" Description="int" Label="ErrorPriority" />
+    <Node Id="dbo.Event" Category="Table" Bounds="536.088924083106,441.022521688729,92.7,25" Group="Collapsed" Label="dbo.Event" />
+    <Node Id="dbo.EventDetail" Category="Table" Bounds="478.191239858902,320.733121571818,123.376666666667,25" Group="Collapsed" Label="dbo.EventDetail" />
+    <Node Id="dbo.EventDetail_DateAdded" Category="Field" Bounds="571.535862240513,183.82180381772,80.0800000000002,25.96" Description="datetime" Label="DateAdded" UseManualLocation="True" />
+    <Node Id="dbo.EventDetail_DetailId" Category="Field Foreign" Bounds="480.599197608352,183.82180381772,60.9366666666668,25.96" Description="int" Label="DetailId" UseManualLocation="True" />
+    <Node Id="dbo.EventDetail_EventId" Category="Field" Bounds="560.599188656529,127.861802945108,59.2099999999999,25.96" Description="int" Label="EventId" UseManualLocation="True" />
+    <Node Id="dbo.EventDetail_Id" Category="Field Primary" Bounds="480.59919292899,127.861802945108,50,25.96" Description="int" Label="Id" UseManualLocation="True" />
+    <Node Id="dbo.EventType" Category="Table" Bounds="404.416916073446,496.022521688729,117.463333333334,25.0000000000001" Group="Collapsed" Label="dbo.EventType" />
+    <Node Id="dbo.EventType_EventId" Category="Field" Description="int" Label="EventId" />
+    <Node Id="dbo.EventType_EventTypeID" Category="Field Primary" Description="int" Label="EventTypeID" />
+    <Node Id="dbo.EventType_Id" Category="Field" Description="int" Label="Id" />
+    <Node Id="dbo.EventType_Name" Category="Field" Description="nvarchar(50)" Label="Name" />
+    <Node Id="dbo.Event_CarId" Category="Field Foreign" Description="int" Label="CarId" />
+    <Node Id="dbo.Event_Category" Category="Field" Description="float" Label="Category" />
+    <Node Id="dbo.Event_Date" Category="Field" Description="datetime" Label="Date" />
+    <Node Id="dbo.Event_EndTime" Category="Field Optional" Description="datetime" Label="EndTime" />
+    <Node Id="dbo.Event_EventTypeId" Category="Field Foreign" Description="int" Label="EventTypeId" />
+    <Node Id="dbo.Event_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.Event_StartTime" Category="Field Optional" Description="datetime" Label="StartTime" />
+    <Node Id="dbo.Event_Type" Category="Field Optional" Description="ntext" Label="Type" />
+    <Node Id="dbo.Event_UserId" Category="Field Foreign" Description="nvarchar(450)" Label="UserId" />
+    <Node Id="dbo.Issues" Category="Table" Bounds="442.899041191856,606.009800822865,95.29,25" Group="Collapsed" Label="dbo.Issues" />
+    <Node Id="dbo.Issues_AssignedTo" Category="Field" Description="ntext" Label="AssignedTo" />
+    <Node Id="dbo.Issues_IssueId" Category="Field Primary" Description="int" Label="IssueId" />
+    <Node Id="dbo.Issues_ModifiedAt" Category="Field" Description="ntext" Label="ModifiedAt" />
+    <Node Id="dbo.Issues_ModifiedBy" Category="Field" Description="ntext" Label="ModifiedBy" />
+    <Node Id="dbo.Issues_ModifiedByUser" Category="Field" Description="ntext" Label="ModifiedByUser" />
+    <Node Id="dbo.Issues_Priority" Category="Field" Description="ntext" Label="Priority" />
+    <Node Id="dbo.Issues_Status" Category="Field" Description="ntext" Label="Status" />
+    <Node Id="dbo.Issues_SubmittedAt" Category="Field" Description="ntext" Label="SubmittedAt" />
+    <Node Id="dbo.Issues_SubmittedBy" Category="Field" Description="ntext" Label="SubmittedBy" />
+    <Node Id="dbo.Issues_Summary" Category="Field" Description="ntext" Label="Summary" />
+    <Node Id="dbo.Issues_System" Category="Field" Description="ntext" Label="System" />
+    <Node Id="dbo.Log" Category="Table" Bounds="865.67145987867,778.349834147979,83.4966666666669,25" Group="Collapsed" Label="dbo.Log" UseManualLocation="True" />
+    <Node Id="dbo.Log_LogID" Category="Field Primary" Bounds="833.623944809342,735.598171338065,0,0" Description="int" Label="LogID" UseManualLocation="True" />
+    <Node Id="dbo.Log_LogMessage" Category="Field" Bounds="833.623944809342,735.598171338065,0,0" Description="nvarchar(255)" Label="LogMessage" UseManualLocation="True" />
+    <Node Id="dbo.Log_LogTime" Category="Field Optional" Bounds="833.623944809342,735.598171338065,0,0" Description="datetime" Label="LogTime" UseManualLocation="True" />
+    <Node Id="dbo.Logger" Category="Table" Bounds="730.59224557505,496.022506304104,101.013333333333,25" Group="Collapsed" Label="dbo.Logger" />
+    <Node Id="dbo.Logger_CarID" Category="Field Foreign" Description="int" Label="CarID" />
+    <Node Id="dbo.Logger_LoggerID" Category="Field Primary" Description="int" Label="LoggerID" />
+    <Node Id="dbo.Logger_NumLoggers" Category="Field" Description="int" Label="NumLoggers" />
+    <Node Id="dbo.Logger_TypeLogger" Category="Field" Description="nvarchar(50)" Label="TypeLogger" />
+    <Node Id="dbo.RoleClaims" Category="Table" Bounds="70.5123511649742,656.198782106866,121.57,25" Group="Collapsed" Label="dbo.RoleClaims" UseManualLocation="True" />
+    <Node Id="dbo.RoleClaims_ClaimType" Category="Field Optional" Description="ntext" Label="ClaimType" />
+    <Node Id="dbo.RoleClaims_ClaimValue" Category="Field Optional" Description="ntext" Label="ClaimValue" />
+    <Node Id="dbo.RoleClaims_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.RoleClaims_RoleId" Category="Field Optional" Description="ntext" Label="RoleId" />
+    <Node Id="dbo.RoleEventMappings" Category="Table" Bounds="1058.65346309106,715.220509951386,168.586666666667,25" Group="Collapsed" Label="dbo.RoleEventMappings" />
+    <Node Id="dbo.RoleEventMappings_DefaultEventTypeId" Category="Field" Description="int" Label="DefaultEventTypeId" />
+    <Node Id="dbo.RoleEventMappings_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.RoleEventMappings_Role" Category="Field Optional" Description="nvarchar(450)" Label="Role" />
+    <Node Id="dbo.Roles" Category="Table" Bounds="112.843036464112,711.198882106866,91.8833333333333,25" Group="Collapsed" Label="dbo.Roles" UseManualLocation="True" />
+    <Node Id="dbo.Roles_ConcurrencyStamp" Category="Field Optional" Description="ntext" Label="ConcurrencyStamp" />
+    <Node Id="dbo.Roles_Id" Category="Field Primary" Description="nvarchar(450)" Label="Id" />
+    <Node Id="dbo.Roles_Name" Category="Field Optional" Description="ntext" Label="Name" />
+    <Node Id="dbo.Roles_NormalizedName" Category="Field Optional" Description="ntext" Label="NormalizedName" />
+    <Node Id="dbo.Software" Category="Table" Bounds="970.104025797388,605.220509951386,110.206666666667,25" Group="Collapsed" Label="dbo.Software" />
+    <Node Id="dbo.Software_CarID" Category="Field" Description="int" Label="CarID" />
+    <Node Id="dbo.Software_HeadUnit" Category="Field" Description="nvarchar(50)" Label="HeadUnit" />
+    <Node Id="dbo.Software_NextSoftwareVersion" Category="Field" Description="nvarchar(50)" Label="NextSoftwareVersion" />
+    <Node Id="dbo.Software_SoftwareID" Category="Field Primary" Description="int" Label="SoftwareID" />
+    <Node Id="dbo.Software_SoftwareVersion" Category="Field" Description="nvarchar(50)" Label="SoftwareVersion" />
+    <Node Id="dbo.Source" Category="Table" Bounds="568.189181686656,605.22049456676,99.9366666666667,25" Group="Collapsed" Label="dbo.Source" />
+    <Node Id="dbo.Source_SourceID" Category="Field Primary" Description="int" Label="SourceID" />
+    <Node Id="dbo.Source_SourceName" Category="Field Optional" Description="nvarchar(50)" Label="SourceName" />
+    <Node Id="dbo.Status" Category="Table" Bounds="66.8966660417584,528.293437064054,95.8600000000001,25" Group="Collapsed" Label="dbo.Status" />
+    <Node Id="dbo.Status_StatusID" Category="Field Primary" Description="int" Label="StatusID" />
+    <Node Id="dbo.Status_StatusName" Category="Field" Description="nvarchar(50)" Label="StatusName" />
+    <Node Id="dbo.Temp_ErrorLog" Category="Table" Bounds="708.998099431455,715.220797955107,142.88,25" Group="Collapsed" Label="dbo.Temp_ErrorLog" />
+    <Node Id="dbo.Temp_ErrorLog_CarID" Category="Field" Description="int" Label="CarID" />
+    <Node Id="dbo.Temp_ErrorLog_ErrorDetails" Category="Field Optional" Description="nvarchar(255)" Label="ErrorDetails" />
+    <Node Id="dbo.Temp_ErrorLog_ErrorID" Category="Field" Description="int" Label="ErrorID" />
+    <Node Id="dbo.Temp_ErrorLog_ErrorNotes" Category="Field Optional" Description="nvarchar(255)" Label="ErrorNotes" />
+    <Node Id="dbo.Temp_ErrorLog_ErrorPriority" Category="Field Optional" Description="int" Label="ErrorPriority" />
+    <Node Id="dbo.Temp_Event" Category="Table" Bounds="668.989171091133,660.220635592406,126.463333333333,25" Group="Collapsed" Label="dbo.Temp_Event" />
+    <Node Id="dbo.Temp_Event_CarID" Category="Field" Description="int" Label="CarID" />
+    <Node Id="dbo.Temp_Event_EndTime" Category="Field" Description="datetime" Label="EndTime" />
+    <Node Id="dbo.Temp_Event_EventID" Category="Field" Description="int" Label="EventID" />
+    <Node Id="dbo.Temp_Event_EventTypeID" Category="Field" Description="int" Label="EventTypeID" />
+    <Node Id="dbo.Temp_Event_StartTime" Category="Field" Description="datetime" Label="StartTime" />
+    <Node Id="dbo.Temp_Event_UserID" Category="Field" Description="int" Label="UserID" />
+    <Node Id="dbo.Temp_Logger" Category="Table" Bounds="698.04818594811,771.173291347712,134.776666666667,25" Group="Collapsed" Label="dbo.Temp_Logger" UseManualLocation="True" />
+    <Node Id="dbo.Temp_Logger_CarID" Category="Field" Description="int" Label="CarID" />
+    <Node Id="dbo.Temp_Logger_LoggerID" Category="Field" Description="int" Label="LoggerID" />
+    <Node Id="dbo.Temp_Logger_NumLoggers" Category="Field" Description="int" Label="NumLoggers" />
+    <Node Id="dbo.Temp_Logger_TypeLogger" Category="Field" Description="nvarchar(50)" Label="TypeLogger" />
+    <Node Id="dbo.Temp_Repair" Category="Table" Bounds="825.452504424466,660.22059456676,130.856666666667,25" Group="Collapsed" Label="dbo.Temp_Repair" />
+    <Node Id="dbo.Temp_Repair_CarID" Category="Field" Description="int" Label="CarID" />
+    <Node Id="dbo.Temp_Repair_RepairDetails" Category="Field" Description="nvarchar(255)" Label="RepairDetails" />
+    <Node Id="dbo.Temp_Repair_RepairEnd" Category="Field" Description="datetime" Label="RepairEnd" />
+    <Node Id="dbo.Temp_Repair_RepairID" Category="Field" Description="int" Label="RepairID" />
+    <Node Id="dbo.Temp_Repair_RepairStart" Category="Field" Description="datetime" Label="RepairStart" />
+    <Node Id="dbo.Temp_Repair_TechnicianID" Category="Field" Description="int" Label="TechnicianID" />
+    <Node Id="dbo.Temp_Software" Category="Table" Bounds="884.683463091059,715.22069456676,143.97,25" Group="Collapsed" Label="dbo.Temp_Software" />
+    <Node Id="dbo.Temp_Software_CarID" Category="Field" Description="int" Label="CarID" />
+    <Node Id="dbo.Temp_Software_HeadUnit" Category="Field" Description="nvarchar(50)" Label="HeadUnit" />
+    <Node Id="dbo.Temp_Software_NextSoftwareVersion" Category="Field" Description="nvarchar(50)" Label="NextSoftwareVersion" />
+    <Node Id="dbo.Temp_Software_SoftwareID" Category="Field" Description="int" Label="SoftwareID" />
+    <Node Id="dbo.Temp_Software_SoftwareVersion" Category="Field" Description="nvarchar(50)" Label="SoftwareVersion" />
+    <Node Id="dbo.TicketAttachment" Category="Table" Bounds="878.236007325954,386.022521688729,156.576666666667,25" Group="Collapsed" Label="dbo.TicketAttachment" />
+    <Node Id="dbo.TicketAttachment_FilePath" Category="Field" Bounds="1052.95284694237,412.589387037507,0,0" Description="ntext" Label="FilePath" UseManualLocation="True" />
+    <Node Id="dbo.TicketAttachment_Id" Category="Field Primary" Bounds="1052.95284694237,412.589387037507,0,0" Description="int" Label="Id" UseManualLocation="True" />
+    <Node Id="dbo.TicketAttachment_TicketId" Category="Field Foreign" Bounds="1052.95284694237,412.589387037507,0,0" Description="int" Label="TicketId" UseManualLocation="True" />
+    <Node Id="dbo.TicketComment" Category="Table" Bounds="1067.61790349423,386.022521688729,147.06,25" Group="Collapsed" Label="dbo.TicketComment" />
+    <Node Id="dbo.TicketComment_AuthorId" Category="Field Foreign" Description="nvarchar(450)" Label="AuthorId" />
+    <Node Id="dbo.TicketComment_Content" Category="Field" Description="ntext" Label="Content" />
+    <Node Id="dbo.TicketComment_CreatedAt" Category="Field" Description="datetime" Label="CreatedAt" />
+    <Node Id="dbo.TicketComment_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.TicketComment_TicketId" Category="Field Foreign" Description="int" Label="TicketId" />
+    <Node Id="dbo.TicketHistory" Category="Table" Bounds="572.939140659289,386.022521688729,132.39,25" Group="Collapsed" Label="dbo.TicketHistory" />
+    <Node Id="dbo.TicketHistory_Change" Category="Field" Description="ntext" Label="Change" />
+    <Node Id="dbo.TicketHistory_ChangedAt" Category="Field" Description="datetime" Label="ChangedAt" />
+    <Node Id="dbo.TicketHistory_ChangedById" Category="Field Foreign" Description="nvarchar(450)" Label="ChangedById" />
+    <Node Id="dbo.TicketHistory_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.TicketHistory_TicketId" Category="Field Foreign" Description="int" Label="TicketId" />
+    <Node Id="dbo.TicketTag" Category="Table" Bounds="735.329240659289,386.022521688729,112.906666666667,25" Group="Collapsed" Label="dbo.TicketTag" />
+    <Node Id="dbo.TicketTag_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.TicketTag_Tag" Category="Field" Description="ntext" Label="Tag" />
+    <Node Id="dbo.TicketTag_TicketId" Category="Field Foreign" Description="int" Label="TicketId" />
+    <Node Id="dbo.Tickets" Category="Table" Bounds="813.174253584709,441.022406304104,99.8866666666672,25" Group="Collapsed" Label="dbo.Tickets" />
+    <Node Id="dbo.Tickets_AssigneeId" Category="Field Foreign" Description="nvarchar(450)" Label="AssigneeId" />
+    <Node Id="dbo.Tickets_ClosedAt" Category="Field Optional" Description="datetime" Label="ClosedAt" />
+    <Node Id="dbo.Tickets_CreatedAt" Category="Field" Description="datetime" Label="CreatedAt" />
+    <Node Id="dbo.Tickets_CreatorId" Category="Field Foreign" Description="nvarchar(450)" Label="CreatorId" />
+    <Node Id="dbo.Tickets_Description" Category="Field" Description="ntext" Label="Description" />
+    <Node Id="dbo.Tickets_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.Tickets_Priority" Category="Field" Description="ntext" Label="Priority" />
+    <Node Id="dbo.Tickets_Severity" Category="Field" Description="ntext" Label="Severity" />
+    <Node Id="dbo.Tickets_Status" Category="Field" Description="ntext" Label="Status" />
+    <Node Id="dbo.Tickets_Title" Category="Field" Description="ntext" Label="Title" />
+    <Node Id="dbo.Tickets_UpdatedAt" Category="Field Optional" Description="datetime" Label="UpdatedAt" />
+    <Node Id="dbo.UserClaims" Category="Table" Bounds="96.9033972109758,766.198982106866,122.316666666667,25" Group="Collapsed" Label="dbo.UserClaims" UseManualLocation="True" />
+    <Node Id="dbo.UserClaims_ClaimType" Category="Field Optional" Bounds="152.734206462605,597.502481604867,0,0" Description="ntext" Label="ClaimType" UseManualLocation="True" />
+    <Node Id="dbo.UserClaims_ClaimValue" Category="Field Optional" Bounds="152.734206462605,597.502481604867,0,0" Description="ntext" Label="ClaimValue" UseManualLocation="True" />
+    <Node Id="dbo.UserClaims_Id" Category="Field Primary" Bounds="152.734206462605,597.502481604867,0,0" Description="int" Label="Id" UseManualLocation="True" />
+    <Node Id="dbo.UserClaims_UserId" Category="Field Optional" Bounds="152.734206462605,597.502481604867,0,0" Description="ntext" Label="UserId" UseManualLocation="True" />
+    <Node Id="dbo.UserDetail" Category="Table" Bounds="631.568006525569,331.022521688729,118.213333333333,25" Group="Collapsed" Label="dbo.UserDetail" />
+    <Node Id="dbo.UserDetail_ApplicationUserId" Category="Field Foreign" Description="nvarchar(450)" Label="ApplicationUserId" />
+    <Node Id="dbo.UserDetail_DetailId" Category="Field Foreign" Description="int" Label="DetailId" />
+    <Node Id="dbo.UserDetail_Id" Category="Field Primary" Description="int" Label="Id" />
+    <Node Id="dbo.UserDetail_UserId" Category="Field" Description="ntext" Label="UserId" />
+    <Node Id="dbo.UserEvents" Category="Table" Bounds="658.789024083106,441.022521688729,121.58,25" Group="Collapsed" Label="dbo.UserEvents" />
+    <Node Id="dbo.UserEvents_EventId" Category="Field" Description="int" Label="EventId" />
+    <Node Id="dbo.UserEvents_UserEventId" Category="Field Primary" Description="int" Label="UserEventId" />
+    <Node Id="dbo.UserEvents_UserId" Category="Field Foreign" Description="nvarchar(450)" Label="UserId" />
+    <Node Id="dbo.UserLogins" Category="Table" Bounds="-32.1083334824396,821.199082106866,122.073333333333,25" Group="Collapsed" Label="dbo.UserLogins" UseManualLocation="True" />
+    <Node Id="dbo.UserLogins_LoginProvider" Category="Field Primary" Bounds="-12.3128486396145,701.180509951386,93.5366666666667,25.96" Description="nvarchar(450)" Label="LoginProvider" UseManualLocation="True" />
+    <Node Id="dbo.UserLogins_ProviderDisplayName" Category="Field Optional" Bounds="-12.3128486396145,757.140509951386,134.076666666667,25.96" Description="ntext" Label="ProviderDisplayName" UseManualLocation="True" />
+    <Node Id="dbo.UserLogins_ProviderKey" Category="Field Primary" Bounds="71.7338180270522,645.220509951386,82.98,25.96" Description="nvarchar(450)" Label="ProviderKey" UseManualLocation="True" />
+    <Node Id="dbo.UserLogins_UserId" Category="Field Optional" Bounds="-12.3128486396145,645.220509951386,54.0466666666667,25.96" Description="ntext" Label="UserId" UseManualLocation="True" />
+    <Node Id="dbo.UserRoles" Category="Table" Bounds="-75.1576488350252,677.644918248965,115.669999999999,25" Group="Collapsed" Label="dbo.UserRoles" UseManualLocation="True" />
+    <Node Id="dbo.UserRoles_RoleId" Category="Field Primary" Description="nvarchar(450)" Label="RoleId" />
+    <Node Id="dbo.UserRoles_UserId" Category="Field Primary" Description="nvarchar(450)" Label="UserId" />
+    <Node Id="dbo.UserTokens" Category="Table" Bounds="-98.6043858046772,622.644818248965,123.806666666667,25" Group="Collapsed" Label="dbo.UserTokens" UseManualLocation="True" />
+    <Node Id="dbo.UserTokens_LoginProvider" Category="Field Primary" Description="nvarchar(450)" Label="LoginProvider" />
+    <Node Id="dbo.UserTokens_Name" Category="Field Primary" Description="nvarchar(450)" Label="Name" />
+    <Node Id="dbo.UserTokens_UserId" Category="Field Primary" Description="nvarchar(450)" Label="UserId" />
+    <Node Id="dbo.UserTokens_Value" Category="Field Optional" Description="ntext" Label="Value" />
+    <Node Id="dbo.__EFMigrationsHistory" Category="Table" Bounds="202.435157533287,824.853358766819,180.153333333333,25" Group="Collapsed" Label="dbo.__EFMigrationsHistory" />
+    <Node Id="dbo.__EFMigrationsHistory_MigrationId" Category="Field Primary" Description="nvarchar(150)" Label="MigrationId" />
+    <Node Id="dbo.__EFMigrationsHistory_ProductVersion" Category="Field" Description="nvarchar(32)" Label="ProductVersion" />
+  </Nodes>
+  <Links>
+    <Link Source="Database" Target="dbo" Category="Contains" />
+    <Link Source="dbo" Target="dbo.ApplicationUser" Category="Contains" />
+    <Link Source="dbo" Target="dbo.ApplicationUserDetail" Category="Contains" />
+    <Link Source="dbo" Target="dbo.AspNetRoles" Category="Contains" />
+    <Link Source="dbo" Target="dbo.BlankModels" Category="Contains" />
+    <Link Source="dbo" Target="dbo.CarDetail" Category="Contains" />
+    <Link Source="dbo" Target="dbo.CarEvent" Category="Contains" />
+    <Link Source="dbo" Target="dbo.CarEventDetail" Category="Contains" />
+    <Link Source="dbo" Target="dbo.CarStaticDetails" Category="Contains" />
+    <Link Source="dbo" Target="dbo.CarStatus" Category="Contains" />
+    <Link Source="dbo" Target="dbo.CarStatus_New" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Cars" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Detail" Category="Contains" />
+    <Link Source="dbo" Target="dbo.DetailType" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Drivers" Category="Contains" />
+    <Link Source="dbo" Target="dbo.ErrorLog" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Event" Category="Contains" />
+    <Link Source="dbo" Target="dbo.EventDetail" Category="Contains" />
+    <Link Source="dbo" Target="dbo.EventType" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Issues" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Log" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Logger" Category="Contains" />
+    <Link Source="dbo" Target="dbo.RoleClaims" Category="Contains" />
+    <Link Source="dbo" Target="dbo.RoleEventMappings" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Roles" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Software" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Source" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Status" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Temp_ErrorLog" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Temp_Event" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Temp_Logger" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Temp_Repair" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Temp_Software" Category="Contains" />
+    <Link Source="dbo" Target="dbo.TicketAttachment" Category="Contains" />
+    <Link Source="dbo" Target="dbo.TicketComment" Category="Contains" />
+    <Link Source="dbo" Target="dbo.TicketHistory" Category="Contains" />
+    <Link Source="dbo" Target="dbo.TicketTag" Category="Contains" />
+    <Link Source="dbo" Target="dbo.Tickets" Category="Contains" />
+    <Link Source="dbo" Target="dbo.UserClaims" Category="Contains" />
+    <Link Source="dbo" Target="dbo.UserDetail" Category="Contains" />
+    <Link Source="dbo" Target="dbo.UserEvents" Category="Contains" />
+    <Link Source="dbo" Target="dbo.UserLogins" Category="Contains" />
+    <Link Source="dbo" Target="dbo.UserRoles" Category="Contains" />
+    <Link Source="dbo" Target="dbo.UserTokens" Category="Contains" />
+    <Link Source="dbo" Target="dbo.__EFMigrationsHistory" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_AccessFailedCount" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_ApplicationUserDetailId" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_ConcurrencyStamp" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_Email" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_EmailConfirmed" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_FirstName" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_FriendlyName" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_Id" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_LastName" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_LockoutEnabled" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_LockoutEnd" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_NormalizedEmail" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_NormalizedUserName" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_PasswordHash" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_PhoneNumber" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_PhoneNumberConfirmed" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_SecurityStamp" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_TwoFactorEnabled" Category="Contains" />
+    <Link Source="dbo.ApplicationUser" Target="dbo.ApplicationUser_UserName" Category="Contains" />
+    <Link Source="dbo.ApplicationUserDetail" Target="dbo.ApplicationUserDetail_UserId" Category="Contains" />
+    <Link Source="dbo.ApplicationUserDetail_UserId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_ApplicationUserDetail_ApplicationUser_UserId" />
+    <Link Source="dbo.AspNetRoles" Target="dbo.AspNetRoles_ConcurrencyStamp" Category="Contains" />
+    <Link Source="dbo.AspNetRoles" Target="dbo.AspNetRoles_Id" Category="Contains" />
+    <Link Source="dbo.AspNetRoles" Target="dbo.AspNetRoles_Name" Category="Contains" />
+    <Link Source="dbo.AspNetRoles" Target="dbo.AspNetRoles_NormalizedName" Category="Contains" />
+    <Link Source="dbo.BlankModels" Target="dbo.BlankModels_Id" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_CarDetailId" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_CarId" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_Color" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_DetailId" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_Make" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_Model" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_Vin" Category="Contains" />
+    <Link Source="dbo.CarDetail" Target="dbo.CarDetail_Year" Category="Contains" />
+    <Link Source="dbo.CarDetail_CarId" Target="dbo.Cars_CarId" Category="Foreign Key" Label="FK_CarDetail_Cars_CarId" />
+    <Link Source="dbo.CarDetail_DetailId" Target="dbo.Detail_Id" Category="Foreign Key" Label="FK_CarDetail_Detail_DetailId" />
+    <Link Source="dbo.CarEvent" Target="dbo.CarEvent_CarEventId" Category="Contains" />
+    <Link Source="dbo.CarEvent" Target="dbo.CarEvent_CarId" Category="Contains" />
+    <Link Source="dbo.CarEvent" Target="dbo.CarEvent_EventId" Category="Contains" />
+    <Link Source="dbo.CarEventDetail" Target="dbo.CarEventDetail_CarDetailId" Category="Contains" />
+    <Link Source="dbo.CarEventDetail" Target="dbo.CarEventDetail_CarEventDetailId" Category="Contains" />
+    <Link Source="dbo.CarEventDetail" Target="dbo.CarEventDetail_CarEventId" Category="Contains" />
+    <Link Source="dbo.CarEventDetail" Target="dbo.CarEventDetail_Note" Category="Contains" />
+    <Link Source="dbo.CarEventDetail_CarDetailId" Target="dbo.CarDetail_CarDetailId" Category="Foreign Key" Label="FK_CarEventDetail_CarDetail_CarDetailId" />
+    <Link Source="dbo.CarEventDetail_CarEventId" Target="dbo.CarEvent_CarEventId" Category="Foreign Key" Label="FK_CarEventDetail_CarEvent_CarEventId" />
+    <Link Source="dbo.CarEvent_CarId" Target="dbo.Cars_CarId" Category="Foreign Key" Label="FK_CarEvent_Cars_CarId" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_Adas" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_CarId" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_CarStaticDetailId" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_Finas" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_FullVin" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_HarnessStatus" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_SoftwareVersion" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_Tag" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails" Target="dbo.CarStaticDetails_VinLast4" Category="Contains" />
+    <Link Source="dbo.CarStaticDetails_CarId" Target="dbo.Cars_CarId" Category="Foreign Key" Label="FK_CarStaticDetails_Cars_CarId" />
+    <Link Source="dbo.CarStatus" Target="dbo.CarStatus_CarID" Category="Contains" />
+    <Link Source="dbo.CarStatus" Target="dbo.CarStatus_StatusID" Category="Contains" />
+    <Link Source="dbo.CarStatus" Target="dbo.CarStatus_StatusTime" Category="Contains" />
+    <Link Source="dbo.CarStatus_CarID" Target="dbo.Cars_CarId" Category="Foreign Key" Label="FK__CarStatus__CarID__498EEC8D" />
+    <Link Source="dbo.CarStatus_New" Target="dbo.CarStatus_New_StatusID" Category="Contains" />
+    <Link Source="dbo.CarStatus_New" Target="dbo.CarStatus_New_StatusName" Category="Contains" />
+    <Link Source="dbo.CarStatus_StatusID" Target="dbo.Status_StatusID" Category="Foreign Key" Label="FK__CarStatus__Statu__4A8310C6" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_CarId" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_Location" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_Make" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_Miles" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_Model" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_SourceId" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_TeleGeneration" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_UserId" Category="Contains" />
+    <Link Source="dbo.Cars" Target="dbo.Cars_Year" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_ApplicationUserId" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_DetailTypeId" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_Discriminator" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_Id" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_Note" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_UserEventDetailId" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_UserEventId" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_UserId" Category="Contains" />
+    <Link Source="dbo.Detail" Target="dbo.Detail_Value" Category="Contains" />
+    <Link Source="dbo.DetailType" Target="dbo.DetailType_CarDetailId" Category="Contains" />
+    <Link Source="dbo.DetailType" Target="dbo.DetailType_Id" Category="Contains" />
+    <Link Source="dbo.DetailType" Target="dbo.DetailType_Name" Category="Contains" />
+    <Link Source="dbo.DetailType_CarDetailId" Target="dbo.CarDetail_CarDetailId" Category="Foreign Key" Label="FK_DetailType_CarDetail_CarDetailId" />
+    <Link Source="dbo.Detail_ApplicationUserId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_Detail_ApplicationUser_ApplicationUserId" />
+    <Link Source="dbo.Detail_DetailTypeId" Target="dbo.DetailType_Id" Category="Foreign Key" Label="FK_Detail_DetailType_DetailTypeId" />
+    <Link Source="dbo.Detail_UserEventDetailId" Target="dbo.UserEvents_UserEventId" Category="Foreign Key" Label="FK_Detail_UserEvents_UserEventDetailId" />
+    <Link Source="dbo.Drivers" Target="dbo.Drivers_DriverId" Category="Contains" />
+    <Link Source="dbo.Drivers" Target="dbo.Drivers_DrivingHours" Category="Contains" />
+    <Link Source="dbo.ErrorLog" Target="dbo.ErrorLog_CarID" Category="Contains" />
+    <Link Source="dbo.ErrorLog" Target="dbo.ErrorLog_ErrorDetails" Category="Contains" />
+    <Link Source="dbo.ErrorLog" Target="dbo.ErrorLog_ErrorID" Category="Contains" />
+    <Link Source="dbo.ErrorLog" Target="dbo.ErrorLog_ErrorNotes" Category="Contains" />
+    <Link Source="dbo.ErrorLog" Target="dbo.ErrorLog_ErrorPriority" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_CarId" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_Category" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_Date" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_EndTime" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_EventTypeId" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_Id" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_StartTime" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_Type" Category="Contains" />
+    <Link Source="dbo.Event" Target="dbo.Event_UserId" Category="Contains" />
+    <Link Source="dbo.EventDetail" Target="dbo.EventDetail_DateAdded" Category="Contains" />
+    <Link Source="dbo.EventDetail" Target="dbo.EventDetail_DetailId" Category="Contains" />
+    <Link Source="dbo.EventDetail" Target="dbo.EventDetail_EventId" Category="Contains" />
+    <Link Source="dbo.EventDetail" Target="dbo.EventDetail_Id" Category="Contains" />
+    <Link Source="dbo.EventDetail_DetailId" Target="dbo.Detail_Id" Category="Foreign Key" Label="FK_EventDetail_Detail_DetailId" />
+    <Link Source="dbo.EventType" Target="dbo.EventType_EventId" Category="Contains" />
+    <Link Source="dbo.EventType" Target="dbo.EventType_EventTypeID" Category="Contains" />
+    <Link Source="dbo.EventType" Target="dbo.EventType_Id" Category="Contains" />
+    <Link Source="dbo.EventType" Target="dbo.EventType_Name" Category="Contains" />
+    <Link Source="dbo.Event_CarId" Target="dbo.Cars_CarId" Category="Foreign Key" Label="FK_Event_Car_CarId" />
+    <Link Source="dbo.Event_EventTypeId" Target="dbo.EventType_EventTypeID" Category="Foreign Key" Label="FK_Event_EventType_EventTypeId" />
+    <Link Source="dbo.Event_UserId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_Event_ApplicationUser_UserId" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_AssignedTo" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_IssueId" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_ModifiedAt" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_ModifiedBy" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_ModifiedByUser" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_Priority" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_Status" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_SubmittedAt" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_SubmittedBy" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_Summary" Category="Contains" />
+    <Link Source="dbo.Issues" Target="dbo.Issues_System" Category="Contains" />
+    <Link Source="dbo.Log" Target="dbo.Log_LogID" Category="Contains" />
+    <Link Source="dbo.Log" Target="dbo.Log_LogMessage" Category="Contains" />
+    <Link Source="dbo.Log" Target="dbo.Log_LogTime" Category="Contains" />
+    <Link Source="dbo.Logger" Target="dbo.Logger_CarID" Category="Contains" />
+    <Link Source="dbo.Logger" Target="dbo.Logger_LoggerID" Category="Contains" />
+    <Link Source="dbo.Logger" Target="dbo.Logger_NumLoggers" Category="Contains" />
+    <Link Source="dbo.Logger" Target="dbo.Logger_TypeLogger" Category="Contains" />
+    <Link Source="dbo.Logger_CarID" Target="dbo.Cars_CarId" Category="Foreign Key" Label="FK__Logger__CarID__5224328E" />
+    <Link Source="dbo.RoleClaims" Target="dbo.RoleClaims_ClaimType" Category="Contains" />
+    <Link Source="dbo.RoleClaims" Target="dbo.RoleClaims_ClaimValue" Category="Contains" />
+    <Link Source="dbo.RoleClaims" Target="dbo.RoleClaims_Id" Category="Contains" />
+    <Link Source="dbo.RoleClaims" Target="dbo.RoleClaims_RoleId" Category="Contains" />
+    <Link Source="dbo.RoleEventMappings" Target="dbo.RoleEventMappings_DefaultEventTypeId" Category="Contains" />
+    <Link Source="dbo.RoleEventMappings" Target="dbo.RoleEventMappings_Id" Category="Contains" />
+    <Link Source="dbo.RoleEventMappings" Target="dbo.RoleEventMappings_Role" Category="Contains" />
+    <Link Source="dbo.Roles" Target="dbo.Roles_ConcurrencyStamp" Category="Contains" />
+    <Link Source="dbo.Roles" Target="dbo.Roles_Id" Category="Contains" />
+    <Link Source="dbo.Roles" Target="dbo.Roles_Name" Category="Contains" />
+    <Link Source="dbo.Roles" Target="dbo.Roles_NormalizedName" Category="Contains" />
+    <Link Source="dbo.Software" Target="dbo.Software_CarID" Category="Contains" />
+    <Link Source="dbo.Software" Target="dbo.Software_HeadUnit" Category="Contains" />
+    <Link Source="dbo.Software" Target="dbo.Software_NextSoftwareVersion" Category="Contains" />
+    <Link Source="dbo.Software" Target="dbo.Software_SoftwareID" Category="Contains" />
+    <Link Source="dbo.Software" Target="dbo.Software_SoftwareVersion" Category="Contains" />
+    <Link Source="dbo.Source" Target="dbo.Source_SourceID" Category="Contains" />
+    <Link Source="dbo.Source" Target="dbo.Source_SourceName" Category="Contains" />
+    <Link Source="dbo.Status" Target="dbo.Status_StatusID" Category="Contains" />
+    <Link Source="dbo.Status" Target="dbo.Status_StatusName" Category="Contains" />
+    <Link Source="dbo.Temp_ErrorLog" Target="dbo.Temp_ErrorLog_CarID" Category="Contains" />
+    <Link Source="dbo.Temp_ErrorLog" Target="dbo.Temp_ErrorLog_ErrorDetails" Category="Contains" />
+    <Link Source="dbo.Temp_ErrorLog" Target="dbo.Temp_ErrorLog_ErrorID" Category="Contains" />
+    <Link Source="dbo.Temp_ErrorLog" Target="dbo.Temp_ErrorLog_ErrorNotes" Category="Contains" />
+    <Link Source="dbo.Temp_ErrorLog" Target="dbo.Temp_ErrorLog_ErrorPriority" Category="Contains" />
+    <Link Source="dbo.Temp_Event" Target="dbo.Temp_Event_CarID" Category="Contains" />
+    <Link Source="dbo.Temp_Event" Target="dbo.Temp_Event_EndTime" Category="Contains" />
+    <Link Source="dbo.Temp_Event" Target="dbo.Temp_Event_EventID" Category="Contains" />
+    <Link Source="dbo.Temp_Event" Target="dbo.Temp_Event_EventTypeID" Category="Contains" />
+    <Link Source="dbo.Temp_Event" Target="dbo.Temp_Event_StartTime" Category="Contains" />
+    <Link Source="dbo.Temp_Event" Target="dbo.Temp_Event_UserID" Category="Contains" />
+    <Link Source="dbo.Temp_Logger" Target="dbo.Temp_Logger_CarID" Category="Contains" />
+    <Link Source="dbo.Temp_Logger" Target="dbo.Temp_Logger_LoggerID" Category="Contains" />
+    <Link Source="dbo.Temp_Logger" Target="dbo.Temp_Logger_NumLoggers" Category="Contains" />
+    <Link Source="dbo.Temp_Logger" Target="dbo.Temp_Logger_TypeLogger" Category="Contains" />
+    <Link Source="dbo.Temp_Repair" Target="dbo.Temp_Repair_CarID" Category="Contains" />
+    <Link Source="dbo.Temp_Repair" Target="dbo.Temp_Repair_RepairDetails" Category="Contains" />
+    <Link Source="dbo.Temp_Repair" Target="dbo.Temp_Repair_RepairEnd" Category="Contains" />
+    <Link Source="dbo.Temp_Repair" Target="dbo.Temp_Repair_RepairID" Category="Contains" />
+    <Link Source="dbo.Temp_Repair" Target="dbo.Temp_Repair_RepairStart" Category="Contains" />
+    <Link Source="dbo.Temp_Repair" Target="dbo.Temp_Repair_TechnicianID" Category="Contains" />
+    <Link Source="dbo.Temp_Software" Target="dbo.Temp_Software_CarID" Category="Contains" />
+    <Link Source="dbo.Temp_Software" Target="dbo.Temp_Software_HeadUnit" Category="Contains" />
+    <Link Source="dbo.Temp_Software" Target="dbo.Temp_Software_NextSoftwareVersion" Category="Contains" />
+    <Link Source="dbo.Temp_Software" Target="dbo.Temp_Software_SoftwareID" Category="Contains" />
+    <Link Source="dbo.Temp_Software" Target="dbo.Temp_Software_SoftwareVersion" Category="Contains" />
+    <Link Source="dbo.TicketAttachment" Target="dbo.TicketAttachment_FilePath" Category="Contains" />
+    <Link Source="dbo.TicketAttachment" Target="dbo.TicketAttachment_Id" Category="Contains" />
+    <Link Source="dbo.TicketAttachment" Target="dbo.TicketAttachment_TicketId" Category="Contains" />
+    <Link Source="dbo.TicketAttachment_TicketId" Target="dbo.Tickets_Id" Category="Foreign Key" Label="FK_TicketAttachment_Tickets_TicketId" />
+    <Link Source="dbo.TicketComment" Target="dbo.TicketComment_AuthorId" Category="Contains" />
+    <Link Source="dbo.TicketComment" Target="dbo.TicketComment_Content" Category="Contains" />
+    <Link Source="dbo.TicketComment" Target="dbo.TicketComment_CreatedAt" Category="Contains" />
+    <Link Source="dbo.TicketComment" Target="dbo.TicketComment_Id" Category="Contains" />
+    <Link Source="dbo.TicketComment" Target="dbo.TicketComment_TicketId" Category="Contains" />
+    <Link Source="dbo.TicketComment_AuthorId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_TicketComment_ApplicationUser_AuthorId" />
+    <Link Source="dbo.TicketComment_TicketId" Target="dbo.Tickets_Id" Category="Foreign Key" Label="FK_TicketComment_Tickets_TicketId" />
+    <Link Source="dbo.TicketHistory" Target="dbo.TicketHistory_Change" Category="Contains" />
+    <Link Source="dbo.TicketHistory" Target="dbo.TicketHistory_ChangedAt" Category="Contains" />
+    <Link Source="dbo.TicketHistory" Target="dbo.TicketHistory_ChangedById" Category="Contains" />
+    <Link Source="dbo.TicketHistory" Target="dbo.TicketHistory_Id" Category="Contains" />
+    <Link Source="dbo.TicketHistory" Target="dbo.TicketHistory_TicketId" Category="Contains" />
+    <Link Source="dbo.TicketHistory_ChangedById" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_TicketHistory_ApplicationUser_ChangedById" />
+    <Link Source="dbo.TicketHistory_TicketId" Target="dbo.Tickets_Id" Category="Foreign Key" Label="FK_TicketHistory_Tickets_TicketId" />
+    <Link Source="dbo.TicketTag" Target="dbo.TicketTag_Id" Category="Contains" />
+    <Link Source="dbo.TicketTag" Target="dbo.TicketTag_Tag" Category="Contains" />
+    <Link Source="dbo.TicketTag" Target="dbo.TicketTag_TicketId" Category="Contains" />
+    <Link Source="dbo.TicketTag_TicketId" Target="dbo.Tickets_Id" Category="Foreign Key" Label="FK_TicketTag_Tickets_TicketId" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_AssigneeId" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_ClosedAt" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_CreatedAt" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_CreatorId" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_Description" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_Id" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_Priority" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_Severity" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_Status" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_Title" Category="Contains" />
+    <Link Source="dbo.Tickets" Target="dbo.Tickets_UpdatedAt" Category="Contains" />
+    <Link Source="dbo.Tickets_AssigneeId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_Tickets_ApplicationUser_AssigneeId" />
+    <Link Source="dbo.Tickets_CreatorId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_Tickets_ApplicationUser_CreatorId" />
+    <Link Source="dbo.UserClaims" Target="dbo.UserClaims_ClaimType" Category="Contains" />
+    <Link Source="dbo.UserClaims" Target="dbo.UserClaims_ClaimValue" Category="Contains" />
+    <Link Source="dbo.UserClaims" Target="dbo.UserClaims_Id" Category="Contains" />
+    <Link Source="dbo.UserClaims" Target="dbo.UserClaims_UserId" Category="Contains" />
+    <Link Source="dbo.UserDetail" Target="dbo.UserDetail_ApplicationUserId" Category="Contains" />
+    <Link Source="dbo.UserDetail" Target="dbo.UserDetail_DetailId" Category="Contains" />
+    <Link Source="dbo.UserDetail" Target="dbo.UserDetail_Id" Category="Contains" />
+    <Link Source="dbo.UserDetail" Target="dbo.UserDetail_UserId" Category="Contains" />
+    <Link Source="dbo.UserDetail_ApplicationUserId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_UserDetail_ApplicationUser_ApplicationUserId" />
+    <Link Source="dbo.UserDetail_DetailId" Target="dbo.Detail_Id" Category="Foreign Key" Label="FK_UserDetail_Detail_DetailId" />
+    <Link Source="dbo.UserEvents" Target="dbo.UserEvents_EventId" Category="Contains" />
+    <Link Source="dbo.UserEvents" Target="dbo.UserEvents_UserEventId" Category="Contains" />
+    <Link Source="dbo.UserEvents" Target="dbo.UserEvents_UserId" Category="Contains" />
+    <Link Source="dbo.UserEvents_UserId" Target="dbo.ApplicationUser_Id" Category="Foreign Key" Label="FK_UserEvents_ApplicationUser_UserId" />
+    <Link Source="dbo.UserLogins" Target="dbo.UserLogins_LoginProvider" Category="Contains" />
+    <Link Source="dbo.UserLogins" Target="dbo.UserLogins_ProviderDisplayName" Category="Contains" />
+    <Link Source="dbo.UserLogins" Target="dbo.UserLogins_ProviderKey" Category="Contains" />
+    <Link Source="dbo.UserLogins" Target="dbo.UserLogins_UserId" Category="Contains" />
+    <Link Source="dbo.UserRoles" Target="dbo.UserRoles_RoleId" Category="Contains" />
+    <Link Source="dbo.UserRoles" Target="dbo.UserRoles_UserId" Category="Contains" />
+    <Link Source="dbo.UserTokens" Target="dbo.UserTokens_LoginProvider" Category="Contains" />
+    <Link Source="dbo.UserTokens" Target="dbo.UserTokens_Name" Category="Contains" />
+    <Link Source="dbo.UserTokens" Target="dbo.UserTokens_UserId" Category="Contains" />
+    <Link Source="dbo.UserTokens" Target="dbo.UserTokens_Value" Category="Contains" />
+    <Link Source="dbo.__EFMigrationsHistory" Target="dbo.__EFMigrationsHistory_MigrationId" Category="Contains" />
+    <Link Source="dbo.__EFMigrationsHistory" Target="dbo.__EFMigrationsHistory_ProductVersion" Category="Contains" />
+  </Links>
+  <Categories>
+    <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+    <Category Id="Database" />
+    <Category Id="Field" />
+    <Category Id="Field Foreign" />
+    <Category Id="Field Optional" />
+    <Category Id="Field Primary" />
+    <Category Id="Foreign Key" />
+    <Category Id="Schema" />
+    <Category Id="Table" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Description" Label="Description" Description="Description" DataType="System.String" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="GraphDirection" DataType="Microsoft.VisualStudio.Diagrams.Layout.LayoutOrientation" />
+    <Property Id="Group" Label="Group" Description="Display the node as a group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+    <Property Id="ZoomLevel" DataType="System.String" />
+  </Properties>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Table" ValueLabel="True">
+      <Condition Expression="HasCategory('Table')" />
+      <Setter Property="Background" Value="#FFC0C0C0" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Schema" ValueLabel="True">
+      <Condition Expression="HasCategory('Schema')" />
+      <Setter Property="Background" Value="#FF7F9169" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field Primary" ValueLabel="True">
+      <Condition Expression="HasCategory('Field Primary')" />
+      <Setter Property="Background" Value="#FF008000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field Optional" ValueLabel="True">
+      <Condition Expression="HasCategory('Field Optional')" />
+      <Setter Property="Background" Value="#FF808040" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field Foreign" ValueLabel="True">
+      <Condition Expression="HasCategory('Field Foreign')" />
+      <Setter Property="Background" Value="#FF8080FF" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Field" ValueLabel="True">
+      <Condition Expression="HasCategory('Field')" />
+      <Setter Property="Background" Value="#FFC0A000" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Database" ValueLabel="True">
+      <Condition Expression="HasCategory('Database')" />
+      <Setter Property="Background" Value="#FFFFFFFF" />
+    </Style>
+  </Styles>
+</DirectedGraph>

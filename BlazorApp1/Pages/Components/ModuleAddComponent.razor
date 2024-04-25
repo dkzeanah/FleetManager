@@ -1,0 +1,32 @@
+﻿@inject ICarService CarService 
+<!-- Replace with your actual Car service class -->
+
+<h2>Add Module to Car</h2>
+<label for="carIdToAddModule">Car ID to Add Module</label>
+<input id="carIdToAddModule" @bind="carIdToAddModule" placeholder="Car ID to Add Module" />
+<label for="moduleName">Module Name</label>
+<input id="moduleName" @bind="newModule.Name" placeholder="Module Name" />
+<label for="moduleDescription">Description</label>
+<input id="moduleDescription" @bind="newModule.Description" placeholder="Description" />
+<label for="currentSoftwareVersion">Current Software Version</label>
+<input id="currentSoftwareVersion" @bind="newModule.CurrentSoftwareVersion" type="number" step="0.01" placeholder="Current Software Version" />
+<label for="nextSoftwareVersion">Next Software Version</label>
+<input id="nextSoftwareVersion" @bind="newModule.NextSoftwareVersion" type="number" step="0.01" placeholder="Next Software Version" />
+<label for="lastUpdated">Last Updated</label>
+<input id="lastUpdated" @bind="newModule.LastUpdated" type="date" placeholder="Last Updated" />
+<label for="projectedRelease">Projected Release</label>
+<input id="projectedRelease" @bind="newModule.ProjectedRelease" type="date" placeholder="Projected Release" />
+@* <button @onclick="AddModule">Add Module</button>
+ *@
+@code {
+    private int carIdToAddModule;
+    private Module newModule; // = new Module();
+    private List<Module> newModuleResults;
+
+    /*
+     * private async Task AddModule()
+    {
+       await CarService.AddModuleToCarAsync(carIdToAddModule, newModule); // Use instance-level variable
+    }
+    */
+}

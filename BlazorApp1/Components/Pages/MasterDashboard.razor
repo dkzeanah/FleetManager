@@ -1,0 +1,703 @@
+﻿@page "/masterdashboard"
+@*//|- |\\*@
+@rendermode InteractiveServer
+
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+@using BlazorApp1.Repositories;
+@using BlazorApp1.Services
+@using BlazorApp1.Data
+
+@inject ICarService CarService
+@inject IEventService EventService
+
+@inject ISimpleEventTypeService SimpleEventTypeService
+
+@inject IUserEventDetailService UserEventDetailService
+@inject IUserService UserService
+@inject ILoggerService LoggerService
+@inject IModuleService ModuleService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<style>
+    .current-booking-card {
+        background-color: #1b1e23;
+        color: #fff;
+    }
+
+        .current-booking-card .dashboard-card-header {
+            background-color: #e67e22;
+        }
+
+        .current-booking-card .dashboard-card-body p {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+</style>
+
+
+<h3>Master Dashboard</h3>
+
+@* <button @onclick="LoadModulesForCar">Load Modules</button> *@
+
+<!-- List to Show Modules for Selected Car -->
+@* <h3>Modules for Selected Car</h3>
+@if (modulesForSelectedCar == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var module in modulesForSelectedCar)
+        {
+            <li>@module.Name (@module.ModuleId)</li>
+        }
+    </ul>
+} *@
+
+<!-- Form to Add a New Module -->
+@* <h3>Add New Module</h3>
+<EditForm Model="newModule" OnValidSubmit="AddModule">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText id="name" @bind-Value="newModule.Name" placeholder="Module Name" />
+    <InputText id="description" @bind-Value="newModule.Description" placeholder="Description" />
+    <InputNumber id="currentSoftwareVersion" @bind-Value="newModule.CurrentSoftwareVersion" placeholder="Current Software Version" />
+    <InputNumber id="nextSoftwareVersion" @bind-Value="newModule.NextSoftwareVersion" placeholder="Next Software Version" />
+    <InputDate id="lastUpdated" @bind-Value="newModule.LastUpdated" placeholder="Last Updated" />
+    <InputDate id="projectedRelease" @bind-Value="newModule.ProjectedRelease" placeholder="Projected Release" /> 
+    
+   
+    <!-- Dropdown to Select a Car -->
+    <h4>Select a Car for this Module</h4>
+    <select @bind="selectedCarId">
+        @foreach (var car in cars)
+        {
+            <option value="@car.CarId">@car.CarId</option>
+        }
+    </select>
+    <button type="submit">Add Module</button>
+</EditForm>
+*@
+
+@* <!-- Form to Add a New Module -->
+<h3>Add New Module</h3>
+<EditForm Model="newModule" OnValidSubmit="AddModule">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText id="name" @bind-Value="newModule.Name" placeholder="Module Name" />
+    <InputText id="description" @bind-Value="newModule.Description" placeholder="Description" />
+    <InputNumber id="currentSoftwareVersion" @bind-Value="newModule.CurrentSoftwareVersion" placeholder="Current Software Version" />
+    <InputNumber id="nextSoftwareVersion" @bind-Value="newModule.NextSoftwareVersion" placeholder="Next Software Version" />
+    <InputDate id="lastUpdated" @bind-Value="newModule.LastUpdated" placeholder="Last Updated" />
+    <InputDate id="projectedRelease" @bind-Value="newModule.ProjectedRelease" placeholder="Projected Release" />
+    <button type="submit">Add Module</button>
+</EditForm> *@
+
+<!-- List to Show All Modules -->
+@* <h3>All Modules</h3>
+@if (modules == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Car ID</th>
+
+                <th>Module ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Current Software Version</th>
+                <th>Next Software Version</th>
+                <th>Last Updated</th>
+                <th>Projected Release</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var module in modules)
+            {
+                <tr>
+                    <td>@module.CarId</td>
+
+                    <td>@module.ModuleId</td>
+                    <td>@module.Name</td>
+                    <td>@module.Description</td>
+                    <td>@module.CurrentSoftwareVersion</td>
+                    <td>@module.NextSoftwareVersion</td>
+                    <td>@module.LastUpdated</td>
+                    <td>@module.ProjectedRelease</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+} *@
+
+
+@* -------------------------- *@
+
+
+<h3>Add Logger Entry</h3>
+@* 
+<EditForm Model="NewLogger" OnValidSubmit="HandleValidLoggerSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="carId">Car ID:</label>
+        <InputNumber @bind-Value="NewLogger.CarId" class="form-control" id="carId" />
+    </div>
+
+    <div class="form-group">
+        <label for="typeLogger">Logger Type:</label>
+        <InputSelect @bind-Value="NewLogger.TypeLogger" class="form-control" id="typeLogger">
+            @foreach (var type in Enum.GetValues(typeof(Logger.LoggerType)))
+            {
+                <option value="@type">@type</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="numLoggers">Number of Loggers:</label>
+        <InputNumber @bind-Value="NewLogger.NumLoggers" class="form-control" id="numLoggers" />
+    </div>
+
+    <div class="form-group form-check">
+        <InputCheckbox @bind-Value="NewLogger.isAssigned" class="form-check-input" id="isAssigned" />
+        <label class="form-check-label" for="isAssigned">Is Assigned?</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Logger</button>
+</EditForm>
+
+@if (isLoggerSuccess)
+{
+    <div class="alert alert-success mt-3">Logger added successfully!</div>
+}
+ *@
+@*
+<h3>Logger Entries</h3>
+
+@if (loggers == null)
+{
+    <p>Loading...</p>
+}
+else if (loggers.Count == 0)
+{
+    <p>No logger entries found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>NaturalId</th>
+                <th>TruckId</th>
+                <th>CarId</th>
+                <th>NewCarId</th>
+                <th>TypeLogger</th>
+                <th>NumLoggers</th>
+                <th>isAssigned</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var logger in loggers)
+            {
+                <tr>
+                    <td>@logger.Id</td>
+
+                    <td>@logger.NaturalId</td>
+                    <td>@logger.TruckId</td>
+                    <td>@logger.CarId</td>
+                    <td>@logger.NewCarId</td>
+                    <td>@logger.TypeLogger</td>
+                    <td>@logger.NumLoggers</td>
+                    <td>@logger.isAssigned</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+} *@
+
+@* <!-- Display existing SimpleEventTypes -->
+@if (simpleEventTypes != null)
+{
+    foreach (var eventType in simpleEventTypes)
+    {
+        <div>
+            @eventType.DisplayName
+            <!-- Add edit and delete buttons if needed -->
+        </div>
+    }
+} *@
+
+
+
+<!-- Dropdown to Select a Car -->
+<h3>Select a Car</h3>
+<select @bind="selectedCarId">
+    @foreach (var car in cars)
+    {
+        <option value="@car.CarId">@car.CarId</option>
+    }
+</select>
+<div class="container mt-5 dashboard-container">
+    <div class="row">
+        <div class="col">
+            <h1 class="mb-5">Dashboard</h1>
+
+
+
+            <!-- Section for choosing a car -->
+            <div class="card dashboard-card">
+                <div class="card-header dashboard-card-header">Choose a Car</div>
+                <div class="card-body dashboard-card-body">
+                    <form @onsubmit="HandleSubmit" />
+
+                    <!-- ... your car choice content ... -->
+                    <select class="form-control" @bind="selectedCarId">
+                        @foreach (var car in cars)
+                        {
+                            <option value="@car.CarId">@car.ToString()</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Section for adding a new event -->
+            <div class="card dashboard-card">
+                <div class="card-header dashboard-card-header">Add Event</div>
+                <div class="card-body dashboard-card-body">
+                    <!-- ... your event form ... -->
+                    <div class="Mysection-container">
+
+                        <select @bind="selectedEventTypeId" class="form-label">
+                            <option value="">-- Select --</option>
+                            @if (simpleEventTypes is not null)
+                            {
+                                @foreach (var type in simpleEventTypes)
+                                {
+                                    <option value="@type.Id">@type.DisplayName</option>
+                                }
+                            }
+                        </select>
+                </div>
+            </div>
+
+            
+    <div class="mb-3">
+        <label for="startDate" class="form-label">Start Date</label>
+        <InputDate id="startDate" class="form-control" @bind-Value="newEvent.StartTime" />
+    </div>
+
+    <div class="mb-3">
+        <label for="endDate" class="form-label">End Date</label>
+        <InputDate id="endDate" class="form-control" @bind-Value="newEvent.EndTime" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" @onclick="HandleSubmit">Add Event</button>
+
+            <!-- Section for displaying events -->
+            <div class="card dashboard-card">
+                <div class="card-header dashboard-card-header">My Events</div>
+                <div class="card-body dashboard-card-body">
+                    <!-- ... your events display ... -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Form for adding a new SimpleEventType -->
+<EditForm Model="@newEventType" OnValidSubmit="HandleValidSubmit3">
+    <InputText @bind-Value="newEventType.Name" />
+    <button type="submit">Add Event Type</button>
+</EditForm>
+
+
+
+<p>breaker</p>
+@if (isEditing)
+{
+    <!-- Form for editing a SimpleEventType -->
+    <EditForm Model="@editingEventType" OnValidSubmit="HandleEditSubmit">
+        <InputText @bind-Value="editingEventType.Name" />
+        <button type="submit">Update Event Type</button>
+        <button @onclick="CancelEdit">Cancel</button>
+    </EditForm>
+}
+@if (simpleEventTypes != null)
+{
+    foreach (var eventType in simpleEventTypes)
+    {
+        <div>
+            @eventType.DisplayName
+            <button @onclick="() => BeginEdit(eventType)">Edit</button>
+        </div>
+    }
+}
+
+
+@code {
+    private int selectedEventTypeId;
+    private string selectedUsername;
+    private ApplicationUser selectedUser;
+    private Car selectedCar;
+    private SimpleEventType selectedSimpleEventType;
+    private SimpleEventType editingEventType = new SimpleEventType();
+
+
+
+    private void BeginEdit(SimpleEventType eventType)
+    {
+        editingEventType = eventType;
+        isEditing = true;
+    }
+
+    private async Task HandleEditSubmit()
+    {
+        await SimpleEventTypeService.UpdateSimpleEventTypeAsync(editingEventType);
+        isEditing = false;
+        editingEventType = new SimpleEventType(); // Reset
+        simpleEventTypes = (await SimpleEventTypeService.GetSimpleEventTypesAsync()).ToList();
+
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+        editingEventType = new SimpleEventType();
+    }
+    private void OnCarSelected(ChangeEventArgs e)
+    {
+        var selectedUserName = e.Value.ToString();
+        selectedUser = GetUserByUserName(selectedUserName);
+        Console.WriteLine($"Method OnUserSelected called. Count.");
+        //selectedUserString = selectedUser.Id.ToString();
+        // selectedUserString = selectedUser.Id;
+        //Console.WriteLine($"Method OnUserSelected called. selectedUserString: {selectedUserString}. ");
+    }
+    private ApplicationUser? GetUserByUserName(string selectedUserName)
+    {
+        return users.FirstOrDefault(u => u.Id == selectedUser.Id);
+    }
+    private bool isAdminOrOrganizer = false;
+    private List<Car> cars = new List<Car>();
+    private List<Event> userEvents = new List<Event>();
+    private List<UserEventDetail> userEventDetails;
+    private int selectedCarId = -1;
+    private Car currentCar;
+    private Event newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private SimpleEventType newEventType = new SimpleEventType();
+    private IEnumerable<SimpleEventType> simpleEventTypes;
+    private bool isEditing = false;
+    private List<Event> events;
+
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // simpleEventTypes = await SimpleEventTypeRepository.GetAllSimpleEventTypesAsync();
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        string currentUserId = await UserService.GetCurrentUserIdAsync();
+
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+        //int currentCarId = await CarService.GetCurrentCarIdForUserIdAsync(currentUserId);
+        //currentCar = await CarService.GetCarByIdAsync(currentCarId); // Get the current Car
+
+        //TODO: make car specified
+        // userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId); //(currentUserId); // Assuming you have this method in your service
+
+        simpleEventTypes = (await SimpleEventTypeService.GetSimpleEventTypesAsync()).ToList(); // Assuming you have this method in your service
+        
+        events = await EventService.GetAllEventsWithLoggingAsync();
+
+        try
+        {
+            var user = authState.User;
+            if (user.IsInRole("Admin") || user.IsInRole("Organizer"))
+            {
+                Console.WriteLine("Admin role is true for this user.");                isAdminOrOrganizer = true;
+            }
+
+            users = await UserService.GetAllUsersAsync();
+            //userIdToUserName = users.ToDictionary(u => u.Id, u => u.UserName);
+            //userIdToFriendlyName = users.ToDictionary(u => u.Id, u => $"{u.FirstName} {u.LastName}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while loading the cars: {ex.Message}");
+        }
+        finally
+        {
+            cars = await CarService.GetAllCarsWithDetailsAsync();
+            //cars = await CarService.GetAllCarsWithDetailsAsync();
+            Console.WriteLine($"Number of cars retrieved: {cars.Count}");
+
+            if (cars.Any())
+            {
+                selectedCarId = cars.First().CarId; // Set default selected car
+            }
+           // loggers = await LoggerService.GetAllLoggerAsync();
+           // modules = await ModuleService.GetAllModulesAsync();
+            StateHasChanged();
+
+
+        }
+
+    }
+    private async Task SelectCar()
+    {
+
+    }
+
+    private async Task HandleValidSubmit3()
+    {
+        await SimpleEventTypeService.AddSimpleEventTypeAsync(newEventType);
+        newEventType = new SimpleEventType(); // Reset the form
+        simpleEventTypes = await SimpleEventTypeService.GetSimpleEventTypesAsync(); // Refresh the list
+    }
+    private async Task HandleSubmit()
+    {
+        Console.WriteLine($"Selected Car ID: {selectedCarId}"); // Debugging line
+
+        if (!newEvent.StartTime.HasValue || newEvent.StartTime.Value.Year < 1753
+            || !newEvent.EndTime.HasValue || newEvent.EndTime.Value.Year < 1753)
+        {
+            Console.WriteLine("Date Invalid, return");
+            return;
+        }
+        if (selectedCarId == null)
+        {
+            Console.WriteLine("CarId is null, return");
+            return;
+        }
+        newEvent.CarId = selectedCarId;
+        newEvent.UserId = await UserService.GetCurrentUserIdAsync();
+        newEvent.SimpleEventTypeId = selectedEventTypeId; // Assign the selected event type ID here
+        try
+        {
+            newEvent = await EventService.AddEventAsync(newEvent);
+            Console.WriteLine($"\n\n\n Event {newEvent.ToString()} added and continuance in progress to clear forms \n\n\n");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding event: {ex.Message}");
+        }
+        StateHasChanged();
+
+    }
+    private async Task HandleSubmit2()
+    {
+        if (!newEvent.StartTime.HasValue || newEvent.StartTime.Value.Year < 1753
+            || !newEvent.EndTime.HasValue || newEvent.EndTime.Value.Year < 1753)
+        {
+            return;
+        }
+
+        newEvent.CarId = selectedCarId;
+        newEvent.UserId = await UserService.GetCurrentUserIdAsync();
+
+        // Assuming AddEventAsync returns the newly created Event
+        newEvent = await EventService.AddEventAsync(newEvent);
+        Console.WriteLine($"\n\n\n Event {newEvent.ToString()} added and continuance in progress to clear forms \n\n\n");
+        // Create a new UserEventDetail for this event
+        //UserEventDetail newUserEventDetail = new UserEventDetail
+        //  {
+        //    UserEventId = newEvent.UserEventId,
+        //  UserId = newEvent.UserId,
+        // Set other fields as needed
+        //};
+        // await UserEventDetailService.AddUserEventDetailAsync(newUserEventDetail);  // Assuming you have UserEventDetailService injected
+
+        // Clear the form
+        newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+
+        // Reload the user's events
+        userEvents = await EventService.GetAllEventsByUserIdAsync(newEvent.UserId);
+
+        // Reload the user's event details
+        //userEventDetails = await UserEventDetailService.GetUserEventDetailsByUserIdAsync(newEvent.UserId);  // Assuming you have this method in your service
+
+    }
+    //private List<Logger>? loggers;
+    // private Logger NewLogger { get; set; } = new Logger();
+    // private List<Module>? modulesForSelectedCar;
+
+    //public List<Module>? modules;
+    //private Module newModule { get; set; } = new Module();
+
+    //changed from IsSuccess with addition of Module
+    //private bool isLoggerSuccess = false;
+    // EMulation of Logger
+    //private bool isModuleSuccess = false;
+
+
+    // private async Task LoadModulesForCar()
+    // {
+    //     modulesForSelectedCar = modules.Where(m => m.CarModules.Any(cm => cm.CarId == selectedCarId)).ToList();
+    // }
+    // private async Task HandleValidLoggerSubmit()
+    // {
+    //     await LoggerService.AddLoggerAsync(NewLogger);
+    //     NewLogger = new Logger(); // Reset the model to allow further additions
+    //     isLoggerSuccess = true;
+    // }
+    // private async Task HandleValidModuleSubmit()
+    // {
+    //     await ModuleService.AddModuleAsync(newModule);
+    //     newModule = new Module(); // Reset the model to allow further additions
+    //     isModuleSuccess = true;
+    // }
+    // private async Task AddModule()
+    // {
+    //     await ModuleService.AddAsync(newModule);
+    //     newModule = new Module(); // Reset the form
+    //     modules = await ModuleService.GetAllAsync(); // Refresh the list
+    // }
+    // private async Task AddModule()
+    // {
+    //     await ModuleService.AddAsync(newModule);
+    //     newModule = new Module(); // Reset the form
+    //     modules = await ModuleService.GetAllAsync(); // Refresh the list
+
+    //     // Create a new CarModule to link the new module to the selected car
+    //     var newCarModule = new CarModule
+    //         {
+    //             CarId = selectedCarId,
+    //             ModuleId = newModule.ModuleId // Assuming ModuleId is generated on insert
+    //         };
+
+    //     // Add the new CarModule to the database
+    //     // Assuming you have a method in your service to do this
+    //     await CarModuleService.AddAsync(newCarModule);
+    // }
+    // private async Task AddModule()
+    // {
+    //     var selectedCar = await CarService.GetCarByIdAsync(selectedCarId);
+    //     await ModuleService.AddModuleAsync(newModule); // Add the new module to the database
+    //     newModule = new Module(); // Reset the form
+    //     modules = await ModuleService.GetAllModulesAsync(); // Refresh the list
+
+    //     // Load the selected car from the database
+
+    //     // Add the new module to the car's Modules collection
+    //     selectedCar.Modules.Add(newModule);
+
+    //     // Update the car to save the changes to the database
+    //     await CarService.UpdateCarAsync(selectedCar);
+
+    //     // await ModuleService.AddAsync(newModule); // Add the new module to the database
+    //     // newModule = new Module(); // Reset the form
+    //     // modules = await ModuleService.GetAllAsync(); // Refresh the list
+
+    //     // // Load the selected car from the database
+    //     // var selectedCar = await CarService.GetCarByIdAsync(selectedCarId);
+
+    //     // // Add the new module to the car's Modules collection
+    //     // selectedCar.Modules.Add(newModule);
+
+    //     // // Update the car to save the changes to the database
+    //     // await CarService.UpdateCarAsync(selectedCar);
+    // }
+}
+
+@* <div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <h1 class="mb-4">Dashboard</h1>
+
+            <!-- Section for showing the currently booked car -->
+            <div class="card mb-4">
+                <div class="card-header">Current Booking</div>
+                <div class="card-body">
+                    @if (currentCar == null)
+                    {
+                        <p class="card-text"><em>You currently have no car booked.</em></p>
+                    }
+                    else
+                    {
+                        <p class="card-text">You currently have the following car booked: @currentCar.Model</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Section for choosing a car -->
+            <div class="card mb-4">
+                <div class="card-header">Choose a Car</div>
+                <div class="card-body">
+                    <select class="form-control" @bind="selectedCarId">
+                        @foreach (var car in cars)
+                        {
+                            <option value="@car.CarId">@car.ToString()</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Section for adding a new event -->
+            <div class="card mb-4">
+                <div class="card-header">Add Event</div>
+                <div class="card-body">
+                    <form @onsubmit="HandleSubmit">
+                        <div class="mb-3">
+                            <label for="simpleEventType" class="form-label">SimpleEventType:</label>
+                                 @foreach (var type in simpleEventTypes)
+                                {
+                                    <option value="@type.Id">@type.Name</option>
+                                }
+                            </select>
+                         </div>
+
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <InputDate id="startDate" class="form-control" @bind-Value="newEvent.StartTime" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <InputDate id="endDate" class="form-control" @bind-Value="newEvent.EndTime" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add Event</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Section for displaying events -->
+            <div class="card">
+                <div class="card-header">My Events</div>
+                <div class="card-body">
+                    @if (userEvents == null)
+                    {
+                        <p class="card-text"><em>Loading...</em></p>
+                    }
+                    else
+                    {
+                        @foreach (var userEvent in userEvents)
+                        {
+                            var simpleEventType = simpleEventTypes.FirstOrDefault(et => et.Id == userEvent.SimpleEventTypeId);
+                            <p class="card-text">@simpleEventType?.Name: @userEvent.StartTime - @userEvent.EndTime</p>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> *@
+
+
+
+

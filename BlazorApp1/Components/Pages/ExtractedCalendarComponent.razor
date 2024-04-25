@@ -1,0 +1,359 @@
+﻿@using System.Globalization;
+@using BlazorApp1.Data;
+@using Microsoft.Extensions.Logging;
+@using BlazorApp1.Components;
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ICarService CarService
+@inject IUserService UserService
+@inject IModuleService ModuleService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ITaskModelService TaskModelService
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ILogger<Calendar> logger
+@inject NavbarService NavbarService
+@attribute [Authorize(Roles = "Admin,Organizer,Driver,Technician")]
+<style>
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr); /* 7 days in a week */
+        grid-gap: 10px;
+    }
+
+    .grid-item {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+
+    /* Rest of your styles */
+
+    .debug-section {
+        padding: 10px;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #ddd;
+        font-family: monospace;
+        color: #333;
+    }
+
+    .calendar-day.in-range {
+        background-color: #c0e0f0; /* Color to indicate selected range */
+    }
+
+    .calendar {
+        border: 1px solid #ddd;
+        padding: 10px;
+        width: 100%; /* This will make the calendar take the full width of its container */
+        max-width: 1200px; /* Optional: if you want to limit how wide it can get */
+        margin: auto; /* This will center the calendar if it's smaller than the max-width */
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+
+
+    .calendar-header, .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr); /* This will distribute the space evenly across the 7 days of the week */
+        text-align: center;
+    }
+
+    /*     .calendar-day {
+            padding: 5px;
+            border: 1px solid #eee;
+        } */
+
+    .range-picker {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .range-picker input {
+            margin-right: 5px;
+        }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 10px 0;
+        background-color: #f4f4f4;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+        .toolbar > * {
+            margin: 0 5px;
+        }
+
+        .toolbar select,
+        .toolbar input[type="text"],
+        .toolbar input[type="color"],
+        .toolbar input[type="date"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            line-height: 1.5;
+        }
+
+        .toolbar button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+            .toolbar button:hover {
+                background-color: #0056b3;
+            }
+
+    /*     .calendar-day {
+            /* ... your existing styles ... */
+    min-height: 100px; /* Or a fixed height that suits your design */
+    overflow: auto; /* Adds a scrollbar if content overflows */
+    display: flex; /* Use flex layout to organize tasks within a day cell */
+    flex-direction: column; /* Stack tasks vertically */
+    border: 1px solid #eee; /* Separates the day cells visually */
+    padding: 5px; /* Adds space inside the day cells */
+    }
+
+    */
+
+
+
+    .task-range-strip {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0.5; /* Adjust for desired transparency */
+        z-index: 1; /* Below the text */
+    }
+
+    .task-text {
+        z-index: 2; /* Above the strip */
+        display: grid;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        /* Other styles for text */
+    }
+
+    /*     .user-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+    color: #333;
+    font-size: 0.8em;
+    z-index: 3; /* Ensure it's above other elements */
+    }
+
+    */
+
+
+
+    .task-entry {
+        border: 1px solid #ccc;
+        margin: 2px;
+        padding: 2px;
+        background: #f9f9f9;
+        border-radius: 4px;
+        box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+    }
+
+    .calendar-day {
+        /* ... your existing styles ... */
+        display: flex; /* Use flex layout to organize content within a day cell */
+        flex-direction: column; /* Stack content vertically */
+        justify-content: start; /* Align content to the start */
+        align-items: center; /* Center content horizontally */
+        min-height: 150px; /* Adjust the height as needed */
+    }
+
+    .user-name {
+        width: 100%;
+        text-align: center;
+        margin-top: 5px; /* Adjust the margin as needed */
+        z-index: 2; /* Above the strips */
+        font-weight: bold; /* Make the text bold */
+    }
+
+    .user-task {
+        width: 100%;
+        text-align: left;
+        margin-top: 2px; /* Space between tasks */
+        z-index: 2; /* Above the strips */
+    }
+
+</style>
+@if (ShowHeader)
+{
+    <h1>Calendar Entry</h1>
+    <p>Current Day: @DateTime.Now.Day</p>
+}
+
+<div class="grid-container" style="@ContainerStyle">
+    <button @onclick="MoveToPreviousMonth">Previous Month</button>
+    <button @onclick="MoveToNextMonth">Next Month</button>
+
+    @if (!string.IsNullOrWhiteSpace(debugMessage))
+    {
+        <div class="debug-section">
+            @debugMessage
+        </div>
+    }
+    @for (int i = 1; i <= DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month); i++)
+    {
+        int day = i;
+        <div @onclick="() => OpenDayTasks(day)" class="grid-item day-box @(day == DateTime.Now.Day ? "current-day" : "")">
+            @day
+            <div class="user-container">
+                @if (isAdminOrOrganizer)
+                {
+                    <input @bind="taskDescription" placeholder="New Task" />
+                    <button @onclick="() => AddTask(currentUserName, new DateTime(CurrentDate.Year, CurrentDate.Month, day), taskDescription)">Add Task</button>
+                }
+                @* @foreach (var user in users)
+                {
+                     foreach (var task in GetTasksForUserAndDay(user.FriendlyName, day))
+                    {
+                        <div class="task-item" @onclick="() => OpenTaskModal(task)">
+                            @($"{user.UserName}: {task.Task}")
+                        </div>
+                    } *@
+                    @if (users != null)
+                    {
+
+                    
+                        @foreach (var user in users)
+                        {
+                            // Construct a DateTime representing the specific day
+                            DateTime dateForTask = new DateTime(CurrentDate.Year, CurrentDate.Month, day);
+
+                            // Now pass the constructed date to the method
+                            foreach (var task in GetTasksForUserAndDay(user.FriendlyName, dateForTask))
+                            {
+                                <div class="task-item" @onclick="() => OpenTaskModal(task)">
+                                    @($"{user.UserName}: {task.Task}")
+                                </div>
+                            }
+                        
+                        }
+                    }
+
+                
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    [Parameter] public string ContainerStyle { get; set; } = "border: 5px solid yellow;"; // Default style
+    [Parameter] public DateTime CurrentDate { get; set; } = DateTime.Today;
+    [Parameter] public IEnumerable<ApplicationUser> users { get; set; } // Define User class as per your model
+    private int selectedDay;
+    private bool isDayTasksModalOpen = false;
+    private bool isAllTasksModalOpen = false;
+    private bool isTaskModalOpen = false;
+    private bool isAdminOrOrganizer = false;
+    private string currentUserName { get; set; }
+    private List<TaskModel> taskModels = new List<TaskModel>();
+    private TaskModel selectedTask;
+    private string taskDescription;
+    private string debugMessage = "";
+
+
+    private void OpenDayTasks(int day)
+    {
+        debugMessage = $"OpenDayTasks triggered for day {day}";
+        selectedDay = day;
+        isDayTasksModalOpen = true;
+        isAllTasksModalOpen = true; // Open the all tasks modal
+        StateHasChanged(); // Refresh the UI to show updated debug message
+    }
+
+    private void AddTask(string userId, DateTime date, string taskDescription)
+    {
+        taskModels.Add(new TaskModel { UserId = userId, DateAssigned = date, Task = taskDescription });
+        debugMessage = $"Added task: {taskDescription} for user {userId} on {date.ToShortDateString()}";
+        StateHasChanged(); // Refresh the UI
+    }
+
+    // Update other methods similarly to reflect actions in the debug message
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        currentUserName = user.Identity.Name;
+        try
+        {
+            //var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            //var user = authState.User;
+
+            if (user.IsInRole("Admin") || user.IsInRole("Organizer"))
+            {
+                isAdminOrOrganizer = true;
+            }
+
+            users = await UserService.GetAllUsersAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while loading the cars: {ex.Message}");
+        }
+        finally
+        {
+            //cars = await CarService.GetAllCarsWithDetailsAsync();
+            // modules = (await ModuleService.GetAllModulesAsync()).ToList();  // Assuming you have a GetAllModulesAsync method
+            users = await UserService.GetAllUsersAsync();
+            taskModels = await TaskModelService.GetAllTaskModels();
+
+        }
+
+        // allUsers = await DbContext.Users.ToListAsync();
+    }
+    private void OpenTaskModal(TaskModel task)
+    {
+        Console.WriteLine("OpenTaskModal triggered");
+        selectedTask = task;
+        isTaskModalOpen = true;
+    }
+    private List<TaskModel> GetTasksForUserAndDay(string userId, DateTime date)
+    {
+        return taskModels.Where(t => t.UserId == userId && t.DateAssigned.Date == date.Date).ToList();
+    }
+
+
+
+
+
+
+    private void MoveToNextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        StateHasChanged();
+    }
+    private void MoveToPreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        StateHasChanged();
+    }
+    
+
+    // Other parameters and methods like MoveToPreviousMonth, MoveToNextMonth, etc.
+}

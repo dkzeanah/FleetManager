@@ -1,0 +1,165 @@
+﻿@page "/virtualdemo2"
+@using BlazorApp1.CarModels
+@using System.Text.Json;
+@using BlazorApp1.Data;
+@inject ContactContext DbContext
+
+<h3>Virtual Entity Demo</h3>
+
+<!-- Input for adding/updating properties -->
+<label for="key">Property Key:</label>
+<input @bind="propertyKey" />
+
+<label for="value">Property Value:</label>
+<input @bind="propertyValue" />
+
+<!-- Buttons for operations -->
+<button @onclick="CreateEntity">Create Virtual Entity</button>
+<button @onclick="UpdateEntity">Update Virtual Entity</button>
+<button @onclick="DisplayEntityState">Display Entities State</button>
+
+<!-- Display the current state of the entities -->
+@if (dynamoEntity != null && virtualEntity != null)
+{
+    <p>Dynamo Entity: @JsonSerializer.Serialize(dynamoEntity)</p>
+    <p>Dynamic Entity: @JsonSerializer.Serialize(virtualEntity)</p>
+}
+
+@if (dynamoEntity != null && virtualEntity != null)
+{
+    <p>Dynamo Entity Configuration: @dynamoEntity.Configuration</p>
+    <p>Dynamic Entity Properties: @virtualEntity.GetPropertiesAsJson()</p>
+}
+
+
+@if (dynamoEntity != null)
+{
+    <h4>Dynamo Properties</h4>
+    <ul>
+        @foreach (var property in DeserializeJsonSafely(dynamoEntity.Configuration))
+        {
+            <li>@property.Key: @property.Value</li>
+        }
+    </ul>
+}
+
+@if (virtualEntity != null)
+{
+    <h4>Dynamic Entity Properties</h4>
+    <ul>
+        @foreach (var property in JsonSerializer.Deserialize<Dictionary<string, object>>(virtualEntity.GetPropertiesAsJson()))
+        {
+            <li>@property.Key: @property.Value</li>
+        }
+    </ul>
+}
+
+@if (virtualEntity != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var property in JsonSerializer.Deserialize<Dictionary<string, object>>(virtualEntity.GetPropertiesAsJson()))
+                {
+                    <th>@property.Key</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @foreach (var property in JsonSerializer.Deserialize<Dictionary<string, object>>(virtualEntity.GetPropertiesAsJson()))
+                {
+                    <td>@property.Value</td>
+                }
+            </tr>
+        </tbody>
+    </table>
+}
+@foreach (var property in DeserializeJsonSafely(virtualEntity.GetPropertiesAsJson()))
+{
+    <li>@property.Key: @property.Value</li>
+}
+@foreach (var property in DeserializeJsonSafely(virtualEntity.GetPropertiesAsJson()))
+{
+    <th>@property.Key</th>
+}
+@foreach (var property in DeserializeJsonSafely(virtualEntity.GetPropertiesAsJson()))
+{
+    <th>@property.Key</th>
+}
+
+
+
+
+
+
+
+@code {
+    private Dynamo dynamoEntity = new Dynamo() { Configuration = "{ }" };
+    private DynamicEntity virtualEntity = new DynamicEntity();
+    private string propertyKey;
+    private string propertyValue;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        // Load existing entities if needed
+    }
+    private void CreateEntity()
+    {
+        Console.WriteLine("Creating entities...");
+        dynamoEntity.AddOrUpdateProperty(propertyKey, propertyValue);
+        virtualEntity.AddProperty(propertyKey, propertyValue);
+        DisplayEntityState();
+    }
+
+    private void UpdateEntity()
+    {
+        Console.WriteLine("Updating entities...");
+        dynamoEntity.AddOrUpdateProperty(propertyKey, propertyValue);
+        virtualEntity.UpdateProperty(propertyKey, propertyValue);
+        DisplayEntityState();
+    }
+
+    private void DisplayEntityState()
+    {
+        Console.WriteLine("Displaying current state of entities...");
+        Console.WriteLine($"Dynamo Entity: {JsonSerializer.Serialize(dynamoEntity)}");
+        Console.WriteLine($"Dynamic Entity: {JsonSerializer.Serialize(virtualEntity)}");
+    }
+    private Dictionary<string, object> DeserializeJsonToDictionary(string json)
+    {
+        if (string.IsNullOrEmpty(json))
+        {
+            return new Dictionary<string, object>();
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Error deserializing JSON: {ex.Message}");
+            return new Dictionary<string, object>();
+        }
+    }
+    private Dictionary<string, object> DeserializeJsonSafely(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new Dictionary<string, object>(); // or other appropriate default value
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, object>>(json);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine($"Error deserializing JSON: {ex.Message}");
+            return new Dictionary<string, object>(); // or other appropriate error handling
+        }
+    }
+   
+}

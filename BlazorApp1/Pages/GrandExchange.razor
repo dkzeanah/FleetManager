@@ -1,0 +1,413 @@
+﻿@page "/grandexchange"
+@inject ExchangeService ExchangeService
+@inject ILogger<GrandExchange> Logger
+
+    <!-- Add CSS for better styling -->
+<style>
+  .input-field {
+    /* Styling for input fields */
+  }
+
+  .submit-button {
+    /* Styling for submit buttons */
+  }
+
+  .offer-table {
+    /* Styling for tables */
+  }
+</style>
+
+@*
+    <h3>Add User</h3>
+<EditForm Model="@newUser" OnValidSubmit="HandleAddUser">
+    <InputText @bind-Value="newUser.Username" />
+    <button type="submit">Add User</button>
+</EditForm>
+
+<h3>Add Item</h3>
+<EditForm Model="@newItem" OnValidSubmit="HandleAddItem">
+    <InputText @bind-Value="newItem.Name" />
+    <InputNumber @bind-Value="newItem.Price" />
+    <button type="submit">Add Item</button>
+</EditForm>
+
+<h3>Create Offer</h3>
+<EditForm Model="@newOffer" OnValidSubmit="HandleCreateOffer">
+    <InputSelect @bind-Value="newOffer.UserId">
+        @foreach (var user in users)
+        {
+            <option value="@user.Id">@user.Username</option>
+        }
+    </InputSelect>
+    <InputSelect @bind-Value="newOffer.ItemId">
+        @foreach (var item in items)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </InputSelect>
+    <InputNumber @bind-Value="newOffer.Quantity" />
+
+    <InputSelect @bind-Value="newOffer.SelectedPriceOption" @onchange="OnPriceOptionChange">
+        @foreach (var option in Enum.GetValues<PriceOption>())
+        {
+            <option value="@option">@option</option>
+        }
+    </InputSelect>
+
+    <!-- Price Input -->
+    <InputNumber @bind-Value="newOffer.Price" disabled="@isPriceDisabled" />
+
+    <!-- Price Input -->
+@*     <InputNumber @bind-Value="newOffer.Price" />
+
+ <InputCheckbox @bind-Value="newOffer.IsBuyOffer" />
+    <button type="submit">Submit Offer</button>
+</EditForm>
+
+ *@
+
+<h2>Grand Exchange Simulation</h2>
+
+
+<h3>Add User</h3>
+<EditForm Model="@newUser" OnValidSubmit="HandleAddUser">
+    <label for="username">Username:</label>
+    <InputText id="username" @bind-Value="newUser.Username" />
+    <button type="submit">Add User</button>
+</EditForm>
+
+<h3>Add Item</h3>
+<EditForm Model="@newItem" OnValidSubmit="HandleAddItem">
+    <label for="itemName">Item Name:</label>
+    <InputText id="itemName" @bind-Value="newItem.Name" />
+    <label for="itemPrice">Item Price:</label>
+    <InputNumber id="itemPrice" @bind-Value="newItem.Price" />
+    <button type="submit">Add Item</button>
+</EditForm>
+
+<h3>Create Offer</h3>
+<EditForm Model="@newOffer" OnValidSubmit="HandleCreateOffer">
+    <label for="userId">User:</label>
+    <InputSelect id="userId" @bind-Value="newOffer.UserId">
+        @foreach (var user in users)
+        {
+            <option value="@user.Id">@user.Username</option>
+        }
+    </InputSelect>
+    <label for="itemId">Item:</label>
+    <InputSelect id="itemId" @bind-Value="newOffer.ItemId">
+        @foreach (var item in items)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </InputSelect>
+    <label for="quantity">Quantity:</label>
+    <InputNumber id="quantity" @bind-Value="newOffer.Quantity" />
+    <label for="priceOption">Price Option:</label>
+    <InputSelect id="priceOption" @bind-Value="newOffer.SelectedPriceOption" @onchange="OnPriceOptionChange">
+        @foreach (var option in Enum.GetValues<PriceOption>())
+        {
+            <option value="@option">@option</option>
+        }
+    </InputSelect>
+    <label for="offerPrice">Price:</label>
+    <InputNumber id="offerPrice" @bind-Value="newOffer.Price" disabled="@isPriceDisabled" />
+    <label for="isBuyOffer">Is Buy Offer:</label>
+    <InputCheckbox id="isBuyOffer" @bind-Value="newOffer.IsBuyOffer" />
+    <button type="submit">Submit Offer</button>
+</EditForm>
+
+
+
+
+
+<h3>Active Offers</h3>
+@if (ExchangeService.Offers.Any())
+{
+    <ul>
+        @foreach (var offer in ExchangeService.Offers)
+        {
+            <li>@offer.UserId - @offer.ItemId - Price: @offer.Price - Quantity: @offer.Quantity - Is Buy Offer: @offer.IsBuyOffer</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No active offers.</p>
+}
+
+<h3>Completed Trades</h3>
+@if (ExchangeService.CompletedTrades.Any())
+{
+    <ul>
+        @foreach (var trade in ExchangeService.CompletedTrades)
+        {
+            <li>Buyer: @trade.BuyerId, Seller: @trade.SellerId, Item: @trade.ItemId, Price: @trade.TradePrice, Quantity: @trade.Quantity</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No completed trades.</p>
+}
+
+<h3>Active Offers</h3>
+@if (ExchangeService.Offers.Any())
+{
+    <ul>
+        @foreach (var offer in ExchangeService.Offers)
+        {
+            var user = users.FirstOrDefault(u => u.Id == offer.UserId);
+            var item = items.FirstOrDefault(i => i.Id == offer.ItemId);
+            <li>@(user?.Username ?? "Unknown User") - @(item?.Name ?? "Unknown Item") - Price: @offer.Price - Quantity: @offer.Quantity - @offer.OfferType</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No active offers.</p>
+}
+
+<h3>Completed Trades</h3>
+@if (ExchangeService.CompletedTrades.Any())
+{
+    <ul>
+        @foreach (var trade in ExchangeService.CompletedTrades)
+        {
+            var buyer = users.FirstOrDefault(u => u.Id == trade.BuyerId);
+            var seller = users.FirstOrDefault(u => u.Id == trade.SellerId);
+            var item = items.FirstOrDefault(i => i.Id == trade.ItemId);
+            <li>Buyer: @(buyer?.Username ?? "Unknown Buyer") - Seller: @(seller?.Username ?? "Unknown Seller") - Item: @(item?.Name ?? "Unknown Item") - Price: @trade.TradePrice - Quantity: @trade.Quantity</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No completed trades.</p>
+}
+<h3>Completed Trades</h3>
+@if (ExchangeService.CompletedTrades.Any())
+{
+    <ul>
+        @foreach (var trade in ExchangeService.CompletedTrades)
+        {
+            var buyer = users.FirstOrDefault(u => u.Id == trade.BuyerId);
+            var seller = users.FirstOrDefault(u => u.Id == trade.SellerId);
+            var item = items.FirstOrDefault(i => i.Id == trade.ItemId);
+
+            decimal originalMarketPrice = item?.Price ?? 0;
+            decimal buyerSavings = originalMarketPrice > trade.TradePrice ? originalMarketPrice - trade.TradePrice : 0;
+            decimal sellerEarnings = trade.TradePrice - originalMarketPrice;
+
+            <li>
+                Buyer: @(buyer?.Username ?? "Unknown Buyer") -
+                Seller: @(seller?.Username ?? "Unknown Seller") -
+                Item: @(item?.Name ?? "Unknown Item") -
+                Price: @trade.TradePrice -
+                Quantity: @trade.Quantity -
+                Original Market Price: @originalMarketPrice -
+                Buyer Savings: @buyerSavings -
+                Seller Extra Earnings: @sellerEarnings -
+                New Market Price: @item?.Price
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No completed trades.</p>
+}
+
+<p>break</p>
+<h2>Grand Exchange Simulation</h2>
+
+<!-- User Interface enhancements for Add User section -->
+<h3>Add User</h3>
+<EditForm Model="@newUser" OnValidSubmit="HandleAddUser">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
+  <label for="username">Username:</label>
+  <InputText id="username" @bind-Value="newUser.Username" class="input-field" />
+  <button type="submit" class="submit-button">Add User</button>
+</EditForm>
+
+<!-- User Interface enhancements for Add Item section -->
+<h3>Add Item</h3>
+<EditForm Model="@newItem" OnValidSubmit="HandleAddItem">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
+  <label for="itemName">Item Name:</label>
+  <InputText id="itemName" @bind-Value="newItem.Name" class="input-field" />
+  <label for="itemPrice">Item Price:</label>
+  <InputNumber id="itemPrice" @bind-Value="newItem.Price" class="input-field" />
+  <button type="submit" class="submit-button">Add Item</button>
+</EditForm>
+
+<!-- User Interface enhancements for Create Offer section -->
+<h3>Create Offer</h3>
+<EditForm Model="@newOffer" OnValidSubmit="HandleCreateOffer">
+  <DataAnnotationsValidator />
+  <ValidationSummary />
+  <!-- ... other fields remain the same ... -->
+  <button type="submit" class="submit-button">Submit Offer</button>
+</EditForm>
+
+<!-- Improved display of Active Offers -->
+<h3>Active Offers</h3>
+@if (ExchangeService.Offers.Any())
+{
+  <table class="offer-table">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Item</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var offer in ExchangeService.Offers)
+      {
+        <tr>
+          <td>@offer.UserId</td>
+          <td>@offer.ItemId</td>
+          <td>@offer.Price</td>
+          <td>@offer.Quantity</td>
+          <td>@(offer.IsBuyOffer ? "Buy" : "Sell")</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+else
+{
+  <p>No active offers.</p>
+}
+
+<!-- Improved display of Completed Trades -->
+<h3>Completed Trades</h3>
+@if (ExchangeService.CompletedTrades.Any())
+{
+  <!-- Display completed trades in a table format -->
+  <!-- ... similar structure to Active Offers ... -->
+}
+else
+{
+  <p>No completed trades.</p>
+}
+
+@foreach (var item in items)
+{
+  string svgGraphic;
+  string itemName = item.Name; // Or apply any necessary transformation to match the dictionary keys
+
+  // Check if the key exists in the dictionary
+  if (itemGraphics.ContainsKey(itemName))
+  {
+    svgGraphic = itemGraphics[itemName];
+  }
+  else
+  {
+    // Fallback SVG or placeholder if the key is not found
+    svgGraphic = "<svg width='50' height='50'><text x='10' y='25'>N/A</text></svg>";
+  }
+
+  <div>
+    <h3>@itemName</h3>
+    <div>@((MarkupString)svgGraphic)</div>
+    <p>Price: @item.Price</p>
+  </div>
+}
+ @foreach (var item in prepopulatedItems)
+        {
+            ExchangeService.AddItem(item);
+        }
+
+
+
+
+
+@code {
+    RsUser newUser = new RsUser();
+    Item newItem = new Item();
+    ExchangeOffer newOffer = new ExchangeOffer();
+    List<RsUser> users => ExchangeService.GetUsers();
+    List<Item> items => ExchangeService.GetItems();
+
+  private List<Item> prepopulatedItems = new List<Item>();
+
+  protected override void OnInitialized()
+  {
+    InitializeItems();
+  }
+
+  private void InitializeItems()
+  {
+    prepopulatedItems = new List<Item>
+        {
+            new Item { Name = "Sword", Price = 100m },
+            new Item { Name = "Shield", Price = 80m },
+            new Item { Name = "Potion", Price = 15m },
+            new Item { Name = "CoinBag", Price = 50m },
+            new Item { Name = "Gem", Price = 200m },
+            new Item { Name = "Scroll", Price = 40m }
+        };
+  }
+  private Dictionary<string, string> itemGraphics = new Dictionary<string, string>
+    {
+        { "Sword", "<svg width='50' height='50'><rect width='10' height='50' x='20' y='0' style='fill:gray;'/><rect width='40' height='10' x='5' y='40' style='fill:gold;'/></svg>" },
+        { "Shield", "<svg width='50' height='50'><circle cx='25' cy='25' r='20' style='fill:blue; stroke:black; stroke-width:3'/></svg>" },
+        { "Potion", "<svg width='50' height='50'><rect width='20' height='40' x='15' y='5' rx='10' ry='10' style='fill:purple;'/><circle cx='25' cy='5' r='5' style='fill:black;'/></svg>" },
+        { "CoinBag", "<svg width='50' height='50'><ellipse cx='25' cy='30' rx='15' ry='20' style='fill:brown;'/><text x='18' y='35' style='font: bold 15px sans-serif; fill:white;'>$</text></svg>" },
+        { "Gem", "<svg width='50' height='50'><polygon points='25,5 5,45 45,45' style='fill:red; stroke:black; stroke-width:1'/></svg>" },
+        { "Scroll", "<svg width='50' height='50'><rect width='30' height='40' x='10' y='5' style='fill:tan;'/><path d='M 10 5 Q 5 25 10 45' style='stroke:tan; stroke-width:5'/><path d='M 40 5 Q 45 25 40 45' style='stroke:tan; stroke-width:5'/></svg>" }
+    };
+    private bool isPriceDisabled = false;
+
+    private void OnPriceOptionChange(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<PriceOption>(e.Value?.ToString(), out var selectedOption))
+        {
+            isPriceDisabled = selectedOption != PriceOption.FreeForm;
+            if (selectedOption != PriceOption.FreeForm)
+            {
+                var selectedItem = items.FirstOrDefault(i => i.Id == newOffer.ItemId);
+                if (selectedItem != null)
+                {
+                    newOffer.Price = selectedOption == PriceOption.MarketPricePlus5
+                        ? selectedItem.Price * 1.05m
+                        : selectedItem.Price * 0.95m;
+                }
+            }
+        }
+        StateHasChanged();
+    }
+    private void HandleAddUser()
+    {
+        Logger.LogInformation("Adding new user: {Username}", newUser.Username);
+        ExchangeService.AddRsUser(newUser);
+        newUser = new RsUser(); // Reset form
+        Logger.LogInformation("User added successfully.");
+        StateHasChanged();
+    }
+
+    private void HandleAddItem()
+    {
+        Logger.LogInformation("Adding new item: {ItemName}" , this.newItem.Name);
+        ExchangeService.AddItem(this.newItem);
+        newItem = new Item(); // Reset form
+        Logger.LogInformation("Item added successfully.");
+        StateHasChanged();
+    }
+
+    private void HandleCreateOffer()
+    {
+        Logger.LogInformation("Creating new offer for user {UserId}", this.newOffer.UserId);
+        ExchangeService.AddOffer(this.newOffer);
+         newOffer = new ExchangeOffer(); // Reset form
+        Logger.LogInformation("Offer created successfully.");
+        StateHasChanged();
+
+    }
+}

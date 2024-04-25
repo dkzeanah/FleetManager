@@ -1,0 +1,61 @@
+﻿@page "/adminpanel"
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+@using BlazorApp1.Data;
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+@attribute [Authorize(Roles = "Admin")]
+@inject RoleManager<IdentityRole> RoleManager
+
+<h3>Admin Panel</h3>
+
+<p>Select a role to add a claim:</p>
+
+<select @bind="selectedRoleName">
+    <option value="">-- Select a Role --</option>
+    @foreach (var role in roles)
+    {
+        <option value="@role.Name">@role.Name</option>
+    }
+</select>
+
+@if (!string.IsNullOrEmpty(selectedRoleName))
+{
+    <div>
+        <h4>Add Claim to @selectedRoleName</h4>
+        <label>Claim Type:</label>
+        <input type="text" @bind="claimType" />
+
+        <label>Claim Value:</label>
+        <input type="text" @bind="claimValue" />
+
+        <button @onclick="HandleAddClaim">Add Claim</button>
+    </div>
+}
+
+@code {
+    private List<IdentityRole> roles;
+    private string selectedRoleName;
+    private string claimType;
+    private string claimValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await RoleManager.Roles.ToListAsync();
+    }
+
+    private async Task HandleAddClaim()
+    {
+        var role = await RoleManager.FindByNameAsync(selectedRoleName);
+        if (role != null)
+        {
+            var claim = new Claim(claimType, claimValue);
+            var result = await RoleManager.AddClaimAsync(role, claim);
+            if (result.Succeeded)
+            {
+                claimType = "";
+                claimValue = "";
+            }
+        }
+    }
+}

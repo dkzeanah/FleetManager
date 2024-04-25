@@ -1,0 +1,108 @@
+﻿
+@inject ICarService CarService
+@inject NavigationManager NavigationManager
+
+<h3>Add Car</h3>
+
+<EditForm Model="newCarModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Make">Make:</label>
+        <InputText id="Make" class="form-control" @bind-Value="newCarModel.Car.Make" />
+    </div>
+
+    <div class="form-group">
+        <label for="Model">Model:</label>
+        <InputText id="Model" class="form-control" @bind-Value="newCarModel.Car.Model" />
+    </div>
+
+    <div class="form-group">
+        <label for="Year">Year:</label>
+        <InputNumber id="Year" class="form-control" @bind-Value="newCarModel.Car.Year" />
+    </div>
+
+    <div class="form-group">
+        <label for="TeleGeneration">TeleGeneration:</label>
+        <InputText id="TeleGeneration" class="form-control" @bind-Value="newCarModel.Car.TeleGeneration" />
+    </div>
+
+    <div class="form-group">
+        <label for="Miles">Miles:</label>
+        <InputNumber id="Miles" class="form-control" @bind-Value="newCarModel.Car.Miles" />
+    </div>
+
+    <div class="form-group">
+        <label for="Location">Location:</label>
+        <InputText id="Location" class="form-control" @bind-Value="newCarModel.Car.Location" />
+    </div>
+
+    <!-- Here starts the CarDetail form part -->
+
+    <div class="form-group">
+        <label for="Tag">Tag:</label>
+        <InputText id="Tag" class="form-control" @bind-Value="newCarModel.CarDetail.Tag" />
+    </div>
+
+    <div class="form-group">
+        <label for="Finas">Finas:</label>
+        <InputText id="Finas" class="form-control" @bind-Value="newCarModel.CarDetail.Finas" />
+    </div>
+
+    <div class="form-group">
+        <label for="VinLast4">VinLast4:</label>
+        <InputText id="VinLast4" class="form-control" @bind-Value="newCarModel.CarDetail.VinLast4" />
+    </div>
+
+    <div class="form-group">
+        <label for="HarnessStatus">HarnessStatus:</label>
+        <InputText id="HarnessStatus" class="form-control" @bind-Value="newCarModel.CarDetail.HarnessStatus" />
+    </div>
+
+    <div class="form-group">
+        <label for="FullVin">FullVin:</label>
+        <InputText id="FullVin" class="form-control" @bind-Value="newCarModel.CarDetail.FullVin" />
+    </div>
+
+    <div class="form-group">
+        <label for="SoftwareVersion">SoftwareVersion:</label>
+        <InputText id="SoftwareVersion" class="form-control" @bind-Value="newCarModel.CarDetail.SoftwareVersion" />
+    </div>
+
+    <div class="form-group">
+        <label for="Adas">Adas:</label>
+        <InputText id="Adas" class="form-control" @bind-Value="newCarModel.CarDetail.Adas" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Car</button>
+</EditForm>
+
+@code {
+    private class NewCarModel
+    {
+        public Car Car { get; set; } = new Car();
+        public CarDetail CarDetail { get; set; } = new CarDetail();
+    }
+
+    NewCarModel newCarModel = new NewCarModel();
+
+    [Parameter]
+    public EventCallback OnCarAdded { get; set; }
+
+    private async void HandleValidSubmit()
+    {
+
+        newCarModel.Car.CarDetail = newCarModel.CarDetail;
+        await CarService.AddCarAsync(newCarModel.Car);
+        // Clear the form
+        newCarModel = new NewCarModel();
+
+        // Notify the parent component to refresh the car list
+        await OnCarAdded.InvokeAsync();
+
+        //newCarModel.Car.CarDetail = newCarModel.CarDetail;
+        //await CarService.AddCarAsync(newCarModel.Car);
+        //NavigationManager.NavigateTo("/carlist2");
+    }
+}

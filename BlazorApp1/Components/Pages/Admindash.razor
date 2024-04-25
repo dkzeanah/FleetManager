@@ -1,0 +1,78 @@
+﻿@page "/adminpanel"
+
+@using BlazorApp1.Data;
+@using Microsoft.EntityFrameworkCore;
+@using System.Security.Claims;
+@inject ICarService CarService
+@inject IUserService UserService
+@inject IEventService EventService
+@inject ISimpleEventTypeService SimpleEventTypeService
+@inject RoleManager<IdentityRole> RoleManager
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Admin Panel</h3>
+
+
+
+<p>Select a role to add a claim:</p>
+
+@if (selectedRoleName == null)
+{
+    <select @bind="selectedRoleName">
+        <option value="">-- Select a Role --</option>
+        @foreach (var role in roles)
+        {
+            <option value="@role.Name
+            ">@role.Name
+            </option>
+        }
+    </select>
+}
+@if (!string.IsNullOrEmpty(selectedRoleName))
+{
+    <div>
+        <h4>Add Claim to @selectedRoleName</h4>
+        <label>Claim Type:</label>
+        <input type="text" @bind="claimType" />
+
+        <label>Claim Value:</label>
+        <input type="text" @bind="claimValue" />
+
+        <button @onclick="HandleAddClaim">Add Claim</button>
+    </div>
+}
+
+@code {
+    private List<IdentityRole> roles = new List<IdentityRole>();
+    private string selectedRoleName;
+    private string claimType;
+    private string claimValue;
+    private List<Car> cars = new List<Car>();
+    private List<SimpleEventType> simpleEventTypes = new List<SimpleEventType>();
+    protected override async Task OnInitializedAsync()
+    {
+        string currentUserId = await UserService.GetCurrentUserIdAsync();
+        ApplicationUser currentUser = await UserService.GetUserByIdAsync(currentUserId);
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+        simpleEventTypes = (await SimpleEventTypeService.GetSimpleEventTypesAsync()).ToList(); // Event Types scoped-to-Events Comprising pertaining to User-Scoped Events Being Created.
+        roles = await RoleManager.Roles.ToListAsync();
+
+    }
+
+
+    private async Task HandleAddClaim()
+    {
+        var role = await RoleManager.FindByNameAsync(selectedRoleName);
+        if (role != null)
+        {
+            var claim = new Claim(claimType, claimValue);
+            var result = await RoleManager.AddClaimAsync(role, claim);
+            if (result.Succeeded)
+            {
+                claimType = "";
+                claimValue = "";
+            }
+        }
+    }
+}

@@ -1,0 +1,147 @@
+
+recognition - 
+jpg to ascii representation of a window / layout graphically
+
+
+
+
+window is the first top layer
+
+controls within window
+key shortcuts, menu items, etc
+
+main active - working area - canvas of window
+
+auxillary gui possibilities - detection / handling procedures 
+
+external application calling /
+
+
+click / keyboard input / touch input  
+
+
+/////
+toggling the navbar on one client effects the ui state in another client browser -
+i.e. accidentally I made the navbar toggle a 'not-localized' -- what nuance is enabling this behavior in my blazor server application. is it because im using a singleton service to achieve the toggle? can it happen without it being a singleton service if so? how do i make it a localized feature where individual instances of the blazor server app running only toggles for each use case basis.
+
+I can tell there is some nuance i need to understand to effictively manage an application that can handle 1000+ users at any time. what are some considerations i need to make in this real in the context of a blazor server application in .net 7 c#(c sharp) .net app?
+
+as a side, when i  close the edge instance that running via visual studio has created - the application also quits 'serving' or running. but in theory, I want it to run regardless if edge instance is active / running all the same in a background and minimized application in my windows environment. in a sense, it should run on start-up and continue to run until prompted for exiting.
+
+
+on a side, side note - when submitting a change in one client - that hits the database and updates the value and shows in the client that made the entry - the other clients do not see the updated value instantly ( it should show the update in real-time so a hub is necessary for that?) -- or more succinctly, what are all the ways to make the other clients have the updated value when it is submitted from a different client, but the extra clients (ongoing signalr connections), havent made any changes to 're-fetch' the entity and new value from the database.
+
+
+i want to utilize the signalr of my blazor server application to impliment a real-time hub, but the example projects come pre-wired up or pre configured. My project I will need to manually wire up the necessary steps to achieve the same functionality. can you walk me through the necessary additions from implimenting the signalr real-time hub feature from scratch in an existing blazor server project
+
+
+ ;//=== followups
+
+utilizing the cache mechanism effectively in blazor server.
+how can i impliment a self-created 'load-balancer' working example? Can achieve using 2 seperate laptops, is that even necessary?
+
+
+obtaining a specific laptops windows liscence for use on a virtual environment vice the hardware its currently attached to -- some bios application tool?
+
+
+
+hirens bootcd
+diskinternals
+adventure ide
+windows 10 iso
+silktest
+https://www.mediawiki.org/wiki/MediaWiki
+https://web.archive.org/web/20130301222155/http://en.wikipedia.org/wiki/Category:Emulation_software
+https://web.archive.org/web/20130523165503/http://en.wikipedia.org/wiki/Category:Free_emulation_software
+https://web.archive.org/web/20101221085718/http://www.opensourcetesting.org/functional.php
+*running c++, python, c in,from a  c# application
+8
+
+
+USBView: USBView is a Windows-based utility provided by Microsoft that allows you to view detailed information about connected USB devices. It provides information about the device descriptors, configurations, interfaces, and endpoints. You can use USBView to inspect the USB topology and gather information about your USB flash drive.
+
+USBlyzer: USBlyzer is a commercial USB analysis tool for Windows that provides advanced monitoring and analyzing capabilities for USB devices. It allows you to capture and analyze USB traffic, monitor USB device events, and explore the USB device hierarchy. USBlyzer can help you gain deeper insights into the USB communication and behavior of your USB flash drive.
+
+Wireshark: Wireshark is a powerful open-source network protocol analyzer that can also be used to analyze USB traffic. By capturing USB packets with Wireshark, you can examine the USB communication between your computer and the USB flash drive. However, note that capturing USB traffic with Wireshark typically requires additional hardware or software drivers.
+
+USB Forensic Tools: There are specialized forensic tools available, such as USBPcap and USB Detective, that focus on USB device analysis and investigation. These tools are primarily used in forensic and security-related contexts to examine USB devices for potential malicious activities or data breaches.
+
+USB Device Libraries and APIs: If you have programming skills, you can utilize USB device libraries and APIs to interact with USB devices at a lower level. Libraries like libusb or pyusb provide programming interfaces that allow you to communicate with USB devices, send commands, and retrieve data from them.
+
+
+
+1: diskpart
+2: list disk
+3: clean
+4: create partition primary
+5: format fs=fat32 quick
+5: active
+6: assign
+
+
+
+
+toggling the navbar on one client effects the ui state in another client browser -
+i.e. accidentally I made the navbar toggle a 'not-localized' -- what nuance is enabling this behavior in my blazor server application. is it because im using a singleton service to achieve the toggle? can it happen without it being a singleton service if so? how do i make it a localized feature where individual instances of the blazor server app running only toggles for each use case basis.
+
+I can tell there is some nuance i need to understand to effictively manage an application that can handle 1000+ users at any time. what are some considerations i need to make in this real in the context of a blazor server application in .net 7 c#(c sharp) .net app?
+
+as a side, when i  close the edge instance that running via visual studio has created - the application also quits 'serving' or running. but in theory, I want it to run regardless if edge instance is active / running all the same in a background and minimized application in my windows environment. in a sense, it should run on start-up and continue to run until prompted for exiting.
+
+
+on a side, side note - when submitting a change in one client - that hits the database and updates the value and shows in the client that made the entry - the other clients do not see the updated value instantly ( it should show the update in real-time so a hub is necessary for that?) -- or more succinctly, what are all the ways to make the other clients have the updated value when it is submitted from a different client, but the extra clients (ongoing signalr connections), havent made any changes to 're-fetch' the entity and new value from the database.
+
+
+i want to utilize the signalr of my blazor server application to impliment a real-time hub, but the example projects come pre-wired up or pre configured. My project I will need to manually wire up the necessary steps to achieve the same functionality. can you walk me through the necessary additions from implimenting the signalr real-time hub feature from scratch in an existing blazor server project
+
+
+ ;//=== followups
+
+utilizing the cache mechanism effectively in blazor server.
+how can i impliment a self-created 'load-balancer' working example? Can achieve using 2 seperate laptops, is that even necessary?
+
+
+obtaining a specific laptops windows liscence for use on a virtual environment vice the hardware its currently attached to -- some bios application tool?
+
+
+
+hirens bootcd
+diskinternals
+adventure ide
+windows 10 iso
+silktest
+https://www.mediawiki.org/wiki/MediaWiki
+https://web.archive.org/web/20130301222155/http://en.wikipedia.org/wiki/Category:Emulation_software
+https://web.archive.org/web/20130523165503/http://en.wikipedia.org/wiki/Category:Free_emulation_software
+https://web.archive.org/web/20101221085718/http://www.opensourcetesting.org/functional.php
+*running c++, python, c in,from a  c# application
+8
+
+
+USBView: USBView is a Windows-based utility provided by Microsoft that allows you to view detailed information about connected USB devices. It provides information about the device descriptors, configurations, interfaces, and endpoints. You can use USBView to inspect the USB topology and gather information about your USB flash drive.
+
+USBlyzer: USBlyzer is a commercial USB analysis tool for Windows that provides advanced monitoring and analyzing capabilities for USB devices. It allows you to capture and analyze USB traffic, monitor USB device events, and explore the USB device hierarchy. USBlyzer can help you gain deeper insights into the USB communication and behavior of your USB flash drive.
+
+Wireshark: Wireshark is a powerful open-source network protocol analyzer that can also be used to analyze USB traffic. By capturing USB packets with Wireshark, you can examine the USB communication between your computer and the USB flash drive. However, note that capturing USB traffic with Wireshark typically requires additional hardware or software drivers.
+
+USB Forensic Tools: There are specialized forensic tools available, such as USBPcap and USB Detective, that focus on USB device analysis and investigation. These tools are primarily used in forensic and security-related contexts to examine USB devices for potential malicious activities or data breaches.
+
+USB Device Libraries and APIs: If you have programming skills, you can utilize USB device libraries and APIs to interact with USB devices at a lower level. Libraries like libusb or pyusb provide programming interfaces that allow you to communicate with USB devices, send commands, and retrieve data from them.
+
+
+
+1: diskpart
+2: list disk
+3: clean
+4: create partition primary
+5: format fs=fat32 quick
+5: active
+6: assign
+
+C:\Users\zeanahd> 
+curl -X POST -k -H "Content-Type: multipart/form-data" -F "file=@c:/dev/file2.txt" https://llq9gqvx-7148.use.devtunnels.ms/api/sensordata/upload
+{"message":"File uploaded successfully!"}
+
+C:\Users\zeanahd>
+curl -X POST -H "Content-Type: multipart/form-data" -F "file=@c:/dev/file3.txt" https://localhost:7148/api/sensordata/upload
+{"message":"File uploaded successfully!"}

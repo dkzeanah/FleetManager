@@ -1,0 +1,33 @@
+﻿@inject ICarService CarService
+
+<h2>All Modules</h2>
+<button @onclick="LoadModules">Load Modules</button>
+<ul>
+    @foreach (var module in modules)
+    {
+        <li>@module.Name (Assigned to Car ID: @module.CarId)</li>
+        <button @onclick="() => ShowUpdateModuleModal(module.ModuleId)">Update</button>
+    }
+</ul>
+
+@code {
+    private List<Module> modules = new List<Module>();
+
+    private async Task LoadModules()
+    {
+        var cars = await CarService.GetAllCarsWithDetailsAsync(); // Make sure this method includes loading Modules for each Car.
+        modules.Clear();
+        foreach (var car in cars)
+        {
+            if (car.Modules != null)
+            {
+                modules.AddRange(car.Modules);
+            }
+        }
+    }
+
+    private void ShowUpdateModuleModal(int moduleId)
+    {
+        // Show update module modal
+    }
+}

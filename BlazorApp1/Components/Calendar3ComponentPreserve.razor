@@ -1,0 +1,681 @@
+﻿@* @page "/your-calendar-page"
+ *@
+
+ @using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@using BlazorApp1.Data
+
+@inject IJSRuntime jsRuntime
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ILogger<Calendar2Component> Logger
+
+@* <style>
+
+    .calendar-day.in-range {
+        background-color: #c0e0f0; /* Color to indicate selected range */
+    }
+
+    .calendar {
+        border: 1px solid #ddd;
+        padding: 10px;
+        width: 300px;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+    }
+
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+    }
+
+    .calendar-day {
+        padding: 5px;
+        border: 1px solid #eee;
+    }
+
+    .range-picker {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .range-picker input {
+            margin-right: 5px;
+        }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 10px 0;
+        background-color: #f4f4f4;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+        .toolbar > * {
+            margin: 0 5px;
+        }
+
+        .toolbar select,
+        .toolbar input[type="text"],
+        .toolbar input[type="color"],
+        .toolbar input[type="date"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            line-height: 1.5;
+        }
+
+        .toolbar button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+            .toolbar button:hover {
+                background-color: #0056b3;
+            }
+
+</style> *@
+@* <style>
+    .calendar-day.in-range {
+        background-color: #c0e0f0; /* Color to indicate selected range */
+    }
+
+    .calendar {
+        border: 1px solid #ddd;
+        padding: 10px;
+        width: 300px;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+    }
+
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+    }
+
+    .calendar-day {
+        padding: 5px;
+        border: 1px solid #eee;
+    }
+
+    .range-picker {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .range-picker input {
+            margin-right: 5px;
+        }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 10px 0;
+        background-color: #f4f4f4;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+        .toolbar > * {
+            margin: 0 5px;
+        }
+
+        .toolbar select,
+        .toolbar input[type="text"],
+        .toolbar input[type="color"],
+        .toolbar input[type="date"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            line-height: 1.5;
+        }
+
+        .toolbar button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+            .toolbar button:hover {
+                background-color: #0056b3;
+            }
+
+    .calendar-day {
+        display: flex;
+        position: relative;
+        /* Other styles for day cells */
+    }
+
+    .task-range-strip {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0.5; /* Adjust for desired transparency */
+        z-index: 1; /* Below the text */
+    }
+
+    .task-text {
+        z-index: 2; /* Above the strip */
+        display: grid;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        /* Other styles for text */
+    }
+
+</style> *@
+
+@if (_isCollapsed)
+{
+    <button @onclick="ToggleCollapse">Expand</button>
+}
+else
+{
+    <div class="toolbar">
+        <!-- Previous and Next month buttons -->
+        <button @onclick="PreviousMonth">←</button>
+        <span>@_currentMonth.ToString("MMMM yyyy")</span>
+        <button @onclick="NextMonth">→</button>
+
+
+        <select @onchange="OnUserSelected">
+            <option value="">Select User</option>
+            @foreach (var user in _users)
+            {
+                <option value="@user.FriendlyName">@user.FriendlyName</option>
+            }
+        </select>
+
+        <!-- Button to add the selected user to the selected day -->
+        <button @onclick="SetUserForSelectedDay">Add User to Day</button>
+
+        <!-- Apply Text and Change Color -->
+        <input type="text" @bind="_inputForSelectedDay" placeholder="Enter text" />
+        <input type="color" @bind="_colorToAssign" />
+        <button @onclick="ApplyInputToSelectedDay">Apply Text</button>
+        <button @onclick="ChangeUserColor">Change Color</button>
+
+        <!-- Range-related actions -->
+        @if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+        {
+            <button @onclick="DeleteSelectedRange">Delete Range</button>
+            <button @onclick="UngroupSelectedRange">Ungroup Range</button>
+        }
+
+        <!-- Show and Collapse buttons -->
+        <button @onclick="ShowRangePicker">Add Range</button>
+        <button @onclick="ToggleCollapse">Collapse</button>
+    </div>
+
+    @RenderCalendar()
+
+    <!-- Range Picker -->
+    @if (_showRangePicker)
+    {
+        <div class="range-picker">
+            <input type="date" @bind="_rangeStart" />
+            <input type="date" @bind="_rangeEnd" />
+            <button @onclick="AddRange">Add</button>
+        </div>
+    }
+}
+
+@code {
+    private DateTime _rangeStart;
+    private DateTime _rangeEnd;
+    private DateTime _currentMonth = DateTime.Today;
+    private DateTime? _selectedDay;
+    private string _inputForSelectedDay;
+    private DateTime? _selectedRangeStart;
+    private DateTime? _selectedRangeEnd;
+
+    private List<(DateTime start, DateTime end)> _ranges = new();
+
+    private Dictionary<DateTime, string> _dayTexts = new Dictionary<DateTime, string>();
+    private Dictionary<DateTime, List<TaskModel>> _dayTasks = new Dictionary<DateTime, List<TaskModel>>();
+
+    //private List<string>? _users = new List<string> { "Andreas", "Shannon", "Lamar", "Marty", "Tim", "Donovan", "Nathaniel", "Hendrik", "Charlie", "Sawyer" };
+    private List<ApplicationUser> _users = new List<ApplicationUser>();
+    private bool _isCollapsed = false;
+    private bool _showRangePicker = false;
+
+
+
+    private string _userToEdit;
+    private string _colorToAssign;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _users = await UserService.GetAllUsersAsync();
+            var tasks = await TaskModelService.GetAllTaskModels();
+            _dayTasks = tasks.GroupBy(task => task.DateAssigned.Date)
+                            .ToDictionary(group => group.Key, group => group.ToList());
+            Logger.LogInformation("oninitializedmethodover");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Initialization failed: {ex.Message}");
+
+        }
+    }
+
+    
+    // private void SetUserForSelectedDay()
+    // {
+    //     if (string.IsNullOrWhiteSpace(_userToEdit) || !_selectedDay.HasValue) return;
+
+    //     var user = _users.FirstOrDefault(u => u.FriendlyName == _userToEdit);
+    //     if (user is null)
+    //     {
+    //         Logger.LogWarning($"User not found: {_userToEdit}");
+    //         return;
+    //     }
+
+    //     if (!_dayTasks.ContainsKey(_selectedDay.Value))
+    //         _dayTasks[_selectedDay.Value] = new List<TaskModel>();
+
+    //     var newTask = new TaskModel
+    //         {
+    //             UserId = user.Id,
+    //             DateAssigned = _selectedDay.Value,
+    //             Task = _inputForSelectedDay,
+    //             IsComplete = false
+    //         };
+
+    //     _dayTasks[_selectedDay.Value].Add(newTask);
+    //     Logger.LogInformation($"Added task for {user.FriendlyName} on {_selectedDay.Value.ToShortDateString()}");
+    // }
+    private void OnUserSelected(ChangeEventArgs e)
+    {
+        _userToEdit = e.Value.ToString();
+        Logger.LogInformation($"User selected: {_userToEdit}");
+
+    }
+
+    private void ShowRangePicker()
+    {
+        // Set default range from current day to 3 days after
+        _rangeStart = DateTime.Today;
+        _rangeEnd = DateTime.Today.AddDays(3);
+        _showRangePicker = true;
+        Logger.LogInformation($"Showing range picker: {_rangeStart.ToShortDateString()} to {_rangeEnd.ToShortDateString()}");
+
+    }
+    // private void ApplyInputToSelectedDay()
+    // {
+    //     if (!string.IsNullOrEmpty(_inputForSelectedDay))
+    //     {
+    //         if (_selectedDay.HasValue)
+    //         {
+    //             _dayTexts[_selectedDay.Value] = _inputForSelectedDay;
+    //             Logger.LogInformation($"Added text to {_selectedDay.Value.ToShortDateString()}: {_inputForSelectedDay}");
+    //         }
+    //         else if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+    //         {
+    //             // Apply text to all days in the range
+    //             for (DateTime date = _selectedRangeStart.Value; date <= _selectedRangeEnd.Value; date = date.AddDays(1))
+    //             {
+    //                 _dayTexts[date] = _inputForSelectedDay;
+    //             }
+    //             Logger.LogInformation($"Added text to range from {_selectedRangeStart.Value.ToShortDateString()} to {_selectedRangeEnd.Value.ToShortDateString()}: {_inputForSelectedDay}");
+    //         }
+    //         _inputForSelectedDay = ""; // Clear input after applying
+    //     }
+    // }                               // Call this method when you want to change the color associated with a user
+
+     private void ChangeUserColor()
+     {
+         if (!string.IsNullOrWhiteSpace(_userToEdit) && !string.IsNullOrWhiteSpace(_colorToAssign))
+         {
+             // Check if user exists in the dictionary before trying to change color
+             if (_userColors.ContainsKey(_userToEdit))
+             {
+                 _userColors[_userToEdit] = _colorToAssign;
+                 Logger.LogInformation($"Changed color of {_userToEdit} to {_colorToAssign}");
+             }
+             else
+             {
+                 // Handle scenario where the user is not in the _userColors dictionary
+                 Logger.LogWarning($"User {_userToEdit} not found in colors dictionary. Adding the user with the specified color.");
+                 _userColors.Add(_userToEdit, _colorToAssign);
+             }
+         }
+     }
+    private TaskModel newTaskModel = new TaskModel
+        {
+            User = new ApplicationUser(), // Dummy user
+            DateAssigned = DateTime.Now,
+            RangeStart = DateTime.Today,
+            RangeEnd = DateTime.Today.AddDays(3)
+        };
+
+    // ...
+
+    private async void ApplyInputToSelectedDay()
+    {
+        if (!string.IsNullOrEmpty(newTaskModel.Task))
+        {
+            if (_selectedDay.HasValue)
+            {
+                var taskForDay = new TaskModel
+                    {
+                        Task = newTaskModel.Task,
+                        User = newTaskModel.User,
+                        UserId = newTaskModel.UserId,
+                        RangeStart = _selectedDay,
+                        RangeEnd = _selectedDay
+                    };
+                taskModels.Add(taskForDay);
+                await TaskModelService.AddTaskModelAsync(taskForDay);
+            }
+            else if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+            {
+                var taskForRange = new TaskModel
+                    {
+                        Task = newTaskModel.Task,
+                        User = newTaskModel.User,
+                        UserId = newTaskModel.UserId,
+                        RangeStart = _selectedRangeStart,
+                        RangeEnd = _selectedRangeEnd
+                    };
+                taskModels.Add(taskForRange);
+                await TaskModelService.AddTaskModelAsync(taskForRange);
+            }
+        }
+        UpdateDayTasks(newTaskModel);
+        RefreshCalendar();
+    }
+    private void UpdateDayTasks(TaskModel taskModel)
+    {
+        var startDate = taskModel.RangeStart ?? DateTime.Today;
+        var endDate = taskModel.RangeEnd ?? startDate;
+
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            if (!_dayTasks.ContainsKey(date))
+            {
+                _dayTasks[date] = new List<TaskModel>();
+            }
+            _dayTasks[date].Add(taskModel);
+        }
+    }
+
+    // ...
+    private List<TaskModel> taskModels = new List<TaskModel>();
+
+    private void RefreshCalendar()
+    {
+        Console.WriteLine("RefreshCalendar Method");
+        StateHasChanged();
+    }
+
+    private async Task AddTaskRange()
+    {
+
+        newTaskModel.RangeStart = _rangeStart;
+        newTaskModel.RangeEnd = _rangeEnd;
+        taskModels.Add(newTaskModel); // Add to local list for immediate UI update
+        await TaskModelService.AddTaskModelAsync(newTaskModel); // Persist to service or database
+        newTaskModel = new TaskModel(); // Reset for next input
+        UpdateDayTasks(newTaskModel);
+        RefreshCalendar();
+    }
+
+    // ...
+
+    // Update SetUserForSelectedDay method to use newTaskModel
+    private void SetUserForSelectedDay()
+    {
+        if (!string.IsNullOrEmpty(newTaskModel.UserId) && _selectedDay.HasValue)
+        {
+            newTaskModel.User = _users.FirstOrDefault(u => u.Id == newTaskModel.UserId);
+            newTaskModel.RangeStart = _selectedDay;
+            newTaskModel.RangeEnd = _selectedDay;
+        }
+    }
+
+    // Call this method when a day is clicked
+    private void OnDayClick(DateTime day)
+    {
+        // Check if the day is part of a range
+        var range = _ranges.FirstOrDefault(r => day >= r.start && day <= r.end);
+        if (range.start != default)
+        {
+            _selectedRangeStart = range.start;
+            _selectedRangeEnd = range.end;
+            Logger.LogInformation($"Day in range clicked: {day.ToShortDateString()} in range {range.start.ToShortDateString()} to {range.end.ToShortDateString()}");
+
+        }
+        else
+        {
+            _selectedDay = day; // If it's not part of a range, select the day
+            Logger.LogInformation($"Day clicked: {day.ToShortDateString()}");
+
+        }
+    }
+
+    // Call this method to delete the selected range
+    private void DeleteSelectedRange()
+    {
+        if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+        {
+            _ranges.Remove(_ranges.First(r => r.start == _selectedRangeStart.Value && r.end == _selectedRangeEnd.Value));
+            Logger.LogInformation($"Deleted range: {_selectedRangeStart.Value.ToShortDateString()} to {_selectedRangeEnd.Value.ToShortDateString()}");
+
+            _selectedRangeStart = null;
+            _selectedRangeEnd = null;
+        }
+    }
+
+
+    private Dictionary<string, string> _userColors = new Dictionary<string, string>
+{
+    {"Andreas", "red"},
+    {"Shannon", "green"},
+    {"Lamar", "blue"},
+    {"Marty", "orange"},
+    {"Tim", "purple"},
+    {"Donovan", "cyan"},
+    {"Nathaniel", "magenta"},
+    {"Hendrik", "yellow"},
+    {"Charlie", "pink"},
+    {"Sawyer", "brown"}
+};
+
+
+
+
+
+    private void ToggleCollapse()
+    {
+        _isCollapsed = !_isCollapsed;
+        Logger.LogInformation($"Calendar collapsed status: {_isCollapsed}");
+    }
+
+
+
+    private void AddRange()
+    {
+        _ranges.Add((_rangeStart, _rangeEnd));
+        Logger.LogInformation($"Added range: {_rangeStart.ToShortDateString()} - {_rangeEnd.ToShortDateString()}");
+        _showRangePicker = false;
+    }
+
+    private void PreviousMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(-1);
+        Logger.LogInformation($"Navigated to {_currentMonth.ToString("MMMM yyyy")}");
+    }
+
+    private void NextMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(1);
+        Logger.LogInformation($"Navigated to {_currentMonth.ToString("MMMM yyyy")}");
+    }
+    private void UngroupSelectedRange()
+    {
+        if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+        {
+            _selectedRangeStart = null;
+            _selectedRangeEnd = null;
+            Logger.LogInformation("Selected range ungrouped");
+        }
+    }
+    private RenderFragment RenderCalendar() => builder =>
+    {
+    var daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
+    var startDayOfMonth = new DateTime(_currentMonth.Year, _currentMonth.Month, 1).DayOfWeek;
+    var dayOffset = (int)startDayOfMonth - (int)DayOfWeek.Monday; // Adjust for Monday start
+    dayOffset = dayOffset < 0 ? 7 + dayOffset : dayOffset;
+
+    // Calendar header
+    builder.OpenElement(0, "div");
+    builder.AddAttribute(1, "class", "calendar-header");
+    // ... [header content]
+
+        // Calendar days
+        builder.OpenElement(4, "div");
+        builder.AddAttribute(5, "class", "calendar-days");
+        int dayCounter = 1;
+        for (int cell = 0; cell < daysInMonth + dayOffset; cell++)
+        {
+            builder.OpenElement(6, "div");
+            builder.AddAttribute(7, "class", "calendar-day");
+
+            if (cell >= dayOffset)
+            {
+                DateTime currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, dayCounter);
+                builder.AddAttribute(8, "onclick", EventCallback.Factory.Create(this, () => OnDayClick(currentDate)));
+
+                // Check for tasks on the current day
+                if (_dayTasks.TryGetValue(currentDate, out var tasksForDay) && tasksForDay.Any())
+                {
+                    foreach (var task in tasksForDay)
+                    {
+                        builder.OpenElement(9, "div");
+                        builder.AddAttribute(10, "class", "task-item");
+                        builder.AddContent(11, $"{task.User?.FriendlyName} - {task.Task} - Complete: {task.IsComplete}");
+                        builder.CloseElement();
+                    }
+                }
+                else
+                {
+                    // Always display the day number
+                    builder.AddContent(12, dayCounter.ToString());
+                }
+                dayCounter++;
+            }
+            else
+            {
+                builder.AddContent(8, string.Empty);
+            }
+
+            builder.CloseElement(); // Close the day cell
+        }
+        builder.CloseElement(); // Close the calendar days container
+        builder.CloseElement(); // Close the calendar days container
+
+    };
+    // private RenderFragment RenderCalendar2() => builder =>
+    //  {
+    //      var daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
+    //      var startDayOfMonth = new DateTime(_currentMonth.Year, _currentMonth.Month, 1).DayOfWeek;
+    //      var dayOffset = (int)startDayOfMonth - (int)DayOfWeek.Monday; // Adjust for Monday start
+    //      dayOffset = dayOffset < 0 ? 7 + dayOffset : dayOffset;
+
+    //      // Calendar header
+    //      builder.OpenElement(0, "div");
+    //      builder.AddAttribute(1, "class", "calendar-header");
+    //      for (int i = 0; i < 7; i++)
+    //      {
+    //          builder.OpenElement(2, "div");
+    //          builder.AddContent(3, CultureInfo.CurrentCulture.DateTimeFormat.GetDayName((DayOfWeek)((i + (int)DayOfWeek.Monday) % 7)));
+    //          builder.CloseElement();
+    //      }
+    //      builder.CloseElement();
+
+    //      // Calendar days
+    //      builder.OpenElement(4, "div");
+    //      builder.AddAttribute(5, "class", "calendar-days");
+    //      int dayCounter = 1;
+    //      for (int cell = 0; cell < daysInMonth + dayOffset; cell++)
+    //      {
+    //          builder.OpenElement(6, "div");
+    //          builder.AddAttribute(7, "class", "calendar-day");
+
+    //          if (cell >= dayOffset)
+    //          {
+    //              // Actual days of the month
+    //              DateTime currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, dayCounter);
+    //              bool isInRange = _ranges.Any(range => currentDate >= range.start && currentDate <= range.end);
+    //              string additionalClass = isInRange ? " in-range" : "";
+    //              builder.AddAttribute(7, "class", $"calendar-day{additionalClass}");
+
+    //              // Display the day number
+    //              builder.AddContent(8, dayCounter.ToString());
+
+    //              // Display tasks for the day
+    //              if (_dayTasks.TryGetValue(currentDate, out var tasksForDay))
+    //              {
+    //                  foreach (var task in tasksForDay)
+    //                  {
+    //                      builder.OpenElement(9, "div");
+    //                      builder.AddAttribute(10, "class", "task-item");
+    //                      builder.AddContent(11, $"{task.Task} - Complete: {task.IsComplete}");
+    //                      builder.CloseElement();
+    //                  }
+    //              }
+
+    //              dayCounter++;
+    //          }
+    //          else
+    //          {
+    //              // Empty cells before start of month
+    //              builder.AddContent(8, string.Empty);
+    //          }
+
+    //          builder.CloseElement(); // Close the day cell
+    //      }
+    //      builder.CloseElement(); // Close the calendar days container
+    //  };
+
+}

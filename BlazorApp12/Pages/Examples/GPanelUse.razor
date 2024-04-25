@@ -1,0 +1,96 @@
+﻿
+    @code {
+        // Parameters for the GPanel component
+        [Parameter] public string HeaderText { get; set; } // The text to display in the panel's header
+        [Parameter] public bool IsCollapsible { get; set; } // Whether the panel can be collapsed
+        [Parameter] public bool IsInitiallyCollapsed { get; set; } // Whether the panel is initially collapsed
+        [Parameter] public RenderFragment ChildContent { get; set; } // The child content of the panel
+
+        // Field to track whether the panel is collapsed
+        private bool isCollapsed;
+
+        // Method to run when the component is initialized
+        protected override void OnInitialized()
+        {
+            // Set the initial collapsed state of the panel
+            isCollapsed = IsInitiallyCollapsed;
+        }
+
+        // Method to toggle the collapsed state of the panel
+        private void ToggleCollapse()
+        {
+            // Only toggle the collapsed state if the panel is collapsible
+            if (IsCollapsible)
+            {
+                isCollapsed = !isCollapsed;
+            }
+        }
+    
+    // A Truck object with some properties and methods
+    private Truck myTruck = new Truck
+        {
+            Make = "Tesla",
+            Model = "Model 3",
+            Year = 2020,
+            Color = "Red",
+            IsElectric = true
+        };
+
+    // A method to display the truck's details
+    private string DisplayTruckDetails(Truck truck)
+    {
+        return $"{truck.Year} {truck.Make} {truck.Model} ({truck.Color}) - {(truck.IsElectric ? "Electric" : "Gas")}";
+    }
+
+    // A Truck class with some properties and methods
+    public class Truck
+    {
+        public string Make { get; set; }
+        public string Model { get; set; }
+        public int Year { get; set; }
+        public string Color { get; set; }
+        public bool IsElectric { get; set; }
+    }
+}
+
+<GPanel HeaderText="Truck Details" IsCollapsible="true" IsInitiallyCollapsed="false">
+    <p>@DisplayTruckDetails(myTruck)</p>
+</GPanel>
+<div class="gpanel">
+    <!-- The panel's header, which toggles the collapsed state when clicked -->
+    <div class="gpanel-header" @onclick="ToggleCollapse">@HeaderText</div>
+    <!-- The panel's content, which is shown or hidden based on the collapsed state -->
+    <div class="gpanel-content" style="display: @(isCollapsed ? "none" : "block")">
+        @ChildContent
+    </div>
+</div>
+
+<div class="card">
+    <!-- The panel's header, which toggles the collapsed state when clicked -->
+    <div class="card-header" @onclick="ToggleCollapse">@HeaderText</div>
+    <!-- The panel's content, which is shown or hidden based on the collapsed state -->
+    <div class="collapse @(isCollapsed ? "" : "show")">
+        <div class="card-body">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+<style>
+    .gpanel-header {
+        cursor: pointer;
+        background-color: #f8f9fa;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+
+    .gpanel-content {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 5px 5px;
+    }
+</style>
+
+@page "/Gpan"

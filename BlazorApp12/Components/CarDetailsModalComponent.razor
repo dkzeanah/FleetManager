@@ -1,0 +1,22 @@
+﻿<ModalComponent @ref="detailsModal" IsOpen="isModalOpen" Title="Car Details">
+    <!-- Modal Content Here -->
+</ModalComponent>
+
+@code {
+    private ModalComponent detailsModal; 
+    private bool isModalOpen;
+    private Car? selectedCar;
+
+    void OpenModal(Car car)
+    {
+        selectedCar = car;
+        isModalOpen = true;
+    }
+
+    void CloseModal()
+    {
+        isModalOpen = false;
+    }
+
+    // Other related methods
+}

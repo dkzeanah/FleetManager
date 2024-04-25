@@ -1,0 +1,20 @@
+﻿<!-- ToolbarComponent.razor -->
+
+<div class="toolbar">
+    <button class="toolbar-btn">Bold</button>
+    <button class="toolbar-btn">Italics</button>
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> FormatSelected { get; set; }
+
+    void Bold()
+    {
+        FormatSelected.InvokeAsync("bold");
+    }
+
+    void Italics()
+    {
+        FormatSelected.InvokeAsync("italics");
+    }
+}

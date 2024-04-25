@@ -1,0 +1,32 @@
+@page "/usereventlistcomponent"
+@inject IEventTypeService EventTypeService
+@inject ICarEventDetailRepository EventCarStaticDetailRepository
+
+@if (eventTypes == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    foreach (var userEvent in UserEvents)
+    {
+        var eventType = eventTypes.FirstOrDefault(et => et.Id == userEvent.Id);
+        <p class="card-text">@eventType?.Name: @userEvent.StartTime - @userEvent.EndTime</p>
+        <button @onclick="() => AddCarEventDetail.InvokeAsync(userEvent)">Add Car Event Detail</button>
+    }
+}
+
+@code {
+    [Parameter]
+    public List<Event> UserEvents { get; set; }
+
+    [Parameter]
+    public EventCallback<Event> AddCarEventDetail { get; set; }
+
+    private List<EventType> eventTypes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        eventTypes = (await EventTypeService.GetEventTypesAsync()).ToList();
+    }
+}

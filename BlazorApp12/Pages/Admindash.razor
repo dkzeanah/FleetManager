@@ -1,0 +1,103 @@
+﻿@page "/Adminpanel"
+@using BlazorApp1.Repositories;
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+@attribute [Authorize(Roles = "Admin")]
+@inject RoleManager<IdentityRole> RoleManager
+@inject IEventTypeService EventTypeService
+@inject IRoleEventMappingService RoleEventMappingService
+
+@inject NavigationManager NavManager
+
+<h3>Admin Panel</h3>
+@*
+<p>Select a role to add a claim:</p>
+
+@*<select @bind="selectedRoleName">
+    <option value="">-- Select a Role --</option>
+    @foreach (var role in roles)
+    {
+        <option value="@role.Name">@role.Name</option>
+    }
+</select>*@
+
+@*if (!string.IsNullOrEmpty(selectedRoleName))
+{
+    <div>
+        <h4>Add Claim to @selectedRoleName</h4>
+        <label>Claim Type:</label>
+        <input type="text" @bind="claimType" />
+
+        <label>Claim Value:</label>
+        <input type="text" @bind="claimValue" />
+
+        <button @onclick="HandleAddClaim">Add Claim</button>
+    </div>
+}*@
+
+@if (roleEventMappings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="roleEventMappings" OnValidSubmit="UpdateRoleEventMappings">
+        @foreach (var mapping in roleEventMappings)
+        {
+            <div class="form-group">
+                <label>@mapping.RoleId</label>
+                <InputSelect @bind-Value="mapping.DefaultEventTypeId" class="form-control">
+                    @foreach (var eventType in eventTypes)
+                    {
+                        <option value="@eventType.Id">@eventType.Name</option>
+                    }
+                </InputSelect>
+            </div>
+        }
+        <button type="submit" class="btn btn-primary">Update</button>
+    </EditForm>
+}
+
+@code {
+    //private List<IdentityRole> roles;
+    //private string selectedRoleName;
+    //private string claimType;
+    //private string claimValue;
+
+    //protected override async Task OnInitializedAsync()
+   // {
+        //roles = await RoleManager.Roles.ToListAsync();
+    //}
+
+    //private async Task HandleAddClaim()
+    //{
+    //    var role = await RoleManager.FindByNameAsync(selectedRoleName);
+    //    if (role != null)
+    //    {
+    //        var claim = new Claim(claimType, claimValue);
+    //        var result = await RoleManager.AddClaimAsync(role, claim);
+    //        if (result.Succeeded)
+    //        {
+    //            claimType = "";
+    //            claimValue = "";
+    //        }
+    //    }
+    //}
+    private List<RoleEventMapping> roleEventMappings;
+    private List<EventType> eventTypes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        roleEventMappings = (await RoleEventMappingService.GetRoleEventMappingsAsync()).ToList();
+        eventTypes = (await EventTypeService.GetEventTypesAsync()).ToList();
+    }
+
+    private async Task UpdateRoleEventMappings()
+    {
+        foreach (var mapping in roleEventMappings)
+        {
+            await RoleEventMappingService.UpdateRoleEventMappingAsync(mapping);
+        }
+        NavManager.NavigateTo("/admin", forceLoad: true);
+    }
+}

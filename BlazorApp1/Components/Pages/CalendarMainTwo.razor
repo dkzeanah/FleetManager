@@ -1,0 +1,430 @@
+﻿@page "/Calendarmaintwo"
+@using BlazorApp1.Data
+@using BlazorApp1.CarModels
+@using System.Globalization
+
+@inject IJSRuntime jsRuntime
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ILogger<Calendar> logger
+
+<h1>Known Quirk</h1>
+<h1>Calendar</h1>
+<button @onclick="CreateSquare">Create Square</button>
+<div class="grid-container">
+    @for (int dayOfYear = 1; dayOfYear <= 365; dayOfYear++)
+    {
+        DateTime date = new DateTime(DateTime.Now.Year, 1, 1).AddDays(dayOfYear - 1);
+        <div class="grid-row">
+            <div class="day-label">
+                @date.DayOfWeek, @date.ToShortDateString()
+                @if (date.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    <span class="week-marker">Week @(date.DayOfYear / 7 + 1)</span>
+                }
+            </div>
+            @foreach (var user in users)
+            {
+                <div @onclick="() => OpenDayTasksForUser(date.Day, user)" id="@($"day-box-{dayOfYear}-{user.Id}")" class="grid-item day-box">
+                    <input class="form-control mb-1 user-input" @onfocus="() => OpenDayTasksForUser(date.Day, user)" placeholder="@user.UserName" />
+                    <button @onclick="() => CreateSquareForUser(date.Day, user.Id)">Create Square</button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<p>/////==========================\\\\\\</p>
+
+<h1>Calendar</h1>
+
+<div class="calendar-header">
+    <button @onclick="PreviousMonth">&lt;</button>
+    <span>@currentMonth.ToString("MMMM yyyy")</span>
+    <button @onclick="NextMonth">&gt;</button>
+</div>
+
+<button @onclick="CreateSquare">Create Square</button>
+<div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(currentMonth.Year, currentMonth.Month); i++)
+    {
+        int day = i;
+        <div @onclick="() => OpenDayTasks(day)" id="@($"day-box-{i}")" class="grid-item day-box">
+            @day
+            @foreach (var user in users)
+            {
+                <div class="user-container">
+                    <input class="form-control mb-1 user-input" @onfocus="() => OpenDayTasksForUser(day, user)" placeholder="@user.UserName" />
+                    <button @onclick="() => CreateSquareForUser(day, user.Id)">Create Square</button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@* Modal for a Specific User *@
+@if (isDayTasksModalOpen && selectedUser != null)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay for @selectedUser.UserName</h2>
+            <EditForm Model="@newTaskModel" OnValidSubmit="AddTaskForUser">
+                <InputText @bind-Value="newTaskModel.Task" placeholder="Enter new task..." />
+                <button type="submit" class="btn btn-sm btn-secondary ml-2">Add Task</button>
+            </EditForm>
+            <TaskListComponent taskList="@GetTasksForSelectedUserAndDay()" UserId="@selectedUser.Id" />
+        </div>
+    </div>
+}
+
+
+
+
+<style>
+
+    .modal {
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 20px;
+        width: 60%;
+        z-index: 1001;
+        border-radius: 15px;
+        box-shadow: 0px 0px 30px #000;
+    }
+
+    .close {
+        color: #e74c3c;
+        float: right;
+        font-size: 28px;
+        cursor: pointer;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        max-width: 90%;
+        margin: 20px auto;
+    }
+
+    .day-box {
+        background-color: #34495e;
+        color: #ecf0f1;
+        padding: 10px;
+        border-radius: 7px;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s;
+    }
+
+        .day-box:hover {
+            transform: scale(1.05);
+        }
+
+    .user-input {
+        background: transparent;
+        border: 1px solid #ecf0f1;
+        color: #ecf0f1;
+        border-radius: 4px;
+    }
+
+</style>
+
+
+<h1>Calendar</h1>
+<button @onclick="CreateSquare">Create Square</button>
+
+<!-- Buttons to navigate through months -->
+<button @onclick="MoveToPreviousMonth">Previous Month</button>
+<button @onclick="MoveToNextMonth">Next Month</button>
+
+<div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month); i++)
+    {
+        int day = i;
+        <div @onclick="() => OpenDayTasks(day)" id="@($"day-box-{i}")" class="grid-item day-box">
+            @day
+            @foreach (var user in users)
+            {
+                <div class="user-container">
+                    <input class="form-control mb-1 user-input" @onfocus="() => OpenDayTasksForUser(day, user)" placeholder="@user.UserName" />
+                    <button @onclick="() => CreateSquareForUser(day, user.Id)">Create Square</button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+@* Modal for a Specific User *@
+@if (isDayTasksModalOpen && selectedUser != null)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay for @selectedUser.UserName</h2>
+
+            <EditForm Model="@newTaskModel" OnValidSubmit="AddTaskForUser">
+                <InputText @bind-Value="newTaskModel.Task" placeholder="Enter new task..." />
+                <button type="submit" class="btn btn-sm btn-secondary ml-2">Add Task</button>
+            </EditForm>
+
+            <TaskListComponent taskList="@GetTasksForSelectedUserAndDay()" UserId="@selectedUser.Id" />
+        </div>
+    </div>
+}
+
+
+
+
+<style>
+    .grid-container {
+        display: flex;
+        flex-direction: column;
+        margin: 20px auto;
+    }
+    .grid-row {
+        display: flex;
+        flex-direction: row;
+    }
+    .day-label {
+        width: 200px;
+        padding: 10px;
+    }
+    .day-box {
+        flex: 1;
+        /* your existing styles */
+    }
+    .week-marker {
+        background-color: #2222f2;
+        padding: 1px;
+        border-radius: 1px;
+        margin-left: 2px;
+    }
+</style>
+
+
+@code {
+    private DateTime currentMonth = DateTime.Now;
+
+    // ... (All your existing code)
+
+    private void PreviousMonth()
+    {
+        currentMonth = currentMonth.AddMonths(-1);
+        StateHasChanged();
+    }
+
+    private void NextMonth()
+    {
+        currentMonth = currentMonth.AddMonths(1);
+        StateHasChanged();
+    }
+
+    // ... (All your existing code)
+
+    private DateTime CurrentDate = DateTime.Now; // Declare the DateTime property
+    private IJSObjectReference _interopModule;
+    private IJSObjectReference _chart;
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private List<TaskModel> taskModels = new List<TaskModel>();
+    private TaskModel newTaskModel = new TaskModel();
+    private ApplicationUser selectedUser;
+    private int selectedDay;
+    private int _squareCount = 0;
+    private bool firstRender = true;
+    private bool isDayTasksModalOpen = false;
+    private string? message;
+    //private OverlayModel selectedOverlay;  // Add this line
+    // Existing code
+
+    private void MoveToNextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        StateHasChanged();
+    }
+
+    private void MoveToPreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUsersAsync();
+        taskModels = await TaskModelService.GetAllTaskModels();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.firstRender = false;
+            _interopModule = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./interop.js");
+            Console.WriteLine("Interop module imported");
+
+            // Initialize your chart here if needed
+            // _chart = await _interopModule.InvokeAsync<IJSObjectReference>("createChart", element, initialData);
+        }
+    }
+
+
+    private async Task CreateSquare()
+    {
+        string squareId = $"square{_squareCount++}";
+        var squareReference = await _interopModule.InvokeAsync<IJSObjectReference>("createSquare", squareId);
+        Console.WriteLine($"Created square with ID: {squareId}");  // Debugging
+        await _interopModule.InvokeVoidAsync("addButtonsToSquare", squareId);
+        Console.WriteLine("Added buttons to square");
+        await Task.Delay(2000);
+        await _interopModule.InvokeVoidAsync("changeColor", squareId, "red");
+        Console.WriteLine("Changed square color");
+    }
+    private async Task CreateSquareForUser(int day, string userId)
+    {
+        try
+        {
+            string squareId = $"square_{day}_{userId}";
+
+            // Make sure the DOM has the element before trying to get its bounding rectangle
+            var dayBoxElement = await jsRuntime.InvokeAsync<IJSObjectReference>("getElementById", $"day-box-{day}");
+            if (dayBoxElement == null)
+            {
+                logger.LogError("dayBoxElement is null");
+                return;
+            }
+
+            var rect = await dayBoxElement.InvokeAsync<ClientRect>("getBoundingClientRect");
+            await _interopModule.InvokeVoidAsync("createSquare", squareId, rect.Left, rect.Top);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred: {ex.Message}");
+        }
+    }
+    private async Task CreateSquareForUser(int day, string userId, ElementReference dayBoxElement)
+    {
+        try
+        {
+            string squareId = $"square_{day}_{userId}";
+
+            var rect = await jsRuntime.InvokeAsync<ClientRect>("getBoundingClientRect", dayBoxElement);
+            await _interopModule.InvokeVoidAsync("createSquare", squareId, rect.Left, rect.Top);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");  // Debugging
+        }
+    }
+    private async Task CreateSquareForUser(int day, ApplicationUser user)
+    {
+        string squareId = $"square{day}_{user.Id}_{_squareCount++}";
+        var squareReference = await _interopModule.InvokeAsync<IJSObjectReference>("createSquare", squareId);
+        Console.WriteLine($"Created square with ID: {squareId}");  // Debugging
+        await _interopModule.InvokeVoidAsync("addButtonsToSquare", squareId);
+        Console.WriteLine("Added buttons to square");
+    }
+    private async Task UpdateChartData(List<int> newData)
+    {
+        await _chart.InvokeVoidAsync("updateData", newData);
+    }
+    private async Task ApplyChartTransformation(string transformation)
+    {
+        await _chart.InvokeVoidAsync("applyTransformation", transformation);
+    }
+
+    private void OpenDayTasks(int day)
+    {
+        try
+        {
+            selectedDay = day;
+            isDayTasksModalOpen = true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred: {ex.Message}");
+        }
+    }
+
+
+
+    private void CloseDayTasks()
+    {
+        isDayTasksModalOpen = false;
+    }
+
+
+
+    private async void AddTaskForUser(ApplicationUser user)
+    {
+        var task = new TaskModel
+            {
+                UserId = user.Id,
+                Task = "Sample Task",
+                IsComplete = false,
+                Importance = 1
+            };
+        await TaskModelService.AddTaskModel(task);
+    }
+
+
+    private void OpenDayTasksForUser(int day, ApplicationUser user)
+    {
+        selectedDay = day;
+        selectedUser = user;
+        isDayTasksModalOpen = true;
+    }
+
+
+
+    private List<TaskModel> GetTasksForSelectedUserAndDay()
+    {
+        // Assuming TaskModel has a DateAssigned property of type DateTime
+        return taskModels.Where(t => t.UserId == selectedUser.Id && t.DateAssigned.Day == selectedDay).ToList();
+    }
+
+
+
+    private async void AddTaskForUser()
+    {
+        if (selectedDay > 0 && selectedDay <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+        {
+            newTaskModel.UserId = selectedUser.Id;
+            newTaskModel.UserName = selectedUser.FriendlyName; // Assuming FriendlyName is a property on ApplicationUser
+            newTaskModel.DateAssigned = new DateTime(DateTime.Now.Year, DateTime.Now.Month, selectedDay);
+            newTaskModel.Importance = 1;
+            newTaskModel.DateExpired = newTaskModel.DateAssigned.AddDays(7); // One week from DateAssigned
+
+            await TaskModelService.AddTaskModel(newTaskModel);
+            taskModels = (await TaskModelService.GetAllTaskModels()).ToList(); // Refresh the task list
+            newTaskModel = new TaskModel(); // Clear the input field
+            StateHasChanged(); // Update the UI
+        }
+        else
+        {
+            // Handle invalid day here, perhaps log an error or show a message to the user
+        }
+
+    }
+
+    // The rest of your existing code
+}

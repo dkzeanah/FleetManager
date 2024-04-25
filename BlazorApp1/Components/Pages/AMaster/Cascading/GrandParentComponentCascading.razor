@@ -1,0 +1,11 @@
+﻿<div>
+    <h3>GrandParent Component</h3>
+    <p>Property: @GrandParentProperty</p>
+    <CascadingValue Value="this" Name="GrandParent">
+        <ParentComponentCascading />
+    </CascadingValue>
+</div>
+
+@code {
+    public string GrandParentProperty { get; set; } = "Initial Value";
+}

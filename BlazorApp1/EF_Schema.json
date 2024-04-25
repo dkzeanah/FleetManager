@@ -1,0 +1,3059 @@
+[
+  {
+    "Name": "BlazorApp1.CarModels.ApplicationUser",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "String"
+      },
+      {
+        "Name": "AccessFailedCount",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ConcurrencyStamp",
+        "Type": "String"
+      },
+      {
+        "Name": "Email",
+        "Type": "String"
+      },
+      {
+        "Name": "EmailConfirmed",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "EventId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "FirstName",
+        "Type": "String"
+      },
+      {
+        "Name": "FriendlyName",
+        "Type": "String"
+      },
+      {
+        "Name": "LastName",
+        "Type": "String"
+      },
+      {
+        "Name": "LockoutEnabled",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "LockoutEnd",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NormalizedEmail",
+        "Type": "String"
+      },
+      {
+        "Name": "NormalizedUserName",
+        "Type": "String"
+      },
+      {
+        "Name": "PasswordHash",
+        "Type": "String"
+      },
+      {
+        "Name": "PhoneNumber",
+        "Type": "String"
+      },
+      {
+        "Name": "PhoneNumberConfirmed",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "RoleId",
+        "Type": "String"
+      },
+      {
+        "Name": "SecurityStamp",
+        "Type": "String"
+      },
+      {
+        "Name": "TeamTypeId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TestReleaseId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TwoFactorEnabled",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "UserCarEventId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "UserDetailId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "UserEventId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "UserName",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "RoleId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TeamTypeId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TestReleaseId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.ApplicationUserDetail",
+    "Properties": [
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "UserId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Blank",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "String",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Car",
+    "Properties": [
+      {
+        "Name": "CarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "HasHarness",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "HasLogger",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "HasTag",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "IsAdas",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Location",
+        "Type": "String"
+      },
+      {
+        "Name": "LoggerId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Make",
+        "Type": "String"
+      },
+      {
+        "Name": "Miles",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Model",
+        "Type": "String"
+      },
+      {
+        "Name": "ParkingSpace",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "SourceId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TeleGeneration",
+        "Type": "String"
+      },
+      {
+        "Name": "TestReleaseId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      },
+      {
+        "Name": "Year",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "CarId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "TestReleaseId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.CarDetail",
+    "Properties": [
+      {
+        "Name": "CarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Adas",
+        "Type": "String"
+      },
+      {
+        "Name": "AdasBool",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "DetailId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Finas",
+        "Type": "String"
+      },
+      {
+        "Name": "FullVin",
+        "Type": "String"
+      },
+      {
+        "Name": "HarnessStatus",
+        "Type": "String"
+      },
+      {
+        "Name": "HeadUnit",
+        "Type": "String"
+      },
+      {
+        "Name": "SoftwareVersion",
+        "Type": "String"
+      },
+      {
+        "Name": "Tag",
+        "Type": "String"
+      },
+      {
+        "Name": "Vin",
+        "Type": "String"
+      },
+      {
+        "Name": "VinLast4",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "CarId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "DetailId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.CarStaticDetail",
+    "Properties": [
+      {
+        "Name": "CarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Adas",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Finas",
+        "Type": "String"
+      },
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Tag",
+        "Type": "String"
+      },
+      {
+        "Name": "Vin",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "CarId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.CarStatus",
+    "Properties": [
+      {
+        "Name": "NewCarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "StatusId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "StatusTime",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "NewCarId",
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "StatusId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.CarStatusNew",
+    "Properties": [
+      {
+        "Name": "StatusId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "StatusName",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "StatusId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Category",
+    "Properties": [
+      {
+        "Name": "CategoryId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "DefaultPriority",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "CategoryId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.CheckListItem",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CreatedAt",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "Description",
+        "Type": "String"
+      },
+      {
+        "Name": "IsCompleted",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "IsDeleted",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "IsGeneric",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "Notes",
+        "Type": "String"
+      },
+      {
+        "Name": "Priority",
+        "Type": "PriorityLevel"
+      },
+      {
+        "Name": "TargetDate",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TestReleaseId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Title",
+        "Type": "String"
+      },
+      {
+        "Name": "UpdatedAt",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CarId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TestReleaseId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Contact",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "City",
+        "Type": "String"
+      },
+      {
+        "Name": "FirstName",
+        "Type": "String"
+      },
+      {
+        "Name": "LastName",
+        "Type": "String"
+      },
+      {
+        "Name": "Phone",
+        "Type": "String"
+      },
+      {
+        "Name": "State",
+        "Type": "String"
+      },
+      {
+        "Name": "Street",
+        "Type": "String"
+      },
+      {
+        "Name": "ZipCode",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Delivery",
+    "Properties": [
+      {
+        "Name": "ShippingInfoOrderId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "DeliveryDate",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "ReceiverName",
+        "Type": "String"
+      },
+      {
+        "Name": "Signature",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "ShippingInfoOrderId",
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Detail",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ApplicationUserId",
+        "Type": "String"
+      },
+      {
+        "Name": "DetailTypeId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Discriminator",
+        "Type": "String"
+      },
+      {
+        "Name": "Value",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "ApplicationUserId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "DetailTypeId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.DetailType",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "TruckDetailId",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "TruckDetailId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Driver",
+    "Properties": [
+      {
+        "Name": "DriverId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "DrivingHours",
+        "Type": "Decimal"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "DriverId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.ErrorLog",
+    "Properties": [
+      {
+        "Name": "ErrorId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ErrorDetails",
+        "Type": "String"
+      },
+      {
+        "Name": "ErrorNotes",
+        "Type": "String"
+      },
+      {
+        "Name": "ErrorPriority",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "ErrorId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CarId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Event",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "CategoryId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Date",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "EndTime",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "EventTypeId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NoteId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "SimpleEventTypeId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "StartTime",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TextNote",
+        "Type": "String"
+      },
+      {
+        "Name": "UserEventDetail",
+        "Type": "String"
+      },
+      {
+        "Name": "UserEventDetailId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CategoryId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "EventTypeId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "NoteId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "SimpleEventTypeId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.EventDetail",
+    "Properties": [
+      {
+        "Name": "EventDetailId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "DateAdded",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "DetailId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "EventId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "EventDetailId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "DetailId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "EventId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.EventType",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "Name"
+        ],
+        "IsUnique": true
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.ExcelDataRecord",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Data",
+        "Type": "String"
+      },
+      {
+        "Name": "Hash",
+        "Type": "String"
+      },
+      {
+        "Name": "JsonData",
+        "Type": "String"
+      },
+      {
+        "Name": "LastModified",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "UploadDate",
+        "Type": "DateTime"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.ExcelDataRecordAttribute",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ExcelDataRecordId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "Value",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "ExcelDataRecordId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.ExcelDataRecordChange",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ChangeDate",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "ColumnName",
+        "Type": "String"
+      },
+      {
+        "Name": "ExcelDataRecordId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "NewValue",
+        "Type": "String"
+      },
+      {
+        "Name": "OldValue",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "ExcelDataRecordId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Issue",
+    "Properties": [
+      {
+        "Name": "IssueId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "AssignedTo",
+        "Type": "String"
+      },
+      {
+        "Name": "ModifiedAt",
+        "Type": "String"
+      },
+      {
+        "Name": "ModifiedBy",
+        "Type": "String"
+      },
+      {
+        "Name": "ModifiedByUser",
+        "Type": "String"
+      },
+      {
+        "Name": "Priority",
+        "Type": "String"
+      },
+      {
+        "Name": "Status",
+        "Type": "String"
+      },
+      {
+        "Name": "SubmittedAt",
+        "Type": "String"
+      },
+      {
+        "Name": "SubmittedBy",
+        "Type": "String"
+      },
+      {
+        "Name": "Summary",
+        "Type": "String"
+      },
+      {
+        "Name": "System",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "IssueId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Log",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Message",
+        "Type": "String"
+      },
+      {
+        "Name": "Time",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Logger",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NaturalId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NewCarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NewCarId1",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NumLoggers",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TruckId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TypeLogger",
+        "Type": "LoggerType"
+      },
+      {
+        "Name": "isAssigned",
+        "Type": "Boolean"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CarId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "NewCarId1"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TruckId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Module",
+    "Properties": [
+      {
+        "Name": "ModuleId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "CurrentSoftwareVersion",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Description",
+        "Type": "String"
+      },
+      {
+        "Name": "LastUpdated",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "NextSoftwareVersion",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "ProjectedRelease",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "ModuleId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.MyModel",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.NewCar",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Adas",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "CarStatusId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Finas",
+        "Type": "String"
+      },
+      {
+        "Name": "Location",
+        "Type": "String"
+      },
+      {
+        "Name": "LoggerId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Make",
+        "Type": "String"
+      },
+      {
+        "Name": "Mileage",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Miles",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Model",
+        "Type": "String"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "SourceId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Tagnumber",
+        "Type": "String"
+      },
+      {
+        "Name": "TeleGeneration",
+        "Type": "String"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      },
+      {
+        "Name": "Vin",
+        "Type": "String"
+      },
+      {
+        "Name": "Year",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "SourceId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.NewCarLogger",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NewCarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NumLoggers",
+        "Type": "Int32"
+      },
+      {
+        "Name": "TruckId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TypeLogger",
+        "Type": "LoggerType"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CarId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "NewCarId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TruckId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.NewTruckLogger",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NewCarId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "NumLoggers",
+        "Type": "Int32"
+      },
+      {
+        "Name": "TruckId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TypeLogger",
+        "Type": "LoggerType"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CarId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "NewCarId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TruckId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Note",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "AuthorId",
+        "Type": "String"
+      },
+      {
+        "Name": "Content",
+        "Type": "String"
+      },
+      {
+        "Name": "CreatedAt",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "DeletedAt",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "IsDeleted",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "Title",
+        "Type": "String"
+      },
+      {
+        "Name": "UpdatedAt",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "AuthorId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.NoteAttachment",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "FilePath",
+        "Type": "String"
+      },
+      {
+        "Name": "NoteId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "NoteId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.NoteComment",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "AuthorId",
+        "Type": "String"
+      },
+      {
+        "Name": "Content",
+        "Type": "String"
+      },
+      {
+        "Name": "CreatedAt",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "NoteId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "AuthorId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "NoteId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.NoteEventDetail",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ApplicationUserId",
+        "Type": "String"
+      },
+      {
+        "Name": "DetailTypeId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Discriminator",
+        "Type": "String"
+      },
+      {
+        "Name": "Value",
+        "Type": "String"
+      },
+      {
+        "Name": "Note",
+        "Type": "String"
+      },
+      {
+        "Name": "UserCarEventId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserEventDetailId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserEventId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "ApplicationUserId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "DetailTypeId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserCarEventId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserEventId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.NoteTag",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "NoteId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Tag",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "NoteId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Order",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CustomerName",
+        "Type": "String"
+      },
+      {
+        "Name": "OrderDate",
+        "Type": "DateTime"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Post",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.RoleEventMapping",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "DefaultEventTypeId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "RoleId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Shipment",
+    "Properties": [
+      {
+        "Name": "ShippingInfoOrderId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Carrier",
+        "Type": "String"
+      },
+      {
+        "Name": "ShipDate",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "TrackingNumber",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "ShippingInfoOrderId",
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.ShippingInfo",
+    "Properties": [
+      {
+        "Name": "OrderId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Address",
+        "Type": "String"
+      },
+      {
+        "Name": "City",
+        "Type": "String"
+      },
+      {
+        "Name": "PostalCode",
+        "Type": "String"
+      },
+      {
+        "Name": "State",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "OrderId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.SimpleEvent",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.SimpleEventType",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "Name"
+        ],
+        "IsUnique": true
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Software",
+    "Properties": [
+      {
+        "Name": "SoftwareId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "HeadUnit",
+        "Type": "String"
+      },
+      {
+        "Name": "NextSoftwareVersion",
+        "Type": "String"
+      },
+      {
+        "Name": "SoftwareVersion",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "SoftwareId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CarId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Source",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "Name"
+        ],
+        "IsUnique": true
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Status",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "Name"
+        ],
+        "IsUnique": true
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Tag",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TaskModel",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "DateAssigned",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "DateCompleted",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "DateExpired",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Importance",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "IsComplete",
+        "Type": "Boolean"
+      },
+      {
+        "Name": "Task",
+        "Type": "String"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      },
+      {
+        "Name": "UserName",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "UserId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TeamTimeline",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "TeamId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "TeamId"
+        ],
+        "IsUnique": true
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TeamType",
+    "Properties": [
+      {
+        "Name": "TeamTypeId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "TeamTypeId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TestRelease",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CalendarMonth",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "CalendarWeek",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "CalendarYear",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "EndDate",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "LastTested",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "ReportId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "StartDate",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Ticket",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "AssigneeId",
+        "Type": "String"
+      },
+      {
+        "Name": "ClosedAt",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "CreatedAt",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "CreatorId",
+        "Type": "String"
+      },
+      {
+        "Name": "Description",
+        "Type": "String"
+      },
+      {
+        "Name": "Priority",
+        "Type": "String"
+      },
+      {
+        "Name": "Severity",
+        "Type": "String"
+      },
+      {
+        "Name": "Status",
+        "Type": "String"
+      },
+      {
+        "Name": "Title",
+        "Type": "String"
+      },
+      {
+        "Name": "UpdatedAt",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "AssigneeId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "CreatorId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TicketAttachment",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "FilePath",
+        "Type": "String"
+      },
+      {
+        "Name": "TicketId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "TicketId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TicketComment",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "AuthorId",
+        "Type": "String"
+      },
+      {
+        "Name": "Content",
+        "Type": "String"
+      },
+      {
+        "Name": "CreatedAt",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "TicketId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "AuthorId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TicketId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TicketHistory",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Change",
+        "Type": "String"
+      },
+      {
+        "Name": "ChangedAt",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "ChangedById",
+        "Type": "String"
+      },
+      {
+        "Name": "TicketId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "ChangedById"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TicketId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TicketTag",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Tag",
+        "Type": "String"
+      },
+      {
+        "Name": "TicketId",
+        "Type": "Int32"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "TicketId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.Truck",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Adas",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Finas",
+        "Type": "String"
+      },
+      {
+        "Name": "Location",
+        "Type": "String"
+      },
+      {
+        "Name": "Make",
+        "Type": "String"
+      },
+      {
+        "Name": "Miles",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Model",
+        "Type": "String"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "NewTruckLoggerId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "SourceId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Tagnumber",
+        "Type": "String"
+      },
+      {
+        "Name": "TeleGeneration",
+        "Type": "String"
+      },
+      {
+        "Name": "TruckDetail",
+        "Type": "Int32"
+      },
+      {
+        "Name": "TruckStatusId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      },
+      {
+        "Name": "Vin",
+        "Type": "String"
+      },
+      {
+        "Name": "Year",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "SourceId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TruckDetail",
+    "Properties": [
+      {
+        "Name": "TruckDetailId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Color",
+        "Type": "String"
+      },
+      {
+        "Name": "DetailTypeId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Make",
+        "Type": "String"
+      },
+      {
+        "Name": "Model",
+        "Type": "String"
+      },
+      {
+        "Name": "TruckId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Vin",
+        "Type": "String"
+      },
+      {
+        "Name": "Year",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "TruckDetailId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "TruckId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TruckStaticDetail",
+    "Properties": [
+      {
+        "Name": "TruckId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Adas",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Finas",
+        "Type": "String"
+      },
+      {
+        "Name": "Tag",
+        "Type": "String"
+      },
+      {
+        "Name": "Vin",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "TruckId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "BlazorApp1.CarModels.TruckStatus",
+    "Properties": [
+      {
+        "Name": "TruckId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "StatusId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "StatusTime",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "TruckId",
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "StatusId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.UserCarEvent",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Date",
+        "Type": "DateTime"
+      },
+      {
+        "Name": "EndTime",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "EventTypeId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "StartTime",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "TeamTimelineId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "EventTypeId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "TeamTimelineId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.UserDetail",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ApplicationUserId",
+        "Type": "String"
+      },
+      {
+        "Name": "DetailId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "ApplicationUserId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "DetailId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.UserEvent",
+    "Properties": [
+      {
+        "Name": "UserEventId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "EventId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserCarEventId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "UserEventId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "EventId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserCarEventId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "BlazorApp1.CarModels.UserEventDetail",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ApplicationUserId",
+        "Type": "String"
+      },
+      {
+        "Name": "DetailTypeId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "Discriminator",
+        "Type": "String"
+      },
+      {
+        "Name": "Value",
+        "Type": "String"
+      },
+      {
+        "Name": "Note",
+        "Type": "String"
+      },
+      {
+        "Name": "UserCarEventId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserEventDetailId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserEventId",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "ApplicationUserId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "DetailTypeId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserCarEventId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "UserEventId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "CarModule",
+    "Properties": [
+      {
+        "Name": "CarId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ModuleId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CarId1",
+        "Type": "Nullable\u00601"
+      },
+      {
+        "Name": "ModuleId1",
+        "Type": "Nullable\u00601"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "CarId",
+          "ModuleId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "CarId1"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "ModuleId"
+        ],
+        "IsUnique": false
+      },
+      {
+        "Properties": [
+          "ModuleId1"
+        ],
+        "IsUnique": false
+      }
+    ]
+  },
+  {
+    "Name": "Microsoft.AspNetCore.Identity.IdentityRole",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "String"
+      },
+      {
+        "Name": "ConcurrencyStamp",
+        "Type": "String"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "NormalizedName",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "Microsoft.AspNetCore.Identity.IdentityRoleClaim\u003Cstring\u003E",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ClaimType",
+        "Type": "String"
+      },
+      {
+        "Name": "ClaimValue",
+        "Type": "String"
+      },
+      {
+        "Name": "RoleId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "Microsoft.AspNetCore.Identity.IdentityUserClaim\u003Cstring\u003E",
+    "Properties": [
+      {
+        "Name": "Id",
+        "Type": "Int32"
+      },
+      {
+        "Name": "ClaimType",
+        "Type": "String"
+      },
+      {
+        "Name": "ClaimValue",
+        "Type": "String"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "Id"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "Microsoft.AspNetCore.Identity.IdentityUserLogin\u003Cstring\u003E",
+    "Properties": [
+      {
+        "Name": "LoginProvider",
+        "Type": "String"
+      },
+      {
+        "Name": "ProviderKey",
+        "Type": "String"
+      },
+      {
+        "Name": "ProviderDisplayName",
+        "Type": "String"
+      },
+      {
+        "Name": "UserId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "LoginProvider",
+          "ProviderKey"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "Microsoft.AspNetCore.Identity.IdentityUserRole\u003Cstring\u003E",
+    "Properties": [
+      {
+        "Name": "UserId",
+        "Type": "String"
+      },
+      {
+        "Name": "RoleId",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "UserId",
+          "RoleId"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "Microsoft.AspNetCore.Identity.IdentityUserToken\u003Cstring\u003E",
+    "Properties": [
+      {
+        "Name": "UserId",
+        "Type": "String"
+      },
+      {
+        "Name": "LoginProvider",
+        "Type": "String"
+      },
+      {
+        "Name": "Name",
+        "Type": "String"
+      },
+      {
+        "Name": "Value",
+        "Type": "String"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "UserId",
+          "LoginProvider",
+          "Name"
+        ]
+      }
+    ],
+    "Indexes": []
+  },
+  {
+    "Name": "PostTag",
+    "Properties": [
+      {
+        "Name": "PostId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "TagId",
+        "Type": "Int32"
+      },
+      {
+        "Name": "CreatedOn",
+        "Type": "DateTime"
+      }
+    ],
+    "Keys": [
+      {
+        "Properties": [
+          "PostId",
+          "TagId"
+        ]
+      }
+    ],
+    "Indexes": [
+      {
+        "Properties": [
+          "TagId"
+        ],
+        "IsUnique": false
+      }
+    ]
+  }
+]

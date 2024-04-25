@@ -1,0 +1,38 @@
+﻿@page "/image-to-ascii"
+@using BlazorApp1.CarModels.Utils;
+@inject HttpClient HttpClient
+
+@inject IImageToAsciiService ImageToAsciiService
+
+<h3>Image to ASCII Converter</h3>
+
+<input type="file" onchange="UploadImage" />
+
+@if (!string.IsNullOrEmpty(asciiArt))
+{
+    <pre>@asciiArt</pre>
+}
+
+@code {
+    private string asciiArt = "";
+
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var imageUrl = "https://picsum.photos/200/300"; // Replace with a public image URL
+    //     var response = await HttpClient.GetStreamAsync(imageUrl);
+    //     asciiArt = ImageToAsciiService.ConvertImage(response);
+
+    //     //var two = ImageToAsciiConverter.ConvertImageToAscii(response);
+    // }
+    private async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        var imageFile = e.File;
+        if (imageFile != null)
+        {
+            using var stream = imageFile.OpenReadStream();
+            asciiArt = ImageToAsciiService.ConvertImage(stream);
+            StateHasChanged();
+        }
+    }
+}

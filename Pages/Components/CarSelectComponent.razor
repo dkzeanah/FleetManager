@@ -1,0 +1,16 @@
+@page "/carselectcomponent"
+
+<select @bind="SelectedCarId">
+    @foreach (var car in Cars)
+    {
+        <option value="@car.CarId">@car.ToString();</option>
+    }
+</select>
+
+@code {
+    [Parameter]
+    public List<Car> Cars { get; set; }
+
+    [Parameter]
+    public int SelectedCarId { get; set; }
+}

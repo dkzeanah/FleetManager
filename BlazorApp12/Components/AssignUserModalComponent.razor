@@ -1,0 +1,21 @@
+﻿<ModalComponent @ref="userModal" IsOpen="isUserModalOpen" Title="Assign User">
+    <!-- Modal Content Here -->
+</ModalComponent>
+
+@code {
+    private ModalComponent userModal;
+    private bool isUserModalOpen;
+    private List<ApplicationUser>? users;
+
+    void OpenUserModal(Car car)
+    {
+        // Logic to open user modal
+    }
+
+    void CloseUserModal()
+    {
+        isUserModalOpen = false;
+    }
+
+    // Other related methods
+}

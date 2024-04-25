@@ -1,0 +1,184 @@
+﻿@page "/jsonupload"
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+@using System.Text.Json
+@using BlazorApp1.CarModels.Sets;
+@using BlazorApp1.Data;
+@using System.Threading.Tasks;
+@using System.Text;
+
+<h3>Upload JSON File</h3>
+
+<EditForm Model="@fileUploadModel" OnValidSubmit="@HandleValidSubmit">
+  <InputFile OnChange="@OnInputFileChange" accept=".json" />
+  <button type="submit" class="btn btn-primary" disabled="@isProcessing">Upload and Process JSON</button>
+</EditForm>
+
+@if (isProcessing)
+{
+  <p>Processing file...</p>
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+  <p>@message</p>
+}
+
+@if (displayData != null && displayData.Count > 0)
+{
+  <h4>Data Preview</h4>
+  <div>
+    @foreach (var line in displayData)
+    {
+      <p>@line</p>
+    }
+  </div>
+}
+
+@if (dynamicSchema is JsonElement && ((JsonElement)dynamicSchema).ValueKind != JsonValueKind.Undefined)
+{
+  <h3>Dynamic Schema Preview</h3>
+  @DisplayDynamicSchema(dynamicSchema)
+}
+
+@code {
+  private FileUploadModel fileUploadModel = new FileUploadModel();
+  // private IBrowserFile selectedFile;
+  // private bool isProcessing;
+  // private string message;
+  private List<string> displayData = new List<string>();
+  private DatabaseSchema databaseSchema;
+  private dynamic dynamicSchema; // For gradual deserialization
+  private string message;
+  private bool isProcessing;
+  private IBrowserFile selectedFile;
+
+  // private async Task HandleValidSubmit()
+  // {
+  //   isProcessing = true;
+  //   message = "";
+
+  //   try
+  //   {
+  //     var jsonContent = await ReadJsonFileAsync(selectedFile);
+  //     var databaseSchema = JsonSerializer.Deserialize<DatabaseSchema>(jsonContent);
+
+  //     PopulateDbContext(databaseSchema);
+  //     message = "JSON file processed successfully!";
+  //   }
+  //   catch (Exception ex)
+  //   {
+  //     message = $"Error processing JSON file: {ex.Message}";
+  //   }
+
+  //   isProcessing = false;
+  // }
+  private async Task HandleValidSubmit()
+  {
+    isProcessing = true;
+    message = "";
+
+    try
+    {
+      var jsonContent = await ReadJsonFileAsync(selectedFile);
+
+      // Gradual deserialization
+      dynamicSchema = JsonSerializer.Deserialize<dynamic>(jsonContent);
+
+      // Deserialize with custom settings
+      var options = new JsonSerializerOptions
+        {
+          PropertyNameCaseInsensitive = true // Example option
+                                             // Add other necessary options
+        };
+      databaseSchema = JsonSerializer.Deserialize<DatabaseSchema>(jsonContent, options);
+
+      PopulateDbContext(databaseSchema);
+      message = "JSON file processed successfully!";
+    }
+    catch (JsonException ex)
+    {
+      message = $"JSON Deserialization Error: {ex.Message}";
+    }
+    catch (Exception ex)
+    {
+      message = $"Error processing file: {ex.Message}";
+    }
+
+    isProcessing = false;
+  }
+
+  private async Task<string> ReadJsonFileAsync(IBrowserFile file)
+  {
+    using var stream = file.OpenReadStream();
+    using var reader = new StreamReader(stream);
+    return await reader.ReadToEndAsync();
+  }
+
+  private void OnInputFileChange(InputFileChangeEventArgs e)
+  {
+    selectedFile = e.File;
+  }
+  private MarkupString DisplayDynamicSchema(dynamic schema)
+  {
+    if (schema is JsonElement element)
+    {
+      return new MarkupString(ProcessJsonElement(element));
+    }
+    return new MarkupString(string.Empty);
+  }
+
+  private string ProcessJsonElement(JsonElement element)
+  {
+    var htmlBuilder = new StringBuilder();
+
+    switch (element.ValueKind)
+    {
+      case JsonValueKind.Object:
+        htmlBuilder.Append("<ul>");
+        foreach (var property in element.EnumerateObject())
+        {
+          htmlBuilder.AppendFormat("<li><strong>{0}</strong>: {1}</li>", property.Name, ProcessJsonElement(property.Value));
+        }
+        htmlBuilder.Append("</ul>");
+        break;
+      case JsonValueKind.Array:
+        htmlBuilder.Append("<ul>");
+        foreach (var item in element.EnumerateArray())
+        {
+          htmlBuilder.AppendFormat("<li>{0}</li>", ProcessJsonElement(item));
+        }
+        htmlBuilder.Append("</ul>");
+        break;
+      default:
+        htmlBuilder.Append(element.ToString());
+        break;
+    }
+
+    return htmlBuilder.ToString();
+  }
+  private void PopulateDbContext(DatabaseSchema databaseSchema)
+  {
+    displayData.Clear();
+
+  foreach (var entity in databaseSchema.Schema.Values)
+    {
+      displayData.Add($"Entity: {entity.Name}");
+      foreach (var prop in entity.Properties.Values)
+      {
+        displayData.Add($"  Property: {prop.Name}, Type: {prop.Type}");
+      }
+      // Add other relevant schema details (keys, indexes, etc.) as needed
+    }
+
+    // Display data records
+    foreach (var table in databaseSchema.Data)
+    {
+      displayData.Add($"Table: {table.Key}");
+      foreach (var row in table.Value)
+      {
+        displayData.Add(string.Join(", ", row.Select(cell => $"{cell.Key}: {cell.Value}")));
+      }
+    }
+  }
+}

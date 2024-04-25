@@ -1,0 +1,20 @@
+﻿
+@page "/api/SensorData"
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<PageTitle>API Endpoint</PageTitle>
+
+@code {
+    private string receivedPostData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var queryString = Navigation.ToAbsoluteUri(Navigation.Uri).Query;
+        if (!string.IsNullOrEmpty(queryString))
+        {
+            var postData = System.Web.HttpUtility.ParseQueryString(queryString)["postData"];
+            receivedPostData = $"Received POST data: {postData}";
+        }
+    }
+}

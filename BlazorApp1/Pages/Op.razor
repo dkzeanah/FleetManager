@@ -1,0 +1,72 @@
+﻿@page "/op"
+
+@using System.Collections.Generic
+@using BlazorApp1.CarModels;
+@using TaskActivity = BlazorApp1.CarModels.Sets.TaskActivity; // Alias for Task
+
+@using Person = BlazorApp1.CarModels.Sets.Person; // Alias for Task
+@using Tool = BlazorApp1.CarModels.Sets.Tool; // Alias for Task
+
+@using BlazorApp1.CarModels.Sets
+
+<h3>Opportunity Cost and Tool Value Calculator</h3>
+
+<h4>Input Person Details</h4>
+<label>Name:</label>
+<input @bind="person.Name" />
+<label>Earnings Per Second:</label>
+<input type="number" @bind="person.EarningsPerSecond" />
+<label>Free Time in Seconds (Yearly):</label>
+<input type="number" @bind="person.FreeTimeSeconds" />
+
+<h4>Input Task Details</h4>
+<label>Task Name:</label>
+<input @bind="task.Name" />
+<label>Task Time in Seconds:</label>
+<input type="number" @bind="task.TimeInSeconds" />
+
+<h4>Input Tool Details</h4>
+<label>Tool Name:</label>
+<input @bind="tool.Name" />
+<label>Tool Cost:</label>
+<input type="number" @bind="tool.Cost" />
+<label>Time Saved Per Use (Seconds):</label>
+<input type="number" @bind="tool.TimeSavedPerUse" />
+
+<button @onclick="CalculateOpportunityCost">Calculate Opportunity Cost</button>
+<button @onclick="CalculateToolValue">Calculate Tool Value</button>
+
+@if (opportunityCost.HasValue)
+{
+    <p>Opportunity Cost for {Person.Name}: @opportunityCost.Value.ToString("C")</p>
+}
+
+@if (toolValue.HasValue)
+{
+    <p>Value of {
+            tool.Name
+} for {
+        Task.Name
+}: @toolValue.Value.ToString("C")</p>
+}
+
+@code {
+    Person person = new Person();
+    TaskActivity task = new TaskActivity();
+    Tool tool = new Tool();
+    double? opportunityCost;
+    double? toolValue;
+
+    OpportunityCostCalculator opportunityCostCalculator = new OpportunityCostCalculator();
+    ToolValueCalculator toolValueCalculator = new ToolValueCalculator();
+
+    private void CalculateOpportunityCost()
+    {
+        opportunityCost = opportunityCostCalculator.CalculateTotalOpportunityCost(person, task);
+    }
+
+    private void CalculateToolValue()
+    {
+        toolValue = toolValueCalculator.CalculateToolValue(tool, task.TimeInSeconds, 10); // Assuming 10 uses for simplicity
+    }
+}

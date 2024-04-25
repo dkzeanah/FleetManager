@@ -1,0 +1,84 @@
+﻿
+
+@page "/cal2"
+@using BlazorApp1.Components
+@inject IJSRuntime jsRuntime
+
+
+
+<CalendarComponent @bind-SelectedDate="selectedDate" />
+<ToolbarComponent FormatSelected="OnFormat" />
+<h1>Calendar</h1>
+
+
+@* <button @onclick="AddBlock">Add block</button>
+<div class="grid-container">
+    @foreach (var block in Blocks)
+    {
+        <div id=@($"block-{block.Id}") class="grid-item">
+            @block.UserName (@block.NumberOfDays days)
+        </div>
+    }
+</div> *@
+
+@code {
+    [Parameter] 
+    public EventCallback<string> FormatSelected { get; set; }
+
+    public DateTime selectedDate { get; set; } = DateTime.Now;
+
+    void OnDateSelected(DateTime date)
+    {
+    }
+
+    void OnFormat(string format)
+    {
+    }
+    private IJSObjectReference? module;
+    public class Block
+    {
+        public string Id { get; set; }
+        public string UserName { get; set; }
+        public int NumberOfDays { get; set; }
+    }
+
+
+    private async Task ShowAlert(string message)
+    {
+        await module.InvokeVoidAsync("window.showAlert", message);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        // module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./custom.js");
+    }
+
+    private List<Block> Blocks = new List<Block>();
+    private int idCounter = 1;
+    private void AddBlock()
+    {
+        Blocks.Add(new Block
+            {
+                Id = $"block-{idCounter++}",
+                UserName = "John Doe",
+                NumberOfDays = new Random().Next(1, 4)
+            });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./custom.js");
+
+            foreach (var block in Blocks)
+            {
+                await jsRuntime.InvokeVoidAsync("interactFunctions.makeResizableAndDraggable", $"block-{block.Id}");
+            }
+        }
+    }
+
+}
+
+
+
+

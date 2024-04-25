@@ -1,0 +1,225 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-BlazorApp1-32af5dc5-fac4-456d-ae23-1af4965f1bcf</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="99Data\**" />
+    <Compile Remove="99Models\**" />
+    <Compile Remove="CarsData\**" />
+    <Compile Remove="Components\**" />
+    <Compile Remove="Interfaces - Copy %282%29\**" />
+    <Compile Remove="Interfaces - Copy\**" />
+    <Compile Remove="Models\**" />
+    <Compile Remove="Pages\Components\Elements\**" />
+    <Compile Remove="Pages\Components\Inventories\**" />
+    <Compile Remove="Pages\Components\Mercedes\**" />
+    <Compile Remove="Pages\Components\Parents\**" />
+    <Compile Remove="Pages\Components\ProductComponents\**" />
+    <Compile Remove="Pages\Tasks\**" />
+    <Compile Remove="TempModels\**" />
+    <Content Remove="99Data\**" />
+    <Content Remove="99Models\**" />
+    <Content Remove="CarsData\**" />
+    <Content Remove="Components\**" />
+    <Content Remove="Interfaces - Copy %282%29\**" />
+    <Content Remove="Interfaces - Copy\**" />
+    <Content Remove="Models\**" />
+    <Content Remove="Pages\Components\Elements\**" />
+    <Content Remove="Pages\Components\Inventories\**" />
+    <Content Remove="Pages\Components\Mercedes\**" />
+    <Content Remove="Pages\Components\Parents\**" />
+    <Content Remove="Pages\Components\ProductComponents\**" />
+    <Content Remove="Pages\Tasks\**" />
+    <Content Remove="TempModels\**" />
+    <EmbeddedResource Remove="99Data\**" />
+    <EmbeddedResource Remove="99Models\**" />
+    <EmbeddedResource Remove="CarsData\**" />
+    <EmbeddedResource Remove="Components\**" />
+    <EmbeddedResource Remove="Interfaces - Copy %282%29\**" />
+    <EmbeddedResource Remove="Interfaces - Copy\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Pages\Components\Elements\**" />
+    <EmbeddedResource Remove="Pages\Components\Inventories\**" />
+    <EmbeddedResource Remove="Pages\Components\Mercedes\**" />
+    <EmbeddedResource Remove="Pages\Components\Parents\**" />
+    <EmbeddedResource Remove="Pages\Components\ProductComponents\**" />
+    <EmbeddedResource Remove="Pages\Tasks\**" />
+    <EmbeddedResource Remove="TempModels\**" />
+    <None Remove="99Data\**" />
+    <None Remove="99Models\**" />
+    <None Remove="CarsData\**" />
+    <None Remove="Components\**" />
+    <None Remove="Interfaces - Copy %282%29\**" />
+    <None Remove="Interfaces - Copy\**" />
+    <None Remove="Models\**" />
+    <None Remove="Pages\Components\Elements\**" />
+    <None Remove="Pages\Components\Inventories\**" />
+    <None Remove="Pages\Components\Mercedes\**" />
+    <None Remove="Pages\Components\Parents\**" />
+    <None Remove="Pages\Components\ProductComponents\**" />
+    <None Remove="Pages\Tasks\**" />
+    <None Remove="TempModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="IActivityService.cs" />
+    <Compile Remove="IBlankRepository.cs" />
+    <Compile Remove="IBlankService.cs" />
+    <Compile Remove="ICalendarRepository.cs" />
+    <Compile Remove="ICarDetailRepository.cs" />
+    <Compile Remove="ICarDetailService.cs" />
+    <Compile Remove="ICarEventDetailRepository.cs" />
+    <Compile Remove="ICarEventDetailService.cs" />
+    <Compile Remove="ICarRepository.cs" />
+    <Compile Remove="ICarService.cs" />
+    <Compile Remove="ICarStatusRepository.cs" />
+    <Compile Remove="ICarStatusService.cs" />
+    <Compile Remove="ICheckListItemRepository.cs" />
+    <Compile Remove="IContactRepository.cs" />
+    <Compile Remove="IErrorLogRepository.cs" />
+    <Compile Remove="IEventDetailRepository.cs" />
+    <Compile Remove="IEventRepository.cs" />
+    <Compile Remove="IEventService.cs" />
+    <Compile Remove="IEventTypeRepository.cs" />
+    <Compile Remove="IEventTypeService.cs" />
+    <Compile Remove="IExcelDataRecordRepository.cs" />
+    <Compile Remove="IExcelDataRecordService.cs" />
+    <Compile Remove="IFlow.cs" />
+    <Compile Remove="IImageToAsciiService.cs" />
+    <Compile Remove="IIssueRepository.cs" />
+    <Compile Remove="IIssueService.cs" />
+    <Compile Remove="ILoggerRepository.cs" />
+    <Compile Remove="ILoggerService.cs" />
+    <Compile Remove="IModuleService.cs" />
+    <Compile Remove="INode.cs" />
+    <Compile Remove="IOrderRepository.cs" />
+    <Compile Remove="IOrderService.cs" />
+    <Compile Remove="IReportable.cs" />
+    <Compile Remove="IRoleEventMappingRepository.cs" />
+    <Compile Remove="IRoleEventMappingService.cs" />
+    <Compile Remove="ISearchService.cs" />
+    <Compile Remove="ISimpleEventTypeRepository.cs" />
+    <Compile Remove="ISimpleEventTypeService.cs" />
+    <Compile Remove="ISoftwareRepository.cs" />
+    <Compile Remove="ISoftwareRepository1.cs" />
+    <Compile Remove="ISoftwareService.cs" />
+    <Compile Remove="ISourceRepository.cs" />
+    <Compile Remove="IStatsService.cs" />
+    <Compile Remove="IStatusRepository.cs" />
+    <Compile Remove="IStatusService.cs" />
+    <Compile Remove="ITaskModelRepository.cs" />
+    <Compile Remove="ITaskModelService.cs" />
+    <Compile Remove="ITestReleaseRepository.cs" />
+    <Compile Remove="ITestRepository.cs" />
+    <Compile Remove="IUserEventDetailRepository.cs" />
+    <Compile Remove="IUserEventDetailService.cs" />
+    <Compile Remove="IUserEventRepository.cs" />
+    <Compile Remove="IUserRepository.cs" />
+    <Compile Remove="IUserService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Pages\CarList3.razor" />
+    <Content Remove="Pages\Components\Calendar4Component.razor" />
+    <Content Remove="Pages\Components\CalendarTwoComponent.razor" />
+    <Content Remove="Pages\Op.razor" />
+    <Content Remove="Pages\RightClickComponent.razor" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="ClosedXML" Version="0.102.1" />
+	  <PackageReference Include="EfCore.SchemaCompare" Version="7.0.0" />
+	  <PackageReference Include="ErikEJ.EntityFrameworkCore.SqlServer.DateOnlyTimeOnly" Version="7.0.5" />
+	  <PackageReference Include="Havit.Blazor.Components.Web" Version="4.2.1" />
+	  <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="4.2.1" />
+	  <PackageReference Include="Havit.Drawing" Version="2.0.30" />
+	  <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.4" />
+	  <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.11" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.11" />
+	  <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.11">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.18.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.10" />
+    <PackageReference Include="Radzen.Blazor" Version="4.16.3" />
+    <PackageReference Include="RepositoryGenerator" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Components\UserNotFound.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Components\Calendar4Component.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Components\TBGipComponent.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Components\UserNotFound.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Op.razor" />
+    <_ContentIncludedByDefault Remove="Pages\RightClickComponent.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\AMaster\Cascading\ChildComponentCascading.razor" />
+    <None Include="Pages\AMaster\Cascading\GrandParentComponentCascading.razor" />
+    <None Include="Pages\AMaster\Cascading\MasterPageCascading.razor" />
+    <None Include="Pages\AMaster\Cascading\ParentComponentCascading.razor" />
+    <None Include="Pages\AMaster\ChildComponent.razor" />
+    <None Include="Pages\AMaster\GrandParentComponent.razor" />
+    <None Include="Pages\AMaster\MasterPage.razor" />
+    <None Include="Pages\AMaster\ParentComponent.razor" />
+    <None Include="Pages\Components\Calendar4Component.razor" />
+    <None Include="Pages\Components\CalendarTwoComponent.razor" />
+    <None Include="Pages\Components\TBGipComponent.razor" />
+    <None Include="Pages\Components\UserNotFound.razor" />
+    <None Include="Pages\Examples\Calljs.razor" />
+    <None Include="Pages\Examples\Example.razor" />
+    <None Include="Pages\Examples\FetchData.razor" />
+    <None Include="Pages\Examples\GPanel.razor" />
+    <None Include="Pages\Examples\GPanelUse.razor" />
+    <None Include="Pages\Examples\NestedChild.razor" />
+    <None Include="Pages\Examples\NestedGrandchild.razor" />
+    <None Include="Pages\Examples\ParameterChild.razor" />
+    <None Include="Pages\Op.razor" />
+    <None Include="Pages\Components\RightClickComponent.razor" />
+    <None Include="Pages\TemplateModels\InlineMedley.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Components\TBGipComponent.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BlazorApp1.ClassLibrary\BlazorApp1.ClassLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Op.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\Components\Calendar4Component.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\RightClickComponent.razor" />
+  </ItemGroup>
+
+</Project>

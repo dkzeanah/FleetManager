@@ -1,0 +1,30 @@
+﻿<ModalComponent @ref="addCarModal" IsOpen="isAddCarModalOpen" Title="Add Car">
+    <ModalContent>
+        <AddCarComponent OnCarAdded="RefreshCars" />
+    </ModalContent>
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseAddCarModal">Close</button>
+    </ModalFooter>
+</ModalComponent>
+
+@code {
+    private ModalComponent addCarModal;
+
+    private bool isAddCarModalOpen;
+
+    private async Task RefreshCars()
+    {
+        StateHasChanged();
+    }
+    void ToggleAddCarModal()
+    {
+        isAddCarModalOpen = !isAddCarModalOpen;
+    }
+
+    void CloseAddCarModal()
+    {
+        isAddCarModalOpen = false;
+    }
+
+    // Other related methods
+}

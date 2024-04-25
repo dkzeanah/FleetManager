@@ -1,0 +1,407 @@
+﻿@page "/carmanagement"
+@using BlazorApp1.Data;
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ICarRepository CarRepo
+
+@* @inject CarService carService
+ *@
+<h1>Car Management</h1>
+
+<!-- Display All Cars -->
+<h2>All Cars</h2>
+<button @onclick="LoadCars">Load Cars</button>
+<ul>
+    @foreach (var car in cars)
+    {
+        <li>@car.ToString() <button @onclick="() => DeleteCar(car.CarId)">Delete</button></li>
+    }
+</ul>
+
+<!-- Add New Car -->
+<h2>Add New Car</h2>
+<input @bind="newCar.Make" placeholder="Make" />
+<input @bind="newCar.Model" placeholder="Model" />
+<button @onclick="AddCar">Add Car</button>
+
+<!-- Update Car -->
+<h2>Update Car</h2>
+<input @bind="updateCarId" placeholder="Car ID" />
+<input @bind="updateCar.Make" placeholder="New Make" />
+<input @bind="updateCar.Model" placeholder="New Model" />
+<button @onclick="UpdateCar">Update Car</button>
+
+<!-- Assign User to Car -->
+<h2>Assign User to Car</h2>
+<input @bind="assignCarId" placeholder="Car ID" />
+<input @bind="assignUserId" placeholder="User ID" />
+<button @onclick="AssignUserToCar">Assign User</button>
+
+<!-- Create Car Event -->
+<h2>Create Car Event</h2>
+<input @bind="eventCarId" placeholder="Car ID" />
+<input @bind="eventUserId" placeholder="User ID" />
+<input @bind="eventRole" placeholder="Role" />
+<button @onclick="CreateCarEvent">Create Event</button>
+
+
+<h2>Add Logger to Car</h2>
+<input @bind="carIdToAddLogger" placeholder="Car ID to Add Logger" />
+<button @onclick="AddLoggerToCar">Add Logger</button>
+
+<!-- Add Module to Car -->
+<h2>Add Module to Car</h2>
+<input @bind="carIdToAddModule" placeholder="Car ID to Add Module" />
+@* <button @onclick="AddModuleToCar">Add Module</button>
+ *@
+<!-- ... existing code ... -->
+<!-- Add Logger to Car -->
+<h2>Add Logger to Car</h2>
+<label for="carIdToAddLogger">Car ID to Add Logger</label>
+<input id="carIdToAddLogger" @bind="carIdToAddLogger" placeholder="Car ID to Add Logger" />
+<label for="naturalId">Natural ID</label>
+<input id="naturalId" @bind="newLogger.NaturalId" placeholder="Natural ID" />
+<label for="truckId">Truck ID</label>
+<input id="truckId" @bind="newLogger.TruckId" placeholder="Truck ID" />
+<label for="newCarId">New Car ID</label>
+<input id="newCarId" @bind="newLogger.NewCarId" placeholder="New Car ID" />
+<label for="typeLogger">Type of Logger</label>
+<select id="typeLogger" @bind="newLogger.TypeLogger">
+    <option value="BluePirate">BluePirate</option>
+    <option value="BluePirateRapid">BluePirateRapid</option>
+    <option value="X2e">X2e</option>
+</select>
+<label for="numLoggers">Number of Loggers</label>
+<input id="numLoggers" @bind="newLogger.NumLoggers" type="number" placeholder="Number of Loggers" />
+<button @onclick="AddLoggerToCar">Add Logger</button>
+
+<!-- Add Module to Car -->
+<h2>Add Module to Car</h2>
+<label for="carIdToAddModule">Car ID to Add Module</label>
+<input id="carIdToAddModule" @bind="carIdToAddModule" placeholder="Car ID to Add Module" />
+<label for="moduleName">Module Name</label>
+<input id="moduleName" @bind="newModule.Name" placeholder="Module Name" />
+<label for="moduleDescription">Description</label>
+<input id="moduleDescription" @bind="newModule.Description" placeholder="Description" />
+<label for="currentSoftwareVersion">Current Software Version</label>
+<input id="currentSoftwareVersion" @bind="newModule.CurrentSoftwareVersion" type="number" step="0.01" placeholder="Current Software Version" />
+<label for="nextSoftwareVersion">Next Software Version</label>
+<input id="nextSoftwareVersion" @bind="newModule.NextSoftwareVersion" type="number" step="0.01" placeholder="Next Software Version" />
+<label for="lastUpdated">Last Updated</label>
+<input id="lastUpdated" @bind="newModule.LastUpdated" type="date" placeholder="Last Updated" />
+<label for="projectedRelease">Projected Release</label>
+<input id="projectedRelease" @bind="newModule.ProjectedRelease" type="date" placeholder="Projected Release" />
+ <button @onclick="AddModuleToCar">Add Module</button>
+
+<!-- Display All Modules -->
+<h2>All Modules</h2>
+@* <button @onclick="LoadModules">Load Modules</button>
+ *@<ul>
+    @foreach (var module in modules)
+    {
+        <li>@module.Name (Assigned to Car ID: @module.CarId)</li>
+        <button @onclick="() => ShowUpdateModuleModal(module.ModuleId)">Update</button>
+
+    }
+</ul>
+
+<!-- Display All Loggers -->
+<h2>All Loggers</h2>
+<button @onclick="LoadLoggers">Load Loggers</button>
+<ul>
+    @foreach (var logger in loggers)
+    {
+        <li>@logger.TypeLogger (Assigned to Car ID: @logger.CarId)</li>
+        <button @onclick="() => ShowUpdateLoggerModal(logger.Id)">Update</button>
+
+    }
+</ul>
+
+<p>=======================================================================================</p>
+<!-- Display All Modules -->
+<h2>All Modules</h2>
+ <button @onclick="LoadModules">Load Modules</button>
+ 
+ 
+ 
+ <ul>
+    @foreach (var module in modules)
+    {
+        <li>
+            Module ID: @module.ModuleId,
+            Name: @module.Name,
+            Description: @module.Description,
+            Current Software Version: @module.CurrentSoftwareVersion,
+            Next Software Version: @module.NextSoftwareVersion,
+            Last Updated: @module.LastUpdated,
+            Projected Release: @module.ProjectedRelease
+            (Assigned to Car ID: @module.CarId)
+            <button @onclick="() => UpdateModule(module.ModuleId)">Update</button>
+        </li>
+    }
+</ul>
+
+<!-- Display All Loggers -->
+<h2>All Loggers</h2>
+<button @onclick="LoadLoggers">Load Loggers</button>
+<ul>
+    @foreach (var logger in loggers)
+    {
+        <li>
+            Logger ID: @logger.Id,
+            Natural ID: @logger.NaturalId,
+            Truck ID: @logger.TruckId,
+            New Car ID: @logger.NewCarId,
+            Type: @logger.TypeLogger,
+            Number of Loggers: @logger.NumLoggers,
+            Is Assigned: @logger.isAssigned
+            (Assigned to Car ID: @logger.CarId)
+            <button @onclick="() => UpdateLogger(logger.Id)">Update</button>
+        </li>
+    }
+</ul>
+
+<p>======================================================</p>
+<style>
+    .form-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px; /* Provides a consistent gap between items */
+    }
+
+    .modal {
+        display: block;
+        /* ... Other CSS ... */
+    }
+
+</style>
+
+
+
+
+    <div class="form-container">
+
+@if (isLoggerModalVisible)
+{
+        <LoggerUpdateModalComponent IsVisible="@isLoggerModalVisible" IsVisibleChanged="@((bool value) => isLoggerModalVisible = value)" />
+
+   // <LoggerUpdateModalComponent LoggerToUpdate="selectedLogger" OnUpdate="LoadLoggers" />
+}
+</div>
+    <div class="form-container">
+
+@if (isModuleModalVisible)
+{
+        <ModuleUpdateModalComponent IsVisible="@isModuleModalVisible" IsVisibleChanged="@((bool value) => isModuleModalVisible = value)" />
+
+}
+</div>
+
+
+
+@code {
+
+    private bool isLoggerModalVisible = false;
+    private bool isModuleModalVisible = false;
+
+
+    private Logger selectedLogger = new Logger();  // Add this line
+    private Module selectedModule = new Module();  // Add this line
+    private Logger newLogger = new Logger(); 
+    private Module newModule = new Module(); 
+    private List<Module> modules = new List<Module>();
+    private List<Logger> loggers = new List<Logger>();
+    private List<Car> cars = new List<Car>();
+    private Car newCar = new Car();
+    private Car updateCar = new Car();
+    private int updateCarId;
+    private int assignCarId;
+    private string assignUserId;
+    private int eventCarId;
+    private string eventUserId;
+    private string eventRole;
+    private int carIdToAddLogger; 
+    private int carIdToAddModule; 
+    
+    private void ShowUpdateLoggerModal(int loggerId)
+    {
+        Console.WriteLine("Entering ShowUpdateLoggerModal");
+        selectedLogger = loggers.First(l => l.Id == loggerId);
+        isLoggerModalVisible = true;
+        Console.WriteLine($"isLoggerModalVisible set to {isLoggerModalVisible}");
+    }
+
+    private void ShowUpdateModuleModal(int moduleId)
+    {
+        Console.WriteLine("Entering ShowUpdateModuleModal");
+        selectedModule = modules.First(m => m.ModuleId == moduleId);
+        isModuleModalVisible = true;
+        Console.WriteLine($"isModuleModalVisible set to {isModuleModalVisible}");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCars();
+    }
+
+    private async Task LoadCars()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+
+        cars = await context.Cars.ToListAsync();
+    }
+
+     private async Task LoadModules()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        modules = await context.Modules.ToListAsync();
+    }
+    
+
+    private async Task LoadLoggers()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        loggers = await context.Loggers.ToListAsync();
+    }
+
+    private async Task UpdateCar()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var carToUpdate = await context.Cars.FindAsync(updateCarId);
+        if (carToUpdate != null)
+        {
+            carToUpdate.Make = updateCar.Make;
+            carToUpdate.Model = updateCar.Model;
+            context.Cars.Update(carToUpdate);
+            await context.SaveChangesAsync();
+            await LoadCars();
+        }
+    }
+
+    private async Task DeleteCar(int carId)
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var carToDelete = await context.Cars.FindAsync(carId);
+        if (carToDelete != null)
+        {
+            context.Cars.Remove(carToDelete);
+            await context.SaveChangesAsync();
+        }
+        await LoadCars(); // Refresh the list
+    }
+
+    private async Task AssignUserToCar()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var carToAssign = await context.Cars.FindAsync(assignCarId);
+        if (carToAssign != null)
+        {
+            carToAssign.UserId = assignUserId;
+            context.Cars.Update(carToAssign);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    private async Task CreateCarEvent()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var newEvent = new Event
+            {
+                CarId = eventCarId,
+                UserId = eventUserId,
+                StartTime = DateTime.Now,
+                EndTime = DateTime.Now.AddDays(1),
+                // Assuming you have a way to determine the event type
+                Id = 1 //DetermineEventType(eventRole)
+    };
+         context.Events.Add(newEvent);
+         await context.SaveChangesAsync();
+     }
+    private async Task AddCar()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        await context.Cars.AddAsync(newCar);
+        await context.SaveChangesAsync();  // Don't forget to save changes
+        newCar = new Car(); // Reset the newCar object
+        await LoadCars(); // Refresh the list
+    }
+
+    private async Task AddLoggerToCar()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var carToAssign = await context.Cars.FindAsync(carIdToAddLogger);
+        if (carToAssign != null)
+        {
+            newLogger.CarId = carIdToAddLogger;
+
+
+            context.Loggers.Add(newLogger);
+            await context.SaveChangesAsync();
+
+            newLogger = new Logger();
+
+            await LoadLoggers();
+        }
+    }
+
+
+   private async Task AddModuleToCar()
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var carToAssign = await context.Cars.FindAsync(carIdToAddModule);
+        if (carToAssign != null)
+        {
+            newModule.CarId = carIdToAddModule;
+
+
+            context.Modules.Add(newModule);
+            await context.SaveChangesAsync();
+
+            newModule = new Module();
+
+            await LoadModules();
+        }
+    }
+    
+
+
+   private async Task UpdateModule(int moduleId)
+     {
+         using var context = DbContextFactory.CreateDbContext();
+         var moduleToUpdate = await context.Modules.FindAsync(moduleId);
+         if (moduleToUpdate != null)
+         {
+
+             moduleToUpdate.Name = "Updated Module Name";
+             moduleToUpdate.CurrentSoftwareVersion = 2.0;
+
+             context.Modules.Update(moduleToUpdate);
+             await context.SaveChangesAsync();
+
+             await LoadModules();
+         }
+     }
+     
+
+    private async Task UpdateLogger(int loggerId)
+    {
+        using var context = DbContextFactory.CreateDbContext();
+        var loggerToUpdate = await context.Loggers.FindAsync(loggerId);
+        if (loggerToUpdate != null)
+        {
+
+            loggerToUpdate.TypeLogger = Logger.LoggerType.X2e;
+            loggerToUpdate.NumLoggers = 2;
+
+            context.Loggers.Update(loggerToUpdate);
+            await context.SaveChangesAsync();
+
+            // Optionally, refresh the list of loggers
+            await LoadLoggers();
+        }
+    }
+   
+
+   
+
+}

@@ -1,0 +1,238 @@
+﻿@using BlazorApp1.Data
+@using BlazorApp1.CarModels
+@inject ITaskModelService TaskModelService
+
+@code {
+    [Parameter]
+    public ApplicationUser User { get; set; }
+
+    [Parameter]
+    public List<TaskModel> Tasks { get; set; } = new List<TaskModel>();
+
+    [Parameter]
+    public string UserId { get; set; }
+
+    // Calculate the filtered task list based on the provided user ID.
+    private List<TaskModel> FilteredTaskList => Tasks.Where(t => t.UserId == UserId).ToList();
+
+
+
+    private int PercentDone
+    {
+        // Calculate the percentage of completed tasks for the progress bar.
+        get { return (FilteredTaskList.Count(x => x.IsComplete) * 100) / FilteredTaskList.Count; }
+    }
+    private async Task ToggleTask(TaskModel task)
+    {
+        task.IsComplete = !task.IsComplete;
+
+        if (task.IsComplete)
+        {
+            // Task is marked as complete, set DateCompleted to the current time.
+            task.DateCompleted = DateTime.Now;
+        }
+        else
+        {
+            // Task is marked as incomplete, set DateCompleted to null.
+            task.DateCompleted = null;
+        }
+
+        // Update the task in the database.
+        await TaskModelService.UpdateTaskModel(task);
+    }
+    private string GetListItemClass(TaskModel task)
+    {
+        // CSS class for list items based on completion status.
+        return task.IsComplete ? "list-group-item list-group-item-secondary my-1" : "list-group-item list-group-item-success my-1";
+    }
+    private TaskModel newTaskModel = new TaskModel(); // Represents the new task to be added.
+    private async Task AddTask()
+    {
+        newTaskModel.UserId = UserId;
+        await TaskModelService.AddTaskModel(newTaskModel);
+        newTaskModel = new TaskModel();
+        Tasks = await TaskModelService.GetAllTaskModels();
+    }
+}
+
+
+
+<div>
+    <!-- Display user's name and tasks -->
+    <h4>@User.UserName's Tasks</h4>
+    @if (FilteredTaskList.Count > 0)
+    {
+        @foreach (var task in FilteredTaskList)
+        {
+            <div class="accordion" id="taskAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading@task.Id">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@task.Id">
+                            @task.Task
+                        </button>
+                    </h2>
+                    <div id="collapse@task.Id" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <!-- Task details and editable fields -->
+                            <strong>ID:</strong> @task.Id<br />
+                            <strong>User ID:</strong> @task.UserId<br />
+                            <strong>User Name:</strong> @task.UserName<br />
+                            <strong>Task:</strong> @task.Task<br />
+                            <strong>Is Complete:</strong> @task.IsComplete<br />
+                            <strong>Importance:</strong> @task.Importance<br />
+                            <strong>Date Assigned:</strong> @task.DateAssigned.ToString("yyyy-MM-dd HH:mm:ss")<br />
+                            @if (task.DateCompleted.HasValue)
+                            {
+                                <strong>Date Completed:</strong> @task.DateCompleted.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                                <br />
+                            }
+                            @if (task.DateExpired.HasValue)
+                            {
+                                <strong>Date Expired:</strong> @task.DateExpired.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                                <br />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No tasks available.</p>
+    }
+
+    <!-- Input fields to add a new task -->
+    <div class="mb-3">
+        <input type="text" class="form-control" placeholder="New Task" @bind="newTaskModel.Task" />
+        <button class="btn btn-primary" @onclick="AddTask">Add Task</button>
+    </div>
+</div>
+
+<div>
+    <!-- Display user's name and tasks -->
+    <div style="text-align: center;">
+        <h4>@User.UserName's Tasks</h4>
+    </div>    @if (FilteredTaskList.Count > 0)
+    {
+        <HxAccordion>
+            @foreach (var task in FilteredTaskList)
+            {
+                <HxAccordionItem>
+                    <HeaderTemplate>
+                        <!-- Display task details in the accordion header -->
+                        <strong style="text-decoration: @(task.IsComplete ? "line-through" : "none")">Task:  @task.Task </strong>
+@*  <strong style="text-decoration: @(task.IsComplete ? "line-through" : "none")">Task: @task.Task</strong>
+ *@                        
+@*  <button class="btn btn-link" @onclick="()=>ToggleTask(task)">Toggle</button>
+ *@
+                    </HeaderTemplate>
+                    <BodyTemplate>
+                        <!-- Display task details in the accordion body -->
+                        <strong>ID:</strong> @task.Id<br />
+                        <strong>Task:</strong> @task.Task<br />
+                        <strong>User ID:</strong> @task.UserId<br />
+                        <strong>User Name:</strong> @task.UserName<br />
+                        <strong>Is Complete:</strong> @task.IsComplete<br />
+                        <strong>Importance:</strong> @task.Importance<br />
+                        <strong>Date Assigned:</strong> @task.DateAssigned.ToString("yyyy-MM-dd HH:mm:ss")<br />
+                        @if (task.DateCompleted.HasValue)
+                        {
+                            <strong>Date Completed:</strong> @task.DateCompleted.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                            <br />
+                        }
+                        @if (task.DateExpired.HasValue)
+                        {
+                            <strong>Date Expired:</strong> @task.DateExpired.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                            <br />
+                        }
+                        <button class="btn btn-link" @onclick="()=>ToggleTask(task)">Strike Out</button>
+                        @* @if (task.DateCompleted.HasValue)
+                        {
+                            <strong>Date Completed:</strong> @task.DateCompleted.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                            <br />
+                        }
+                        @if (task.DateExpired.HasValue)
+                        {
+                            <strong>Date Expired:</strong> @task.DateExpired.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                            <br />
+                        } *@
+                    </BodyTemplate>
+                </HxAccordionItem>
+            }
+        </HxAccordion>
+    }
+    else
+    {
+        <p>No tasks available.</p>
+    }
+
+    <!-- Input fields to add a new task with separate styling -->
+    <div class="new-task">
+        <input type="text" class="form-control" placeholder="New Task" @bind="newTaskModel.Task" />
+        <button class="btn btn-primary" @onclick="AddTask">Add Task</button>
+    </div>
+</div>
+
+<!-- CSS styles for task list and new task section (if needed) -->
+<style>
+    .new-task {
+        /* Add styles for "Add New Task" section here */
+        margin-top: 20px;
+    }
+</style>
+
+
+
+
+
+
+
+@*<div>
+     <!-- Display user's name and tasks with completion status -->
+    <h4>@User.UserName's Tasks</h4>
+    <ul class="list-group">
+        @foreach (var task in FilteredTaskList)
+        {
+            <li class="@GetListItemClass(task)" @onclick="()=>ToggleTask(task)">
+                <strong>ID:</strong> @task.Id<br />
+                <strong>User ID:</strong> @task.UserId<br />
+                <strong>User Name:</strong> @task.UserName<br />
+                <strong>Task:</strong> @task.Task<br />
+                <strong>Is Complete:</strong> @task.IsComplete<br />
+                <strong>Importance:</strong> @task.Importance<br />
+                <strong>Date Assigned:</strong> @task.DateAssigned.ToString("yyyy-MM-dd HH:mm:ss")<br />
+                @if (task.DateCompleted.HasValue)
+                {
+                    <strong>Date Completed:</strong> @task.DateCompleted.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                    <br />
+                }
+                @if (task.DateExpired.HasValue)
+                {
+                    <strong>Date Expired:</strong> @task.DateExpired.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                    <br />
+                }
+            </li>
+        }
+    </ul>
+
+    <!-- Display progress bar if tasks are available -->
+    @if (FilteredTaskList.Count > 0)
+    {
+        <div class="progress my-2">
+            <div class="progress-bar" role="progressbar"
+                 style="width: @PercentDone%"
+                 aria-valuemin="0" aria-valuemax="100">
+                @PercentDone%
+            </div>
+        </div>
+    }
+</div> *@

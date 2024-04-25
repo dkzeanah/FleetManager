@@ -1,0 +1,519 @@
+﻿@page "/Calendarmaintwoview"
+@using BlazorApp1.Data
+@using BlazorApp1.CarModels
+@inject IJSRuntime jsRuntime
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ILogger<Calendar> logger
+
+
+
+
+<style>
+    .grid-container {
+        display: grid;
+        /*         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+         */
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .grid-row {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .day-label {
+        flex: 0 0 100px;
+        text-align: center;
+    }
+
+    .grid-item {
+        flex: 1;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    .day-box {
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .user-name {
+        font-weight: bold;
+    }
+
+    .task-item {
+        display: inline-block;
+        margin: 2px;
+        font-size: 10px;
+        cursor: pointer;
+    }
+
+    /* Custom CSS for the 365-day calendar */
+.grid-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid blue;
+    padding: 10px;
+}
+
+.day-label {
+    flex: 1;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.user-container {
+    flex: 3;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.task-item {
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 12px;
+    background-color: black;
+    color: #ccc;
+}
+
+/* Custom CSS for the modal */
+.all-tasks-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.all-tasks-container h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.all-tasks-container .task-item {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.user-badge {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 50px;
+    background-color: #007bff;
+    color: White;
+    margin-right: 5px;
+}
+
+</style>
+
+
+<div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month); i++)
+    {
+        int day = i;
+        DateTime currentDate = new DateTime(CurrentDate.Year, CurrentDate.Month, day);
+        <div @onclick="() => OpenDayTasks(day)" id="@($"day-box-{i}")" class="grid-item day-box">
+            @day
+            <div class="user-container">
+                @foreach (var user in users)
+                {
+                    foreach (var task in GetTasksForUserAndDay(user, currentDate))
+                    {
+                        <div class="task-item" @onclick="() => OpenTaskModal(task)">
+                            @($"{user.UserName}: {task.Task}")
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+
+
+<p>/////==========================\\\\\\</p>
+<h1>1. Team Calendar</h1>
+<button @onclick="MoveToPreviousMonth">Previous Month</button>
+<button @onclick="MoveToNextMonth">Next Month</button>
+
+<div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month); i++)
+    {
+        int day = i;
+        <div @onclick="() => OpenDayTasks(day)" id="@($"day-box-{i}")" class="grid-item day-box">
+            @day
+            <div class="user-container">
+                @foreach (var user in users)
+                {
+                    foreach (var task in GetTasksForUserAndDay(user, day))
+                    {
+                        <div class="task-item" @onclick="() => OpenTaskModal(task)">
+                            @($"{user.UserName}: {task.Task}")
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<p>/////==========================\\\\\\</p>
+
+
+<h1>2. 365 Team Calendar Viewer</h1>
+
+<div class="grid-container">
+    @for (int dayOfYear = 1; dayOfYear <= 365; dayOfYear++)
+    {
+        DateTime date = new DateTime(CurrentDate.Year, 1, 1).AddDays(dayOfYear - 1);
+        <div class="grid-row">
+            <div class="day-label">
+                @date.DayOfWeek, @date.ToShortDateString()
+            </div>
+            <div class="user-container">
+                @foreach (var user in users)
+                {
+                    foreach (var task in GetTasksForUserAndDay(user.Id, date))
+                    {
+                        <div class="task-item" @onclick="() => OpenModalForTask(task)">
+                            @($"{user.UserName}: {task.Task}")
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<p>/////==========================\\\\\\</p>
+
+
+
+
+<h1>3. Team Calendar Viewer</h1>
+
+
+<div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month); i++)
+    {
+        int day = i;
+        <div @onclick="() => OpenDayTasks(day)" id="@($"day-box-{i}")" class="grid-item day-box">
+            @day
+            <div class="user-container">
+                @foreach (var user in users)
+                {
+                    foreach (var task in GetTasksForUserAndDay(user, day))
+                    {
+                        <div class="task-item" @onclick="() => OpenTaskModal(task)">
+                            @($"{user.FriendlyName}: {task.Task}")
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+
+
+<p>///// If section ==========================\\\\\\</p>
+
+
+<ModalComponent IsOpen="isAllTasksModalOpen" Title="All Tasks for All Users for Selected Day" CloseButtonClicked="CloseAllTasksModal">
+    <ChildContent>
+        <h2>Tasks for day: @selectedDay</h2>
+        <div class="all-tasks-container">
+            @foreach (var user in users)
+            {
+                <h3>@user.UserName</h3>
+                @foreach (var task in GetTasksForUserAndDay(user, selectedDay))
+                {
+                    <div class="task-item">
+                        @task.Task
+                    </div>
+                }
+            }
+        </div>
+    </ChildContent>
+</ModalComponent>
+@if (isTaskModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseTaskModal">&times;</span>
+            <h2>Tasks for task: @selectedTask.Task</h2>
+        </div>
+    </div>
+}
+@if (isDayTasksModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay</h2>
+
+
+        </div>
+    </div>
+}
+
+<p>///// END ==========================\\\\\\</p>
+
+
+
+@code {
+
+
+
+    // Add a new boolean flag to control the new modal's visibility
+    private bool isAllTasksModalOpen = false;
+
+    // Add a new method to open the new modal
+    private void OpenAllTasksModal()
+    {
+        Console.WriteLine("OpenAllTasksModal triggered");
+        isAllTasksModalOpen = true;
+    }
+
+    // Add a new method to close the new modal
+    private void CloseAllTasksModal()
+    {
+        Console.WriteLine("CloseAllTasksModal triggered");
+        isAllTasksModalOpen = false;
+    }
+
+
+
+
+    private void OpenModalForTask(TaskModel task)
+    {
+        Console.WriteLine("OpenModalForTask triggered");
+        selectedTask = task;
+        selectedUser = users.FirstOrDefault(u => u.Id == task.UserId);
+        isDayTasksModalOpen = true;
+    }
+
+    private async void UpdateTaskForUser()
+    {
+        Console.WriteLine("UpdateTaskForUser triggered");
+        await TaskModelService.UpdateTaskModel(selectedTask);
+        taskModels = (await TaskModelService.GetAllTaskModels()).ToList();
+        selectedTask = null;
+        isDayTasksModalOpen = false;
+        StateHasChanged();
+    }
+
+
+    private void OpenTaskModal(TaskModel task)
+    {
+        Console.WriteLine("OpenTaskModal triggered");
+        selectedTask = task;
+        isTaskModalOpen = true;
+    }
+
+    private void CloseTaskModal()
+    {
+        Console.WriteLine("CloseTaskModal triggered");
+        isTaskModalOpen = false;
+    }
+
+
+    private void OpenDayTasks(int day)
+    {
+        Console.WriteLine($"OpenDayTasks triggered for day {day}"); // Logging
+        selectedDay = day;
+        isDayTasksModalOpen = true;
+        isAllTasksModalOpen = true; // Open the all tasks modal
+
+    }
+
+    private void CloseDayTasks()
+    {
+        Console.WriteLine("CloseDayTasks triggered"); // Logging
+        isDayTasksModalOpen = false;
+    }
+
+
+    private async void AddTaskForUser(ApplicationUser user)
+    {
+        Console.WriteLine($"AddTaskForUser triggered for user {user.Id}"); // Logging
+        var task = new TaskModel
+            {
+                UserId = user.Id,
+                Task = "Sample Task",
+                IsComplete = false,
+                Importance = 1
+            };
+        await TaskModelService.AddTaskModel(task);
+    }
+
+    private void OpenDayTasksForUser(int day, ApplicationUser user)
+    {
+        Console.WriteLine($"OpenDayTasksForUser triggered for day {day} and user {user.Id}"); // Logging
+        selectedDay = day;
+        selectedUser = user;
+        isDayTasksModalOpen = true;
+    }
+
+
+    private async void AddTaskForUser()
+    {
+        Console.WriteLine("AddTaskForUser triggered, nothing else happening here");
+    }
+    private void OpenModal(TaskModel task)
+    {
+        selectedTask = task;
+        selectedUser = users.FirstOrDefault(u => u.Id == task.UserId);
+        isDayTasksModalOpen = true;
+        isTaskModalOpen = true; // Decide based on your actual logic
+    }
+
+    private List<TaskModel> GetTasksForUserAndDay(string userId, DateTime date)
+    {
+        return taskModels.Where(t => t.UserId == userId && t.DateAssigned.Date == date.Date).ToList();
+    }
+
+    private List<TaskModel> GetTasksForUserAndDay(ApplicationUser user, int day)
+    {
+        return taskModels.Where(t => t.UserId == user.Id && t.DateAssigned.Day == day).ToList();
+    }
+
+
+
+
+
+
+
+    private IJSObjectReference _interopModule;
+
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private ApplicationUser selectedUser;
+
+
+    private List<TaskModel> taskModels = new List<TaskModel>();
+    private TaskModel newTaskModel = new TaskModel();
+    private TaskModel selectedTask;
+
+    private DateTime currentMonth = DateTime.Now; 
+    private DateTime CurrentDate = DateTime.Now; 
+
+
+
+    private int selectedDay;
+    private int _squareCount = 0;
+    private bool firstRender = true;
+    private bool isTaskModalOpen = false;
+    private bool isDayTasksModalOpen = false;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUsersAsync();
+        taskModels = await TaskModelService.GetAllTaskModels();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.firstRender = false;
+            _interopModule = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./interop.js");
+            Console.WriteLine("Interop module imported");
+
+        }
+    }
+    private List<TaskModel> GetTasksForUserAndDay(ApplicationUser user, DateTime day)
+    {
+        return taskModels.Where(t =>
+            t.UserId == user.Id &&
+            t.DateAssigned <= day &&
+            (t.DateExpired.HasValue ? t.DateExpired.Value >= day : true)
+        ).ToList();
+    }
+    private List<TaskModel> GetTasksForSelectedUserAndDay()
+    {
+        //return taskModels.Where(t =>/*  t.UserId == selectedUser.Id && */ t.DateAssigned.Day == selectedDay).ToList();
+        return taskModels.Where(t => t.DateAssigned.Day == selectedDay).ToList();
+
+    }
+
+    private void MoveToNextMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(1);
+        StateHasChanged();
+    }
+    private void MoveToPreviousMonth()
+    {
+        CurrentDate = CurrentDate.AddMonths(-1);
+        StateHasChanged();
+    }
+    private void PreviousMonth()
+    {
+        currentMonth = currentMonth.AddMonths(-1);
+        StateHasChanged();
+    }
+    private void NextMonth()
+    {
+        currentMonth = currentMonth.AddMonths(1);
+        StateHasChanged();
+    }
+
+    private async Task CreateSquare()
+    {
+        string squareId = $"square{_squareCount++}";
+        var squareReference = await _interopModule.InvokeAsync<IJSObjectReference>("createSquare", squareId);
+        Console.WriteLine($"Created square with ID: {squareId}");  // Debugging
+        await _interopModule.InvokeVoidAsync("addButtonsToSquare", squareId);
+        Console.WriteLine("Added buttons to square");
+        await Task.Delay(2000);
+        await _interopModule.InvokeVoidAsync("changeColor", squareId, "red");
+        Console.WriteLine("Changed square color");
+    }
+    private async Task CreateSquareForUser(int day, string userId)
+    {
+        try
+        {
+            string squareId = $"square_{day}_{userId}";
+
+            var dayBoxElement = await jsRuntime.InvokeAsync<IJSObjectReference>("getElementById", $"day-box-{day}");
+            if (dayBoxElement == null)
+            {
+                logger.LogError("dayBoxElement is null");
+                return;
+            }
+
+            var rect = await dayBoxElement.InvokeAsync<ClientRect>("getBoundingClientRect");
+            await _interopModule.InvokeVoidAsync("createSquare", squareId, rect.Left, rect.Top);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred: {ex.Message}");
+        }
+    }
+    private async Task CreateSquareForUser(int day, string userId, ElementReference dayBoxElement)
+    {
+        try
+        {
+            string squareId = $"square_{day}_{userId}";
+
+            var rect = await jsRuntime.InvokeAsync<ClientRect>("getBoundingClientRect", dayBoxElement);
+            await _interopModule.InvokeVoidAsync("createSquare", squareId, rect.Left, rect.Top);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");  // Debugging
+        }
+    }
+    private async Task CreateSquareForUser(int day, ApplicationUser user)
+    {
+        string squareId = $"square{day}_{user.Id}_{_squareCount++}";
+        var squareReference = await _interopModule.InvokeAsync<IJSObjectReference>("createSquare", squareId);
+        Console.WriteLine($"Created square with ID: {squareId}");  // Debugging
+        await _interopModule.InvokeVoidAsync("addButtonsToSquare", squareId);
+        Console.WriteLine("Added buttons to square");
+    }
+    
+}
+

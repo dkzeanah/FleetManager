@@ -1,0 +1,586 @@
+﻿@page "/dashboard"
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+@using BlazorApp1.Repositories
+@using BlazorApp1.Services
+@using BlazorApp1.Data
+
+
+@inject ICarService CarService
+@inject IUserService UserService
+@inject IEventService EventService
+@inject ISimpleEventTypeService SimpleEventTypeService
+
+@* @inject IUserEventDetailService UserEventDetailService
+ *@
+
+<style>
+    .current-booking-card {
+        background-color: #1b1e23;
+        color: #fff;
+    }
+
+        .current-booking-card .dashboard-card-header {
+            background-color: #e67e22;
+        }
+
+        .current-booking-card .dashboard-card-body p {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+    /* ... your existing styles ... */
+
+    .Mysection-container {
+        border: 2px solid #e67e22; /* You can change the color as needed */
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px; /* rounded corners */
+        box-shadow: 2px 2px 12px #aaa; /* subtle shadow for depth */
+                font-color: white;
+
+    }
+
+    .Mytoolbar {
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background-color: #333;
+        color: white;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    /* Themes */
+    .theme-default .Mysection-container {
+        background-color: white;
+        color: black;
+        font-color: white;
+    }
+
+    .theme-dark .Mysection-container {
+        background-color: #1b1e23;
+        color: white;
+        font-color: white;
+    }
+
+    .theme-blue .Mysection-container {
+        background-color: #007BFF;
+        color: white;
+        font-color: white;
+    }
+</style>
+
+
+
+
+
+
+<div class="@currentTheme">
+
+
+
+    <div class="container mt-5 dashboard-container">
+        <div class="row">
+            <div class="col">
+                <h1 class="mb-5">Dashboard</h1>
+
+                @if (currentCar == null)
+                {
+                    <p class="card-text"><em>You currently have no car booked.</em></p>
+                }
+                else
+                {
+                <!-- Emphasized section for showing the currently booked car -->
+                <div class="card dashboard-card current-booking-card">
+                    <div class="card-header dashboard-card-header">Current Assigned Car @currentCar.Model</div>
+                    <div class="card-body dashboard-card-body">
+
+                        <!-- ... your current booking content ... -->
+                        @if (currentCar == null)
+                        {
+                            <p class="card-text"><em>You currently have no car booked.</em></p>
+                        }
+                        else
+                        {
+                                <h1 class="card-text">Information:</h1>
+
+                                <p class="card-text">Fin: @(currentCar.CarDetail?.Finas ?? "Not Available")</p>
+                                <p class="card-text">Tag: @(currentCar.CarDetail?.Tag ?? "Not Available")</p>
+                            @* <h1 class="card-text">Information:</h1>
+
+                            <p class="card-text">Fin: @currentCar.CarDetail.Finas</p>
+                            <p class="card-text">Tag: @currentCar.CarDetail.Tag</p> *@
+                            <p class="card-text">Miles: @currentCar.Miles</p>
+
+
+                        }
+                    </div>
+                </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div class="Mysection-container">
+
+    <select @bind="selectedEventTypeId" class="form-label">
+        <option value="">-- Select --</option>
+        @foreach (var type in simpleEventTypes)
+        {
+            <option value="@type.Id">@type.DisplayName</option>
+        }
+    </select>
+
+
+
+    <div class="mb-3">
+        <label for="startDate" class="form-label">Start Date</label>
+        <InputDate id="startDate" class="form-control" @bind-Value="newEvent.StartTime" />
+    </div>
+
+    <div class="mb-3">
+        <label for="endDate" class="form-label">End Date</label>
+        <InputDate id="endDate" class="form-control" @bind-Value="newEvent.EndTime" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" @onclick="HandleSubmit">Add Event</button>
+
+</div>
+
+<div class="Mysection-container">
+
+    
+                <div class="card mb-4">
+
+                    <div class="card-header">Event</div>
+
+                    <div class="card-body">
+
+                        @if (personalEvents == null)
+
+                        {
+
+                            <p class="card-text"><em>Loading...</em></p>
+
+                        }
+
+                        else
+
+                        {
+
+                            @foreach (var personalEvent in personalEvents)
+
+                            {
+                    <HxAccordion>
+                        <HxAccordionItem>
+                            <HeaderTemplate>
+                                <div class="card-body">
+                                    @if (personalEvents == null)
+                                    {
+                                        <p class="card-text"><em>Loading...</em></p>
+                                    }
+                                    else
+                                    {
+                                       
+                                            
+
+                                       
+                                            if (@personalEvent.SimpleEventType is not null)
+                                            {
+                                                // Assuming you have an event type
+                                                var eventType = simpleEventTypes.FirstOrDefault(et => et.Id == personalEvent.SimpleEventType.Id);
+
+                                                <p class="card-text">
+                                                    @personalEvent.SimpleEventType.Name: @personalEvent.StartTime - @personalEvent.EndTime
+                                                    <!-- Adding a delete button next to each event -->
+                                                    <button @onclick="(() => AddNoteForEvent(personalEvent))">Add Note</button>
+                                                    <button @onclick="(() => DeleteEvent(personalEvent))">Delete</button>
+                                                </p>
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine("Failed to list the event");
+                                            }
+
+                                            <div class="card">
+                                            <div class="card-header"> <strong>@simpleEventTypes.FirstOrDefault(e => e.Id == personalEvent.SimpleEventTypeId)?.Name: </strong></div>
+                                            <div class="card-body">
+                                                <span class="ml-3 event-note"> @personalEvent.TextNote</span>
+                                            </div>
+                                            </div>
+
+
+                                        }
+                                    @* } *@
+                                </div>
+
+                            </HeaderTemplate>
+                            <BodyTemplate>
+
+                                <div class="mb-3 event-display">
+
+                                    <strong>@simpleEventTypes.FirstOrDefault(e => e.Id == personalEvent.SimpleEventTypeId)?.Name: </strong>
+
+                                    @*                                 <span>: @personalEvent.StartTime - @personalEvent.EndTime</span>
+                            *@
+                                    <span class="ml-3 event-note"> @personalEvent.TextNote</span>
+
+                                    <div class="event-actions">
+
+                                        @*                                     <button @onclick="(() => UpdateEvent(personalEvent))" class="btn btn-info">Update</button>
+                                *@
+                                        <button @onclick="(() => ToggleNoteInput(personalEvent))" class="btn btn-info">Add Note</button>
+                                        @if (showNoteInput)
+                                        {
+                                            <input @bind="personalEvent.TextNote" placeholder="Enter a note..." />
+                                            <button @onclick="(() => SaveNoteForEvent(personalEvent))">Save Note</button>
+                                            <button @onclick="(() => CancelNoteForEvent(personalEvent))">Cancel</button>
+                                        }
+                                        else
+                                        {
+                                            <button @onclick="(() => ToggleNoteInput(personalEvent))" class="btn btn-info">Note </button>
+                                        }
+
+                                        <button @onclick="(() => ToggleDetailView(personalEvent))" class="btn btn-warning">Detailed View</button>
+@*                                         @if (showDetailView)
+ *@
+                                        @if (personalEvent.ShowDetailView)
+
+                                        {
+                                            <input @bind="personalEvent.Id" placeholder="Enter a note..." />
+@*                                             <input @bind="personalEvent.SimpleEventTypeId" placeholder="Enter a note..." />
+
+                                            <input @bind="personalEvent.SimpleEventType.Name" placeholder="Enter a note..." /> *@
+
+                                            <input @bind="personalEvent.TextNote" placeholder="Enter a note..." />
+                                            <input @bind="personalEvent.StartTime" placeholder="Enter a note..." />
+
+                                            <input @bind="personalEvent.EndTime" placeholder="Enter a note..." />
+
+                                            <button @onclick="(() => SaveNoteForEvent(personalEvent))">Save Note</button>
+                                            <button @onclick="(() => CancelNoteForEvent(personalEvent))">Cancel</button>
+                                        }
+                                        else
+                                        {
+                                            @*                             <button @onclick="(() => ToggleDetailView(personalEvent))" class="btn btn-info">Toggle</button>
+                                *@  }
+
+                                        <button @onclick="(() => DeleteEvent(personalEvent))" class="btn btn-danger">Delete</button>
+
+                                        @*                         <div>@personalEvent.TextNote</div>
+                                *@
+                                    </div>
+
+
+                                </div>
+                                            </BodyTemplate>
+        </HxAccordionItem>
+
+    </HxAccordion>
+                            }
+
+                        }
+
+
+
+                    </div>
+
+                </div>
+
+
+</div>
+
+
+<div class="Mysection-container">
+
+<!-- Section for displaying events -->
+
+    <div class="card">
+        <div class="card-header">My Events</div>
+        <div class="card-body">
+            @if (personalEvents == null)
+            {
+                <p class="card-text"><em>Loading...</em></p>
+            }
+            else
+            {
+                    // Iterate through user events
+                @foreach (var personalEvent in personalEvents)
+                {
+                    // Check if SimpleEventType is not null and its Name is not null before proceeding
+                    if (@personalEvent.SimpleEventType != null && @personalEvent.SimpleEventType.Name is not null)
+                    {
+                        // Find the event type from the simpleEventTypes list based on its ID
+                        var eventType = simpleEventTypes.FirstOrDefault(et => et.Id == personalEvent.SimpleEventTypeId);
+
+                        // Display the event's type name, start time, and end time
+                        <p class="card-text">@personalEvent.SimpleEventType.Name: @personalEvent.StartTime - @personalEvent.EndTime</p>
+
+                        <div>
+                            <!-- Other event details here -->
+                            @if (showNoteInput)
+                            {
+                                <input @bind="personalEvent.TextNote" placeholder="Enter a note..." />
+                                <button @onclick="(() => SaveNoteForEvent(personalEvent))">Save Note</button>
+                                <button @onclick="(() => CancelNoteForEvent(personalEvent))">Cancel</button>
+                            }
+                            else
+                            {
+                                <button @onclick="(() => ToggleNoteInput(personalEvent))">Add/Update Note</button>
+                            }
+
+                            <!-- Display the saved note, if any -->
+                            <div>@personalEvent.TextNote</div>
+                        </div>
+                    }
+                    else
+                    {
+                        // Print to console if event type name is not found
+                        Console.WriteLine("Event type name retrieval failed");
+                    }
+                }
+
+            }
+        </div>
+    </div>
+
+
+
+    <!-- Section for displaying events -->
+    <div class="card">
+        <div class="card-header">My Events</div>
+        <div class="card-body">
+            @if (personalEvents == null)
+            {
+                <p class="card-text"><em>Loading...</em></p>
+            }
+            else
+            {
+                @foreach (var personalEvent in personalEvents)
+                {
+                    // Get the event type name through the Event navigation property
+                    var eventName = personalEvent.EventType?.Name ?? "Unknown";
+
+                    <p class="card-text">@simpleEventTypes.FirstOrDefault(e => e.Id == personalEvent.SimpleEventTypeId)?.Name : @personalEvent.StartTime - @personalEvent.EndTime</p>
+
+                    //<p class="card-text">@personalEvent.SimpleEventTypeId : @personalEvent.StartTime - @personalEvent.EndTime</p>
+
+                    <button @onclick="(() => AddNoteForEvent(personalEvent))">Add Note</button>
+
+                    <!-- Add this button wherever you want to trigger the modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#noteModal">
+                        Add Note
+                    </button>
+                    if (@personalEvent.SimpleEventType is not null)
+                    {
+                        // Assuming you have an event type
+                        var eventType = simpleEventTypes.FirstOrDefault(et => et.Id == personalEvent.SimpleEventType.Id);
+
+                        <p class="card-text">
+                            @personalEvent.SimpleEventType.Name: @personalEvent.StartTime - @personalEvent.EndTime
+                            <!-- Adding a delete button next to each event -->
+                            <button @onclick="(() => DeleteEvent(personalEvent))">Delete</button>
+                        </p>
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to list the event");
+                    }
+
+                    <div class="card">
+                        <div class="card-header">My Events</div>
+                        <div class="card-body">
+                        </div>
+                    </div>
+
+
+                }
+            }
+        </div>
+    </div>
+
+
+
+   
+
+</div>
+
+<NoteModalComponent></NoteModalComponent>
+
+
+
+
+@code {
+    private ApplicationUser? currentUser { get; set; }
+    private string? currentUserId {get;set;}
+    private string currentTheme = "theme-default";
+    private List<TaskModel> taskModels = new List<TaskModel>();
+
+    public void ChangeTheme(string theme)
+    {
+        currentTheme = $"theme-{theme}";
+    }
+    private void ChangeTheme2(string theme)
+    {
+        currentTheme = $"theme-{theme}";
+    }
+    private List<TaskModel> GetTasksForUser(ApplicationUser user)
+    {
+        return taskModels.Where(t => t.UserId == user.Id).ToList();
+    }
+    private bool showNoteInput;
+    private bool showDetailView;
+
+    private int selectedEventTypeId;
+    private string? selectedEventTypeName;
+    private List<Car> cars = new List<Car>();
+    private List<SimpleEventType> simpleEventTypes = new List<SimpleEventType>();
+    private List<Event> personalEvents = new List<Event>();
+    //private List<UserEventDetail> userEventDetails;
+
+    private int selectedCarId;
+    private Car currentCar;
+    private Event newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+    // Method to toggle the note input visibility
+
+    // private async Task ToggleDetailView(Event personalEvent)
+    // {
+    //     showDetailView = !showDetailView; // Hide the input box
+    //                                       // await EventService.UpdateEventAsync(personalEvent); // Save the updated event with the new note
+    // }
+    private void ToggleDetailView(Event personalEvent)
+    {
+        personalEvent.ShowDetailView = !personalEvent.ShowDetailView;
+    }
+    private void ToggleNoteInput(Event personalEvent)
+    {
+        showNoteInput = !showNoteInput; // Toggle the boolean property
+    }
+    private async Task SaveNoteForEvent(Event personalEvent)
+    {
+        showNoteInput = false; // Hide the input box
+        await EventService.UpdateEventAsync(personalEvent); // Save the updated event with the new note
+    }
+    private void CancelNoteForEvent(Event personalEvent)
+    {
+        showNoteInput = false; // Hide the input box without saving
+    }
+    private async Task UpdateEvent(Event personalEvent)
+    {
+        await EventService.UpdateEventAsync(personalEvent);
+    }
+    private async Task DeleteEvent(Event personalEvent)
+    {
+
+
+        await EventService.DeleteEventAsync(personalEvent.Id);
+
+    }
+
+
+
+    private Event AddNoteForEvent(Event personalEvent)
+    {
+        personalEvent.TextNote = "placeholder information";
+        return personalEvent;
+        // Implement logic to add a note for this event. Maybe open a modal or navigate to another page.
+    }
+    protected override async Task OnInitializedAsync()    
+    {
+
+        string currentUserId = await UserService.GetCurrentUserIdAsync();
+        ApplicationUser currentUser = await UserService.GetUserByIdAsync(currentUserId);
+        /*Pre-Instantiated*/ cars = await CarService.GetAllCarsWithDetailsAsync();
+        int currentCarId = await CarService.GetCurrentCarIdForUserIdAsync(currentUserId);
+        currentCar = await CarService.GetCarByIdAsync(currentCarId); // Get the current Car Scoped-To-User
+        
+        personalEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId); // Events Scoped-To-User
+        simpleEventTypes = (await SimpleEventTypeService.GetSimpleEventTypesAsync()).ToList(); // Event Types scoped-to-Events Comprising pertaining to User-Scoped Events Being Created.
+
+
+
+    }
+
+
+    private async Task HandleSubmit()
+    {
+        // Check if StartTime and EndTime have values and the year is not less than 1753.
+        if (!newEvent.StartTime.HasValue || newEvent.StartTime.Value.Year < 1753
+            || !newEvent.EndTime.HasValue || newEvent.EndTime.Value.Year < 1753)
+        {
+            return;
+        }
+
+        newEvent.CarId = currentCar.CarId;
+        newEvent.UserId = await UserService.GetCurrentUserIdAsync();
+
+        newEvent.SimpleEventTypeId = selectedEventTypeId; // Assign the selected event type ID here
+
+        try
+        {
+            newEvent = await EventService.AddEventAsync(newEvent);
+            Console.WriteLine($"\n\n\n Event {newEvent.ToString()} added and continuance in progress to clear forms \n\n\n");
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding event: {ex.Message}");
+        }
+        //newEvent.SimpleEventType = (await SimpleEventTypeService.GetSimpleEventTypeByIdAsync(selectedEventTypeId)); // Assign the selected event type ID here
+        
+        StateHasChanged();
+
+    }
+
+
+
+    /*
+    <select label for="simpleEventType" class="form-label">
+      SimpleEventType
+      @foreach (var type in simpleEventTypes)
+      {
+      <option value="@type.Id">@type.DisplayName</option>
+      }
+      </select>
+
+
+      <div class="mb-3">
+      <label for="startDate" class="form-label">Start Date</label>
+      <InputDate id="startDate" class="form-control" @bind-Value="newEvent.StartTime" />
+      </div>
+
+      <div class="mb-3">
+      <label for="endDate" class="form-label">End Date</label>
+      <InputDate id="endDate" class="form-control" @bind-Value="newEvent.EndTime" />
+      </div>
+
+      <button type="submit" class="btn btn-primary" @onclick="(() => HandleSubmit())">Add Event</button>
+    */
+
+    // UserEventDetail newUserEventDetail = new UserEventDetail
+        //     {
+        //         UserEventId = newEvent.UserEventDetailId,
+        //         UserId = newEvent.UserId,
+        //     };
+        // newEvent.UserEventDetail = "test text";
+
+
+        // newEvent.TextNote = "placeholder";
+
+        //newEvent = await EventService.AddEventAsync(newEvent);
+
+        // Clear the form
+        //newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+        //personalEvents = await EventService.GetAllEventsByUserIdAsync(newEvent.UserId);
+        
+
+}

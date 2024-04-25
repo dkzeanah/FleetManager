@@ -1,0 +1,35 @@
+﻿@using BlazorApp1.Data
+@inject IUserService UserService
+
+@*CalendarGridGPTComponent*@
+@for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+{
+    int day = i;
+    <div @onclick="() => OnDayClicked.InvokeAsync(day)">
+        @day
+        @foreach (var user in users)
+        {
+            <input @onfocus="() => OnUserDayClicked.InvokeAsync(new UserDayInfo { Day = day, User = user })" />
+        }
+    </div>
+}
+
+@code {
+    public class UserDayInfo
+    {
+        public int Day { get; set; }
+        public ApplicationUser User { get; set; }
+    }
+
+    [Parameter]
+    public EventCallback<int> OnDayClicked { get; set; }
+    [Parameter]
+    public EventCallback<UserDayInfo> OnUserDayClicked { get; set; }
+
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUsersAsync();
+    }
+}

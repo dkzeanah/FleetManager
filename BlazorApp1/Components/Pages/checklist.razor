@@ -1,0 +1,176 @@
+﻿@page "/checklist"
+@using BlazorApp1.Interfaces
+@using BlazorApp1.Services
+@inject ITestReleaseService TestReleaseService
+@inject ICarService CarService
+@inject ICheckListItemService CheckListItemService
+
+@if (checklistItem != null && testReleases != null && cars != null)
+{
+    <EditForm Model="checklistItem" OnValidSubmit="HandleValidSubmit" FormName="ChecklistForm">
+        <DataAnnotationsValidator />
+
+        
+        <label for="testRelease">Select Test Release:</label>
+        <InputSelect id="testRelease" @bind-Value="@selectedTestReleaseId">
+            <option value="">-- Choose a Test Release --</option>
+            @foreach (var testRelease in testReleases)
+            {
+                <option value="@testRelease.Id">@testRelease.Name</option>
+            }
+        </InputSelect>
+
+        <label for="car">Select Car:</label>
+        <InputSelect id="car" @bind-Value="checklistItem.CarId">
+            <option value="">-- Choose a Car --</option>
+            @foreach (var car in cars)
+            {
+                <option value="@car.CarId">@car.Make - @car.Model</option>
+            }
+        </InputSelect>
+
+        <label for="title">Title:</label>
+        <InputText id="title" @bind-Value="checklistItem.Title" />
+
+        <label for="description">Description:</label>
+        <InputTextArea id="description" @bind-Value="checklistItem.Description" />
+
+        <button type="submit">Create Checklist Item</button>
+    </EditForm>
+}
+else
+{
+<p>Loading...</p>
+}
+
+@* if cars not null *@
+@if (cars != null)
+{
+    <!-- Dropdown to Select a Car -->
+    <h3>Select a Car</h3>
+    <select @bind="selectedCarId">
+        @foreach (var car in cars)
+        {
+            <option value="@car.CarId">@car.CarId</option>
+        }
+    </select>
+}
+
+@*//# ===========================================================================
+//Purpose: Check List Item
+//Comment: 
+//# ===========================================================================*@
+
+<EditForm Model="@checklistItem" OnValidSubmit="HandleValidSubmit" FormName="NewChecklistForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <!-- Input for Title -->
+    <label for="title">Title:</label>
+    <InputText id="title" @bind-Value="checklistItem.Title" />
+
+    <!-- Input for Description -->
+    <label for="description">Description:</label>
+    <InputTextArea id="description" @bind-Value="checklistItem.Description" />
+
+    <!-- Input for IsCompleted -->
+    <label for="isCompleted">Is Completed:</label>
+    <InputNumber id="Priority" @bind-Value="checklistItem.TargetDate" />
+
+   @*  <!-- Input for CompletedOn -->
+    <label for="completedOn">Completed On:</label>
+    <InputDate id="completedOn" @bind-Value="checklistItem.CompletedOn" /> *@
+
+    <!-- Input for Notes -->
+    <label for="notes">Notes:</label>
+    <InputTextArea id="notes" @bind-Value="checklistItem.Notes" />
+
+    <!-- Input for Priority -->
+    <label for="priority">Priority:</label>
+    <InputSelect id="priority" @bind-Value="checklistItem.Priority">
+        @foreach (var priority in Enum.GetValues(typeof(PriorityLevel)))
+        {
+            <option value="@priority">@priority</option>
+        }
+    </InputSelect>
+
+    <!-- Input for DueDate -->
+    <label for="dueDate">Due Date:</label>
+    <InputDate id="dueDate" @bind-Value="checklistItem.DueDate" />
+
+    <!-- Input for IsGeneric -->
+    <label for="isGeneric">Is Generic:</label>
+    <InputCheckbox id="isGeneric" @bind-Value="checklistItem.IsGeneric" />
+
+    <!-- Submit Button -->
+    <button type="submit">Submit</button>
+</EditForm>
+@code {
+        /*using System.ComponentModel.DataAnnotations;
+
+        namespace BlazorApp1.CarModels
+            {
+            public class TestRelease
+            {
+            public int Id { get; set; }
+            [Required]
+            public string Name { get; set; }
+            public int? CalendarWeek { get; set; }
+            public int? CalendarMonth { get; set; }
+            public int? CalendarYear { get; set; }
+            public DateOnly StartDate { get; set; }
+            public DateTime? EndDate { get; set; }
+            public List<Car> Cars { get; set; }
+            public List<ApplicationUser>? Users { get; set; }
+
+        }
+        }
+        */
+    private int selectedCarId;
+    private List<TestRelease> testReleases;
+    private List<Car> cars;
+    private int selectedTestReleaseId = 1;
+
+    private CheckListItem newChecklistItem = new CheckListItem();
+    private CheckListItem checklistItem = new CheckListItem();
+    private List<CheckListItem> checklistItems = new List<CheckListItem>();
+
+    private async Task HandleValidSubmit()
+    {
+        await CheckListItemService.AddCheckListItemAsync(checklistItem);
+        checklistItems = await CheckListItemService.GetAllCheckListItemsAsync();
+        checklistItem = new CheckListItem(); // Reset form
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+
+        checklistItems = await CheckListItemService.GetAllCheckListItemsAsync();
+    }
+    private async Task HandleSubmit()
+    {
+        await CheckListItemService.AddCheckListItemAsync(newChecklistItem);
+        // Reset form or navigate to another page as needed
+        newChecklistItem = new CheckListItem(); // Reset the form
+    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //    // testReleases = await TestReleaseService.GetTestReleasesByNameAsync();
+    //     cars = await CarService.GetAllCarsWithDetailsAsync();
+
+    // }
+
+    // private async Task HandleValidSubmit()
+    // {
+    //     await CheckListItemService.AddCheckListItemAsync(checklistItem);
+    //     // Additional logic after successful submission
+    // }
+
+    private async Task OnTestReleaseSelected(ChangeEventArgs e)
+    {
+        selectedTestReleaseId = Convert.ToInt32(e.Value.ToString());
+        cars = await CarService.GetCarsByTestReleaseIdAsync(selectedTestReleaseId);
+    }
+    
+}

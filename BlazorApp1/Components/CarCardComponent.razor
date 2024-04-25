@@ -1,0 +1,38 @@
+﻿<div class="car-card">
+    <p>@CarItem.ToString()</p>
+
+    @if (HasLogger())
+    {
+        <!-- SVG for logger -->
+        <svg width="16" height="16" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="14" stroke="black" stroke-width="2" fill="none" />
+        </svg>
+    }
+
+    @if (HasHarness())
+    {
+        <!-- SVG for harness -->
+        <svg width="16" height="16" viewBox="0 0 32 32">
+            <rect x="8" y="8" width="16" height="16" stroke="black" stroke-width="2" fill="none" />
+        </svg>
+    }
+
+    @if (IsAdas())
+    {
+        <!-- SVG for ADAS -->
+        <svg width="16" height="16" viewBox="0 0 32 32">
+            <triangle x="8" y="8" width="16" height="16" stroke="black" stroke-width="2" fill="none" />
+        </svg>
+    }
+</div>
+
+@code {
+    @code {
+        [Parameter]
+        public Car CarItem { get; set; }
+
+        private bool HasLogger() => CarItem.Loggers?.Count > 0;
+        private bool HasHarness() => CarItem?.HasHarness == true;
+        private bool IsAdas() => CarItem?.IsAdas == true;
+    }
+}

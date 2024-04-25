@@ -1,0 +1,78 @@
+﻿@page "/job-management"
+
+<h3>Job Management</h3>
+
+<div>
+    <h4>Create New Job</h4>
+    <input @bind="jobAttribute" placeholder="Job Attribute" />
+    <input @bind="timeWithoutTool" type="number" placeholder="Time Without Tool (hours)" />
+    <input @bind="toolCost" type="number" placeholder="Tool Cost" />
+
+    <button @onclick="CreateJob">Create Job</button>
+
+    @if (currentJob != null)
+    {
+        <div>
+            <h4>Add Tool</h4>
+            <input @bind="toolName" placeholder="Tool Name" />
+            <input @bind="efficiencyMultiplier" type="number" placeholder="Efficiency Multiplier" />
+            <button @onclick="AddToolToJob">Add Tool</button>
+
+            <h4>Add Material</h4>
+            <input @bind="material" placeholder="Material" />
+            <button @onclick="AddMaterialToJob">Add Material</button>
+
+            <h4>Add Step</h4>
+            <input @bind="stepDescription" placeholder="Step Description" />
+            <input @bind="stepTime" type="number" placeholder="Estimated Time (hours)" />
+            <button @onclick="AddStepToJob">Add Step</button>
+
+            <h4>Perform Job</h4>
+            <button @onclick="PerformCurrentJob">Perform Job</button>
+        </div>
+    }
+</div>
+
+@code {
+    private string jobAttribute;
+    private decimal timeWithoutTool;
+    private Job<string> currentJob;
+
+    private decimal toolCost;
+
+    private string toolName;
+    private decimal efficiencyMultiplier;
+    private string material;
+    private string stepDescription;
+    private decimal stepTime;
+
+    private void CreateJob()
+    {
+        currentJob = new Job<string>(jobAttribute, timeWithoutTool);
+    }
+
+    private void AddToolToJob()
+    {
+        var tool = new Tool(toolName, toolCost, efficiencyMultiplier);
+        currentJob.AddTool(tool);
+    }
+
+    private void AddMaterialToJob()
+    {
+        currentJob.AddMaterial(material);
+    }
+
+    private void AddStepToJob()
+    {
+        var step = new JobStep { Description = stepDescription, EstimatedTime = stepTime };
+        currentJob.AddStep(step);
+    }
+
+    private void PerformCurrentJob()
+    {
+        // Assuming worker details are already set
+        var worker = new Worker { Name = "John" };
+        currentJob.PerformJob(worker);
+        // Optionally display results or handle further logic
+    }
+}

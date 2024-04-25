@@ -1,0 +1,55 @@
+﻿<style >
+
+
+.modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    width: 60%;
+    z-index: 1001;
+    border-radius: 15px;
+    box-shadow: 0px 0px 30px #000;
+}
+
+.close {
+    color: #e74c3c;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-width: 90%;
+    margin: 20px auto;
+}
+
+.day-box {
+    background-color: #34495e;
+    color: #ecf0f1;
+    padding: 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+    .day-box:hover {
+        transform: scale(1.05);
+    }
+
+.user-input {
+    background: transparent;
+    border: 1px solid #ecf0f1;
+    color: #ecf0f1;
+    border-radius: 4px;
+}
+
+</style >

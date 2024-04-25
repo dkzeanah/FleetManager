@@ -1,0 +1,62 @@
+﻿@page "/ToolCalculator"
+
+@using BlazorApp1.Pages
+
+<h3>Efficiency Calculator</h3>
+
+<div>
+    <h4>Worker and Tool Details</h4>
+    <p>Worker's Original Hourly Rate: $@worker.HourlyRate/hour</p>
+    <p>Drill Cost: $@drill.Cost</p>
+    <p>Drill Efficiency Multiplier: @drill.EfficiencyMultiplier</p>
+
+    <h4>Standard Job Calculations</h4>
+    <p>Original Time for Standard Job: @job.TimeTakenWithoutTool hours</p>
+    <p>Time for Standard Job with Drill: @job.TimeTakenWithTool hours (Calculated as Original Time * Efficiency Multiplier)</p>
+    <p>Time Saved with Drill on Standard Job: @timeSaved hours (Calculated as Original Time - Time with Drill)</p>
+    <p>Original Earnings for Standard Job: $@originalEarnings (Calculated as Original Time * Hourly Rate)</p>
+    <p>New Hourly Rate to Maintain Earnings on Standard Job: $@newHourlyRate/hour (Calculated as Original Earnings / Time with Drill)</p>
+
+    <h4>Large Job Calculations</h4>
+    <p>Original Time for Large Job: @largeJob.TimeTakenWithoutTool hours</p>
+    <p>Time for Large Job with Drill: @largeJob.TimeTakenWithTool hours</p>
+    <p>Large Job Time Saved: @largeJobTimeSaved hours</p>
+    <p>Efficiency Value of Drill: @efficiencyValue hours saved per dollar (Calculated as Time Saved on Large Job / Drill Cost)</p>
+</div>
+
+@code {
+    private Worker worker = new Worker { HourlyRate = 20 };
+    private Tool drill = new Tool("Drill", 60, 0.67m); // Efficiency multiplier
+    private Job<string> job = new Job<string>("Screws", 2); // 2 hours without tool
+    private Job<string> largeJob = new Job<string>("Screws", 20); // 20 hours without tool
+
+    private decimal timeSaved;
+    private decimal newHourlyRate;
+    private decimal efficiencyValue;
+    private decimal originalEarnings;
+    private decimal largeJobTimeSaved;
+
+    protected override void OnInitialized()
+    {
+        // Calculating time saved with drill on the standard job
+        timeSaved = job.TimeTakenWithoutTool - (job.TimeTakenWithoutTool * drill.EfficiencyMultiplier);
+        Console.WriteLine($"Time saved with drill on standard job: {timeSaved} hours");
+
+        // Calculate original earnings for the standard job
+        originalEarnings = worker.HourlyRate * job.TimeTakenWithoutTool;
+        Console.WriteLine($"Original earnings for standard job: ${originalEarnings}");
+
+        // Calculate new hourly rate for the standard job
+        newHourlyRate = originalEarnings / (job.TimeTakenWithoutTool * drill.EfficiencyMultiplier);
+        Console.WriteLine($"New hourly rate for standard job: ${newHourlyRate}/hour");
+
+        // Calculating efficiency value for the drill on the large job
+        largeJobTimeSaved = largeJob.TimeTakenWithoutTool - (largeJob.TimeTakenWithoutTool * drill.EfficiencyMultiplier);
+        efficiencyValue = largeJobTimeSaved / drill.Cost;
+        Console.WriteLine($"Efficiency value of the drill on large job: {efficiencyValue} hours saved per dollar");
+
+        base.OnInitialized();
+    }
+
+    // Define additional methods and classes (Worker, Tool, Job) here...
+}

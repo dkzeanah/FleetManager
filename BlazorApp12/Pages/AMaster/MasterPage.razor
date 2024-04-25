@@ -1,0 +1,18 @@
+﻿@page "/master"
+@namespace BlazorApp1.Pages.AMaster
+<h3>Master</h3>
+<GrandParentComponent />
+@code{
+
+
+
+    private string grandParentProperty;
+
+    private void GrandParentValueChanged(string value)
+    {
+        grandParentProperty = value;
+    }
+
+    // Similarly define ParentValueChanged and ChildValueChanged
+}
+

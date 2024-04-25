@@ -1,0 +1,64 @@
+﻿@using BlazorApp1.Data
+@using BlazorApp1.CarModels
+@inject ILogger<GPTDayModal> logger
+
+@if (IsGroup)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="Close">&times;</span>
+            <h2>Tasks for day: @SelectedDay</h2>
+            @foreach (var user in Users)
+            {
+                <div style="border: 1px solid #00FFEE;">
+                    @user.UserName
+                    <TaskListComponent taskList="@GetTasksForUserAndDay(user.Id)" userId="@user.Id" />
+                </div>
+            }
+        </div>
+    </div>
+}
+else if (Users.Count == 1)
+{
+    var user = Users[0];
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="Close">&times;</span>
+            <h2>Tasks for day: @SelectedDay for @user.UserName</h2>
+            <TaskListComponent taskList="@GetTasksForUserAndDay(user.Id)" userId="@user.Id" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public List<ApplicationUser> Users { get; set; }
+    [Parameter] public List<TaskModel> Tasks { get; set; }
+    [Parameter] public int SelectedDay { get; set; }
+    [Parameter] public EventCallback CloseModal { get; set; }
+    [Parameter] public bool IsGroup { get; set; }
+
+    private List<TaskModel> GetTasksForUserAndDay(string userId)
+    {
+        try
+        {
+            return Tasks.Where(t => t.UserId == userId && t.DateAssigned.Day == SelectedDay).ToList();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred: {ex.Message}");
+            return new List<TaskModel>();
+        }
+    }
+
+    private void Close()
+    {
+        try
+        {
+            CloseModal.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred: {ex.Message}");
+        }
+    }
+}

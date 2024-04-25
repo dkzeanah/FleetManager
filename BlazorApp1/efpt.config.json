@@ -1,0 +1,259 @@
+﻿{
+   "CodeGenerationMode": 3,
+   "ContextClassName": "dbfromQRDContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "ModelNamespace": null,
+   "OutputContextPath": "99Data",
+   "OutputPath": "99Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "BlazorApp99",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[ApplicationUser]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ApplicationUserDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Blank]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CarDetails]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Cars]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CarStaticDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CarStatus_New]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CarStatuses]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Category]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Detail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[DetailType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Drivers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ErrorLog]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Event]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EventDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[EventType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExcelDataRecord]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExcelDataRecordAttribute]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ExcelDataRecordChange]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Issues]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Log]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NewCar]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[NewCar_Loggers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Order]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PlaceholderUser]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PlaceholderUserRole]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Posts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PostTag]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[RoleClaims]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Roles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SimpleEvent]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SimpleEventType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Software]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Source]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Status]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Tags]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Team]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TeamTimeline]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketAttachment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketComment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketHistory]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Tickets]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TicketTag]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Truck]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Truck_Loggers]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TruckDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TruckStaticDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TruckStatus]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserCarEvent]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserClaims]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserDetail]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserEvents]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserLogins]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserRoles]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserTokens]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "hp.dbfromQRD.dbo",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": true,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": true,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": true,
+   "UseNoDefaultConstructor": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": true,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

@@ -1,0 +1,45 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BlazorApp1.CarModels;
+[Table("Cars")]
+
+public partial class Car
+{
+    //private 
+    public int Id { get; set; }
+    public string? Name { get; set; } = null!;
+    public string? Make { get; set; } 
+    public string? Model { get; set; } = null!;
+
+    public int? Year { get; set; }
+
+    public string? TeleGeneration { get; set; } = null!;
+
+    public int? Miles { get; set; }
+
+    public string? Location { get; set; }
+    public string? Tagnumber { get; set; }
+    public string? Vin { get; set; }
+    public string? Finas { get; set; }
+    public bool Adas { get; set; }
+    public int? SourceId { get; set; }
+    public Source? Source { get; set; }
+
+    public virtual CarStaticDetail? CarStaticDetail { get; set; }
+    public int CarDetail { get; set; }
+    public ICollection<CarDetail>? CarDetails { get; set; }
+
+    public int CarStatusId { get; set; }
+    public ICollection<CarStatus>? CarStatus { get; set; }
+
+
+    public virtual ICollection<Logger>? Loggers { get; set; } = new List<Logger>();
+    public string? UserId { get;  set; }
+    //public double Mileage { get;  set; }
+
+   
+    public override string ToString()
+    {
+        return $"CarId: {Id}, Make: {Make}, Model: {Model}, Year: {Year}, TeleGeneration: {TeleGeneration}, Miles: {Miles}, Location: {Location}";
+    }
+}

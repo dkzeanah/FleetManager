@@ -1,0 +1,167 @@
+    public class CarMap : IEntityTypeConfiguration<Car>
+    {
+        public void Configure(EntityTypeBuilder<Car> builder)
+        {
+            //says: theres a car with a [cardetail that has  carId on it as a dependancy]
+            builder.HasOne(c => c.CarDetail).WithOne(cd => cd.Car).HasForeignKey<CarDetail>(cd => cd.CarId);
+            builder.HasMany(c => c.Loggers).WithOne(l => l.Car).HasForeignKey(l => l.CarId);
+            builder.HasMany(e => e.Modules)
+                    .WithMany(e => e.Cars)
+                    .UsingEntity<CarModule>(
+                        "CarModule",
+                        l => l.HasOne<Module>().WithMany(e => e.CarModules).HasForeignKey(e => e.ModuleId).HasPrincipalKey(e => e.ModuleId),
+                        r => r.HasOne<Car>().WithMany(e => e.CarModules).HasForeignKey(e => e.CarId).HasPrincipalKey(e => e.CarId),
+                        j =>
+                        {
+                            j.HasKey(e => new { e.CarId, e.ModuleId });
+                        });
+        }
+    }
+
+using BlazorApp1.CarModels;
+using BlazorApp1.Repositories;
+using DocumentFormat.OpenXml.Office2010.Excel;
+
+namespace BlazorApp1.Services
+{
+    public class ModuleService : IModuleService
+    {
+        private readonly IModuleRepository _ModuleRepository;
+
+        public ModuleService(IModuleRepository ModuleRepository)
+        {
+            _ModuleRepository = ModuleRepository;
+        }
+
+        public async Task<List<Module>> GetAllModulesAsync()
+        {
+            return (await _ModuleRepository.GetAllAsync()).ToList();
+        }
+
+        public async Task<Module> GetModuleByIdAsync(int id)
+        {
+            return await _ModuleRepository.GetByIdAsync(id);
+        }
+
+        public async Task AddModuleAsync(Module item)
+        {
+             await _ModuleRepository.AddAsync(item);
+        }
+
+        public async Task UpdateModuleAsync(int id, Module module)
+        {
+             await _ModuleRepository.UpdateAsync(id, module);
+        }
+        public async Task UpdateModuleAsync( Module module)
+        {
+            var id = module.ModuleId;
+
+            await _ModuleRepository.UpdateAsync(id, module);
+        }
+
+        public async Task DeleteModuleAsync(int id)
+        {
+             await _ModuleRepository.DeleteAsync(id);
+        }
+    }
+}
+
+@using BlazorApp1.Data
+@using BlazorApp1.Interfaces
+@using BlazorApp1.Services
+
+@inject ICarService CarService
+
+@inject IModuleService ModuleService
+@inject ILoggerService LoggerService
+
+<div class="form-group">
+    <label>Modules</label>
+    @if (ExistingModules != null)
+    {
+        <ul>
+            @foreach (var module in ExistingModules)
+            {
+                <li>
+                    @module.Name (@module.ModuleId)
+                    <br />Description: @module.Description
+                    <br />Current Software Version: @module.CurrentSoftwareVersion
+                    <br />Next Software Version: @module.NextSoftwareVersion
+                    <br />Last Updated: @module.LastUpdated
+                    <br />Projected Release: @module.ProjectedRelease
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No modules available.</p>
+    }
+</div>
+
+<!-- Add New Module -->
+<div class="form-group">
+    <label>Add New Module</label>
+    <input class="form-control" @bind="@NewModule.Name" placeholder="Module Name" />
+    <input class="form-control" @bind="@NewModule.Description" placeholder="Description" />
+    <input class="form-control" @bind="@NewModule.CurrentSoftwareVersion" placeholder="Current Software Version" />
+    <input class="form-control" @bind="@NewModule.NextSoftwareVersion" placeholder="Next Software Version" />
+    <input type="date" class="form-control" @bind="@NewModule.LastUpdated" placeholder="Last Updated" />
+    <input type="date" class="form-control" @bind="@NewModule.ProjectedRelease" placeholder="Projected Release" />
+    <button class="btn btn-primary" @onclick="() => OnAddModule.InvokeAsync(NewModule.ModuleId)">Add</button>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public List<BlazorApp1.CarModels.Module> ExistingModules { get; set; }
+    [Parameter]
+    public EventCallback<int> OnAddModule { get; set; }
+    public BlazorApp1.CarModels.Module NewModule { get; set; } = new BlazorApp1.CarModels.Module();
+}
+
+
+how to make this component show from the list of modules only the components that belong to a certain car?
+
+
+        <!-- AddModuleComponent-->
+   <AddModuleComponent ExistingModules="@modulesForSelectedCar" OnAddModule="AddModule" />
+
+        <!-- New Section for Modules -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    Modules
+                </div>
+                <div class="card-body">
+
+
+                    <!-- Form to Add a New Module -->
+                    <h5>Add New Module</h5>
+                    <EditForm Model="newModule" OnValidSubmit="@(() => AddModule(selectedCar.CarId))">
+
+                       <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <InputText id="name" @bind-Value="newModule.Name" placeholder="Module Name" />
+                        <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    </EditForm>
+
+                    <!-- List to Show Modules for Selected Car -->
+                    <h5>Existing Modules</h5>
+                    @if (modulesForSelectedCar == null)
+                    {
+                        <p>Loading...</p>
+                    }
+                    else
+                    {
+                        <ul>
+                            @foreach (var module in modulesForSelectedCar)
+                            {
+                                <li>@module.Name (@module.ModuleId)</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>

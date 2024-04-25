@@ -1,0 +1,19 @@
+﻿<input @bind="SearchTerm" @bind:event="oninput" />
+
+@code {
+    [Parameter] public EventCallback<string> OnTextChanged { get; set; }
+    private string SearchTerm { get; set; }
+
+    private async Task SetSearchText()
+    {
+        await OnTextChanged.InvokeAsync(SearchTerm);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SetSearchText();
+        }
+    }
+}

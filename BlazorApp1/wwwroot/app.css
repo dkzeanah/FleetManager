@@ -1,0 +1,640 @@
+
+
+.container {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+
+.heading {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.button-style {
+    color: white;
+    background-color: #007bff;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.list-style {
+    list-style-type: disc;
+    padding-left: 40px;
+}
+
+    .list-style li {
+        color: #555;
+        font-size: 16px;
+    }
+
+.modal {
+    display: block; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+
+@media (max-width: 768px) {
+    /* Adjustments for smaller screens */
+}
+
+/* Style for user row in car list */
+.car-user-row {
+    /* Styling for the new user row */
+}
+
+.modal {
+    border: 3px solid red; /* Red/Orange border for modal */
+}
+
+.btn {
+    background-color: lightblue; /* Light blue background for buttons */
+    color: black; /* Black text for buttons */
+    font-weight: bold; /* Bold text for button title */
+}
+
+/* Responsive button sizing */
+@media (max-width: 600px) {
+    .btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+}
+
+.small-button {
+    transform: scale(0.8);
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    max-height: 800px; /* Set the maximum height for scrollability */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    width: 60%;
+    z-index: 1001;
+    border-radius: 15px;
+    box-shadow: 0px 0px 30px #000;
+}
+
+.close {
+    color: #e74c3c;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-width: 90%;
+    margin: 20px auto;
+}
+
+.day-box {
+    /*         background-color: #34495e;
+                     */ background-color: #ff5733;
+    color: #ecf0f1;
+    padding: 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+    .day-box:hover {
+        transform: scale(1.05);
+    }
+
+.current-day {
+    background-color: #ff5733; /* Change this color to your desired highlight color */
+    color: white; /* Text color for the highlighted day */
+}
+
+.user-input {
+    background: transparent;
+    border: 1px solid #ecf0f1;
+    color: #ecf0f1;
+    border-radius: 4px;
+}
+
+.modal {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+.modal-content {
+    max-height: 800px; /* Set the maximum height for scrollability */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    width: 60%;
+    z-index: 1001;
+    border-radius: 15px;
+    box-shadow: 0px 0px 30px #000;
+}
+
+.close {
+    color: #e74c3c;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-width: 90%;
+    margin: 20px auto;
+}
+
+.day-box {
+    background-color: #34495e;
+    color: #ecf0f1;
+    padding: 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+    .day-box:hover {
+        transform: scale(1.05);
+    }
+
+.current-day {
+    background-color: #ff5733; /* Change this color to your desired highlight color */
+    color: white; /* Text color for the highlighted day */
+}
+
+.user-input {
+    background: transparent;
+    border: 1px solid #ecf0f1;
+    color: #ecf0f1;
+    border-radius: 4px;
+}
+
+/*break*/
+/*.calendar-day.in-range {
+    background-color: #808080;*/ /* Overridden color for selected range */
+/*}
+
+.calendar {
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 300px;
+}
+
+.calendar-day {
+    padding: 5px;
+    border: 10px solid #eee;
+}*/
+
+/* Additional scoped styles... */
+
+
+/*.toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+
+.calendar-day {
+    padding: 5px;
+    border: 1px solid #eee;
+}
+
+.range-picker {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+    .range-picker input {
+        margin-right: 5px;
+    }
+
+.toolbar {
+    display: flex;
+    justify-content: space-around;*/ /* Changed to space-around for equal spacing */
+/*align-items: center;
+    padding: 10px 0;
+    background-color: #f4f4f4;*/ /* Light grey background for the toolbar */
+/*border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+    .toolbar > * {
+        margin: 0 5px;*/ /* Adds some space around toolbar items */
+/*}
+
+    .toolbar select,
+    .toolbar input[type="text"],
+    .toolbar input[type="color"],
+    .toolbar input[type="date"] {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        line-height: 1.5;
+    }
+
+    .toolbar button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+    }
+
+        .toolbar button:hover {
+            background-color: #0056b3;
+        }*/
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    /* Adjustments for smaller screens */
+}
+
+@media (max-width: 600px) {
+    .toolbar button {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Styles for calendar and related components */
+.calendar-day.in-range {
+    background-color: #808080; /* Overridden color for selected range */
+}
+
+.calendar {
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 300px;
+}
+
+.calendar-day {
+    padding: 5px;
+    border: 10px solid #eee; /* Increased border thickness */
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-around; /* Changed to space-around for equal spacing */
+    align-items: center;
+    padding: 10px 0;
+    background-color: #f4f4f4; /* Light grey background for the toolbar */
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px; /* Added margin-bottom from original .toolbar style */
+}
+
+    .toolbar > * {
+        margin: 0 5px; /* Adds some space around toolbar items */
+    }
+
+    .toolbar select,
+    .toolbar input[type="text"],
+    .toolbar input[type="color"],
+    .toolbar input[type="date"] {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        line-height: 1.5;
+    }
+
+    .toolbar button {
+        background-color: lightblue; /* Light blue background for buttons */
+        color: black; /* Black text for buttons */
+        font-weight: bold; /* Bold text for button title */
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .toolbar button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+.range-picker {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+    .range-picker input {
+        margin-right: 5px;
+    }
+
+/* Other component styles */
+.car-user-row {
+    /* Styling for the new user row */
+}
+
+.modal {
+    display: block;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    border: 3px solid red; /* Red/Orange border for modal */
+}
+
+.modal-content {
+    max-height: 800px; /* Set the maximum height for scrollability */
+    overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 20px;
+    width: 60%;
+    z-index: 1001;
+    border-radius: 15px;
+    box-shadow: 0px 0px 30px #000;
+}
+
+.close {
+    color: #e74c3c;
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-width: 90%;
+    margin: 20px auto;
+}
+
+.day-box {
+    background-color: #34495e; /* Replaced color with one from original .day-box */
+    color: #ecf0f1;
+    padding: 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+    .day-box:hover {
+        transform: scale(1.05);
+    }
+
+.current-day {
+    background-color: #ff5733; /* Change this color to your desired highlight color */
+    color: white; /* Text color for the highlighted day */
+}
+
+.user-input {
+    background: transparent;
+    border: 1px solid #ecf0f1;
+    color: #ecf0f1;
+    border-radius: 4px;
+}
+
+.small-button {
+    transform: scale(0.8);
+}
+
+.debug-section {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+    font-family: monospace;
+    color: #333;
+}
+
+.calendar-day.in-range {
+    background-color: #c0e0f0; /* Color to indicate selected range */
+}
+
+.calendar {
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 100%; /* This will make the calendar take the full width of its container */
+    max-width: 1200px; /* Optional: if you want to limit how wide it can get */
+    margin: auto; /* This will center the calendar if it's smaller than the max-width */
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+
+
+.calendar-header, .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* This will distribute the space evenly across the 7 days of the week */
+    text-align: center;
+}
+
+/*     .calendar-day {
+        padding: 5px;
+        border: 1px solid #eee;
+    } */
+
+.range-picker {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+    .range-picker input {
+        margin-right: 5px;
+    }
+
+.toolbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+    .toolbar > * {
+        margin: 0 5px;
+    }
+
+    .toolbar select,
+    .toolbar input[type="text"],
+    .toolbar input[type="color"],
+    .toolbar input[type="date"] {
+        padding: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        line-height: 1.5;
+    }
+
+    .toolbar button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: white;
+    }
+
+        .toolbar button:hover {
+            background-color: #0056b3;
+        }
+
+/*     .calendar-day {
+        /* ... your existing styles ... */
+min-height: 100px; /* Or a fixed height that suits your design */
+overflow: auto; /* Adds a scrollbar if content overflows */
+display: flex; /* Use flex layout to organize tasks within a day cell */
+flex-direction: column; /* Stack tasks vertically */
+border: 1px solid #eee; /* Separates the day cells visually */
+padding: 5px; /* Adds space inside the day cells */
+}
+
+*/
+
+
+
+.task-range-strip {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5; /* Adjust for desired transparency */
+    z-index: 1; /* Below the text */
+}
+
+.task-text {
+    z-index: 2; /* Above the strip */
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    /* Other styles for text */
+}
+
+/*     .user-name {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+color: #333;
+font-size: 0.8em;
+z-index: 3; /* Ensure it's above other elements */
+}
+
+*/
+
+
+
+.task-entry {
+    border: 1px solid #ccc;
+    margin: 2px;
+    padding: 2px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+}
+
+.calendar-day {
+    /* ... your existing styles ... */
+    display: flex; /* Use flex layout to organize content within a day cell */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: start; /* Align content to the start */
+    align-items: center; /* Center content horizontally */
+    min-height: 150px; /* Adjust the height as needed */
+}
+
+.user-name {
+    width: 100%;
+    text-align: center;
+    margin-top: 5px; /* Adjust the margin as needed */
+    z-index: 2; /* Above the strips */
+    font-weight: bold; /* Make the text bold */
+}
+
+.user-task {
+    width: 100%;
+    text-align: left;
+    margin-top: 2px; /* Space between tasks */
+    z-index: 2; /* Above the strips */
+}

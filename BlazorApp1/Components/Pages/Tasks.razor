@@ -1,0 +1,231 @@
+﻿@page "/Tasks"
+@using BlazorApp1.Data
+@using BlazorApp1.CarModels 
+
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@attribute [Authorize(Roles = "Admin,Organizer,Driver,Technician")]
+
+
+
+
+
+
+
+
+
+<h1>Havit</h1>
+
+
+<h3>Team TaskList</h3>
+<div class="toolbar p-3 rounded">
+
+
+    <div class="d-flex align-items-center">
+        <input class="form-control mr-3" @bind="searchTerm" placeholder="Search..." />
+        <EditForm class="form-check-inline d-flex align-items-center" Model="@newTask" OnValidSubmit="AddTask">
+            <InputText class="form-control mx-2" @bind-Value="newTask.Task" placeholder="Enter task..." />
+            <button class="btn btn-light" type="submit">Add Task</button>
+        </EditForm>
+    </div>
+</div>
+
+<TaskListComponent taskList="@taskList" />
+
+
+
+
+<div class="TaskList">
+    <h3>TaskList</h3>
+
+    @if (taskList.Count > 0)
+    {
+        <div class="progress my-2">
+            <div class="progress-bar" role="progressbar"
+                 style="width: @(percentDone)%"
+                 aria-valuemin="0" aria-valuemax="100">
+                @(percentDone)
+            </div>
+        </div>
+    }
+    <br />
+
+
+
+
+    <ul class="list-group">
+        @foreach (var task in taskList)
+        {
+            @if (task.IsComplete)
+            {
+                <li class="list-group-item list-group-item-secondary my-1"
+                @onclick="(()=>task.IsComplete = !task.IsComplete)">
+                    <del>@task.Task</del>
+                </li>
+            }
+            else
+            {
+                <li class="list-group-item list-group-item-success my-1"
+                @onclick="(()=>task.IsComplete = !task.IsComplete)">
+                    @task.Task
+                </li>
+
+            }
+        }
+    </ul>
+
+</div>
+
+<p>//======================</p>
+@* //==================== *@
+
+@foreach (var user in users)
+{
+    var currentUser = user;
+    //using the GetTaskForUser(user) to pass a list of TaskModels to the UserTask Component, which is name with a list.
+    <UserTaskListComponent User="@currentUser" UserId="@currentUser.Id" Tasks="@GetTasksForUser(currentUser)" />
+
+
+    <EditForm class="form-check-inline my-2" Model="@newTask" OnValidSubmit="@(async () => AddTask(currentUser.Id))">
+        <InputText class="form-control d-inline-block mr-2" @bind-Value="newTask.Task" />
+        <button class="btn btn-outline-primary d-inline-block" type="submit">Add Task</button>
+    </EditForm>
+
+   
+
+    <ul class="list-group">
+        @foreach (var task in taskList)
+        {
+            @if (task.IsComplete)
+            {
+                <li class="list-group-item list-group-item-secondary my-1"
+                @onclick="(()=>task.IsComplete = !task.IsComplete)">
+                    <del>@task.Task</del>
+                </li>
+            }
+            else
+            {
+                <li class="list-group-item list-group-item-success my-1"
+                @onclick="(()=>task.IsComplete = !task.IsComplete)">
+                    @task.Task
+                </li>
+
+            }
+            //Origin// <li class="list-group-item list-group-item-success my-1">@task.Task</li>
+        }
+    </ul>
+    @*  @if (taskModels == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        @foreach (var taskModel in taskModels)
+        {
+            <p>@taskModel.UserName: @taskModel.Task</p>
+        }
+    } *@
+
+    @* <h3>Add a Tm</h3>
+    <EditForm Model="@newTaskModel" OnValidSubmit="AddTask">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <InputText id="name" @bind-Value="newTaskModel.UserName" placeholder="@user" />
+        <InputText id="string" @bind-Value="newTaskModel.Task" placeholder="String" />
+
+        <button type="submit">Add Blank</button>
+    </EditForm> *@
+
+
+
+@*     <p>//==========================================</p>
+ *@
+
+
+
+    @*         <InputText class="form-control mx-2" @bind-Value="newTask.Task" />
+        <button class="btn btn-outline-primary" type="submit">Add Task</button> *@
+}
+
+@code {
+    private bool isAdminOrOrganizer = false; // True if the current user is an admin or organizer
+    private string currentUserId;
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private List<TaskModel> taskModels; 
+
+    private List<TaskModel> personalTaskModels;
+    private TaskModel newTaskModel = new TaskModel();
+    private string searchTerm = string.Empty;
+    private string CurrentUserName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        CurrentUserName = user.Identity.Name;
+        try
+        {
+            //var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            //var user = authState.User;
+
+            if (user.IsInRole("Admin") || user.IsInRole("Organizer"))
+            {
+                isAdminOrOrganizer = true;
+            }
+
+            users = await UserService.GetAllUsersAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while loading the cars: {ex.Message}");
+        }
+        finally
+        {
+            currentUserId = await UserService.GetCurrentUserIdAsync();
+
+
+            users = await UserService.GetAllUsersAsync();
+            taskModels = (await TaskModelService.GetAllTaskModels()).ToList();
+
+            personalTaskModels = await TaskModelService.GetAllTaskModelsByUserIdAsync(currentUserId) ; // Events Scoped-To-User
+
+        }
+    }
+    private List<TaskModel> taskList = new List<TaskModel>();
+    private BlazorApp1.CarModels.TaskModel newTask = new BlazorApp1.CarModels.TaskModel();
+
+    private int percentDone
+    {
+        get { return (taskList.Count(x => x.IsComplete) * 100) / taskList.Count; }
+    }
+
+    private async void AddTask()
+    {
+
+        await TaskModelService.AddTaskModel(newTaskModel);
+        newTaskModel = new TaskModel();
+        taskModels = (await TaskModelService.GetAllTaskModels()).ToList();
+        StateHasChanged();
+    }
+    private async void AddTask(string userId)
+    {
+        newTask.UserId = userId;
+
+        await TaskModelService.AddTaskModel(newTask);
+        newTask = new TaskModel();
+        taskModels = (await TaskModelService.GetAllTaskModels()).ToList();
+        StateHasChanged();
+    }
+
+    private List<TaskModel> GetTasksForUser(ApplicationUser user)
+    {
+        return taskModels.Where(t => t.UserId == user.Id).ToList();
+    }
+
+}

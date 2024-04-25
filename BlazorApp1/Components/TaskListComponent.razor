@@ -1,0 +1,158 @@
+﻿@using BlazorApp1.Data
+@using BlazorApp1.CarModels
+@inject ITaskModelService TaskModelService
+
+<style>
+    .task-list {
+        margin-bottom: 20px;
+    }
+
+    .task-item {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .new-task {
+        margin-top: 20px;
+    }
+</style>
+
+
+
+<p>TaskList</p>
+
+@if (taskList.Count > 0)
+{
+    <div class="progress my-2">
+        <div class="progress-bar" role="progressbar"
+             style="width: @(percentDone)%"
+             aria-valuemin="0" aria-valuemax="100">
+            @(percentDone)
+        </div>
+    </div>
+}
+
+
+
+<ul class="list-group">
+    @foreach (var task in taskList)
+    {
+        @if (task.IsComplete)
+        {
+            <li class="list-group-item list-group-item-secondary my-1"
+            @onclick="(()=>ToggleTaskStatus(task))">
+                <del>@task.Task</del>
+            </li>
+        }
+        else
+        {
+            <li class="list-group-item list-group-item-success my-1"
+            @onclick="(()=>ToggleTaskStatus(task))">
+                @task.Task
+            </li>
+        }
+    }
+</ul>
+
+  <!-- NewTask2 Input fields to add a new task with separate styling -->
+    <div class="new-task">
+        <input type="text" class="form-control" placeholder="NewTask2" @bind="newTaskModel.Task" />
+        <button class="btn btn-primary" @onclick="AddTask">Add Task</button>
+    </div>
+
+
+
+
+@code {
+
+    // Parameters for the component.
+    // Calculate the filtered task list based on the provided user ID.
+    // Calculate the percentage of completed tasks for the progress bar.
+    // TODO: Make the day of the month a p
+
+    [Parameter]
+    public List<TaskModel> taskList { get; set; }
+
+    [Parameter]
+    public string userId { get; set; }
+    [Parameter]
+    public DateTime SelectedDay { get; set; }
+
+    // private List<TaskModel> FilteredTaskList => taskList.Where(t => t.UserId == userId && (t.DateAssigned.Date == SelectedDay.Date || t.DateCompleted?.Date == SelectedDay.Date)).ToList();
+    private List<TaskModel> FilteredTaskList => taskList.Where(t => t.UserId == userId).ToList();
+    private TaskModel newTaskModel = new TaskModel();
+
+    protected override void OnInitialized()
+    {
+        if (taskList == null)
+        {
+            Console.WriteLine("taskList was null so set to empty list");
+            taskList = new List<TaskModel>();
+        }
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            Console.WriteLine("userId was null or empty so 'defaultUserId' set..");
+            userId = "DefaultUserId"; // Replace with logic to get the logged-in user's ID
+        }
+
+        if (SelectedDay == DateTime.MinValue)
+        {
+            Console.WriteLine("DateTime.now for the SelectedDay, since was 'DateTime.MinValue'.");
+            SelectedDay = DateTime.Now;
+        }
+    }
+    private int percentDone
+    {
+        get
+        {
+            if (FilteredTaskList.Count == 0)
+            {
+                return 0;
+            }
+            return (FilteredTaskList.Count(x => x.IsComplete) * 100) / FilteredTaskList.Count;
+        }
+    }
+    private async Task AddTask()
+    {
+        newTaskModel.UserId = userId;
+        await TaskModelService.AddTaskModel(newTaskModel);
+        newTaskModel = new TaskModel();
+        taskList = await TaskModelService.GetAllTaskModels();
+    }
+    private async Task ToggleTaskStatus(TaskModel task)
+    {
+        task.IsComplete = !task.IsComplete;
+
+        if (task.IsComplete)
+        {
+            task.DateCompleted = DateTime.Now;
+        }
+        else
+        {
+            task.DateCompleted = null;
+        }
+
+        await TaskModelService.UpdateTaskModel(task);
+    }
+
+
+    /* model of TaskModel for reference
+        public class TaskModel
+        {
+        public int Id { get; set; }
+        public string? UserId { get; set; }
+        public virtual ApplicationUser? User { get; set; }// = null!;
+        public string? UserName { get; set; }
+        [Required]
+        public string Task { get; set; }
+        public bool IsComplete { get; set; } = false;
+        public int? Importance { get; set; }
+
+        public DateTime DateAssigned { get; set; } = DateTime.Now;
+        public DateTime? DateCompleted { get; set; }
+        public DateTime? DateExpired { get; set; }
+    }
+    */
+}

@@ -1,0 +1,213 @@
+﻿@page "/reports"
+@using ClosedXML.Excel;
+@using Microsoft.AspNetCore.Components.Forms
+@using ClosedXML
+
+@inject IExcelDataRecordService ExcelDataService
+
+<h3>Upload Excel File</h3>
+
+@*<EditForm Model="@fileUploadModel" OnValidSubmit="@OnSubmit">
+    <InputFile OnChange="@OnInputFileChange" />
+    <button type="submit" class="btn btn-primary" disabled="@isUploading">Upload</button>
+    <p>@message</p>
+</EditForm>*@
+
+<EditForm Model="@fileUploadModel" OnValidSubmit="@HandleValidSubmit">
+    <InputFile OnChange="@OnInputFileChange" />
+    <button type="submit" class="btn btn-primary" disabled="@isUploading">Upload</button>
+    <p>@message</p>
+</EditForm>
+
+
+@*<EditForm OnValidSubmit="HandleValidSubmit">
+    <InputFile OnChange="HandleSelected" />
+    <button type="submit" disabled="@isProcessing">Upload</button>
+</EditForm>*@
+
+@if (isProcessing)
+{
+    <p>Processing file...</p>
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <p>@message</p>
+}
+@*returning a list of dictionaries and each dictionary is a row of data with column name as the key and cell value as the value, you should first check if any data is available and then display each dictionary as a row:*@
+@if (excelData != null && excelData.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var key in excelData[0].Keys)
+                {
+                    <th>@key</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in excelData)
+            {
+                <tr>
+                    @foreach (var cell in row)
+                    {
+                        <td>@cell.Value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<button @onclick="CreateExcelFile" class="btn btn-primary">Generate Excel File</button>
+
+
+
+@code {
+    private List<Dictionary<string, object>> excelData;
+
+    private FileUploadModel fileUploadModel = new FileUploadModel();
+    private List<ExcelDataRow> excelDataRows;
+    private IBrowserFile selectedFile;
+    private bool isProcessing;
+    private bool isUploading;
+
+    private string message;
+
+
+
+    private void HandleSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+    private async Task HandleValidSubmit()
+    {
+        isProcessing = true;
+        message = "";
+
+        try
+        {
+            // Use the IExcelDataService service to process the file and store the data.
+            excelData = await ExcelDataService.ProcessExcelFileToJson(fileUploadModel.File);
+            message = "File processed successfully";
+
+            // Notify Blazor that state has changed and UI needs to be updated
+            this.StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error processing file: {ex.Message}";
+        }
+
+        isProcessing = false;
+    }
+
+    private async Task HandleValidSubmit2()
+    {
+        isProcessing = true;
+        message = "";
+
+        try
+        {
+            // Use the IExcelDataService service to process the file and store the data.
+            excelData = await ExcelDataService.ProcessExcelFile(fileUploadModel.File);
+            message = "File processed successfully";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error processing file: {ex.Message}";
+        }
+
+        isProcessing = false;
+    }
+    private async Task OnSubmit()
+    {
+        isUploading = true;
+        message = string.Empty;
+        excelDataRows = null; // Reset the previously uploaded data
+        try
+        {
+            // Use the IExcelDataService service to upload the file.
+            excelData = await ExcelDataService.ProcessExcelFile(fileUploadModel.File); //excelData = await ExcelDataService.ProcessExcelFileToJson(fileUploadModel.File, rowData);
+            message = "File uploaded successfully!";
+
+            // Notify Blazor that state has changed and UI needs to be updated
+            this.StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error uploading file: {ex.Message}";
+        }
+
+        isUploading = false;
+    }
+
+    private async Task OnSubmit2()
+    {
+        isUploading = true;
+        message = string.Empty;
+        excelDataRows = null; // Reset the previously uploaded data
+        try
+        {
+            // Use the IExcelDataService service to upload the file.
+            excelData = await ExcelDataService.ProcessExcelFile(fileUploadModel.File);
+            message = "File uploaded successfully!";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error uploading file: {ex.Message}";
+        }
+
+        isUploading = false;
+    }
+    private void OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        fileUploadModel.File = e.File;
+    }
+    public void CreateExcelFile()
+    {
+        Console.WriteLine("Creating new workbook...");
+        using var workbook = new XLWorkbook();
+        Console.WriteLine("Adding worksheet to workbook...");
+        var worksheet = workbook.Worksheets.Add("Sheet 1");
+
+        Console.WriteLine("Processing excel data...");
+        for (int i = 0; i < excelData.Count; i++)
+        {
+            Console.WriteLine($"Processing row {i + 1}...");
+            var row = worksheet.Row(i + 1);
+            var dict = excelData[i];
+
+            if (i == 0)
+            {
+                // Create the header row with column names
+                Console.WriteLine("Creating header row...");
+                var headerRow = worksheet.Row(1);
+                int column = 1;
+                foreach (var key in dict.Keys)
+                {
+                    Console.WriteLine($"Adding header cell for {key}...");
+                    headerRow.Cell(column).Value = key;
+                    column++;
+                }
+            }
+
+            // Populate the row with data
+            Console.WriteLine("Populating data row...");
+            int dataColumn = 1;
+            foreach (var value in dict.Values)
+            {
+                Console.WriteLine($"Adding data cell: {value.ToString()}...");
+                row.Cell(dataColumn).Value = value.ToString();
+                dataColumn++;
+            }
+        }
+
+        // Save the workbook to a file
+        Console.WriteLine("Saving workbook to data.xlsx...");
+        workbook.SaveAs("data.xlsx");
+        Console.WriteLine("Workbook saved successfully!");
+    }
+
+
+}

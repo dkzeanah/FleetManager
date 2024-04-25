@@ -1,0 +1,329 @@
+﻿@page "/register"
+@using BlazorApp1.Data;
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using System.Linq
+@using Microsoft.EntityFrameworkCore;
+@using System.ComponentModel;
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject NavigationManager NavigationManager
+@*im not sure my register page sets up identity users fully, can you double check the created user will have all fulfilled fields once submitted?*@
+
+<h3>Register</h3>
+<p>Please fill in the registration form:</p>
+<EditForm Model="@registerModel" OnValidSubmit="HandleRegistration">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="friendlyName">@nameof(RegisterModel.FriendlyName)</label>
+        @*<label for="friendlyName">Friendly Name</label>*@
+        <InputText id="friendlyName" class="form-control" @bind-Value="@registerModel.FriendlyName" />
+        <ValidationMessage For="@(() => registerModel.FriendlyName)" />
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="@registerModel.Email" />
+        <ValidationMessage For="@(() => registerModel.Email)" />
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText id="password" class="form-control" @bind-Value="@registerModel.Password" type="password" />
+        <ValidationMessage For="@(() => registerModel.Password)" />
+    </div>
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <InputText id="confirmPassword" class="form-control" @bind-Value="@registerModel.ConfirmPassword" type="password" />
+        <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+    </div>
+    <div class="form-group">
+        <label for="role">Role</label>
+        <select id="role" class="form-control" @bind="@registerModel.Role">
+            <option value="">Select Role</option>
+            @foreach (var role in roles)
+            {
+                <option value="@role">@role</option>
+            }
+        </select>
+        <ValidationMessage For="@(() => registerModel.Role)" />
+    </div>
+
+
+    <div class="form-group">
+        <label for="code">Code</label>
+        <InputText id="code" class="form-control" @bind-Value="@registerModel.Code" />
+        <ValidationMessage For="@(() => registerModel.Code)" />
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+
+
+
+@code {
+    private RegisterModel registerModel = new RegisterModel();
+    private List<string> roles { get; set; } = new List<string>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        roles = (await RoleManager.Roles.ToListAsync()).Select(r => r.Name).ToList() ?? new List<string>();
+
+        foreach(string role in roles){
+            Console.WriteLine($"\n\n roles: \n\n {role} ");
+
+        }
+        Console.WriteLine($"\n\n roles: \n\n {roles.ToString()} ");
+        Console.WriteLine($"\n\n roles: \n\n {string.Join(", ", roles)} ");
+    }
+    private async Task HandleRegistration()
+    {
+        Console.WriteLine("HandleRegistration was called.");
+        var user = new ApplicationUser { UserName = registerModel.Email, Email = registerModel.Email, FriendlyName = registerModel.FriendlyName };
+        var result = await UserManager.CreateAsync(user, registerModel.Password);
+
+        if (result.Succeeded)
+        {
+            string role = GetRoleFromCode(registerModel.Code);
+
+            if (!string.IsNullOrEmpty(role))
+            {
+                await UserManager.AddToRoleAsync(user, role);
+                Console.WriteLine($"Added role '\n\r\n\r\n\r {role}'");
+            }
+            else
+            {
+                await UserManager.AddToRoleAsync(user, "Contact");
+                Console.WriteLine($"No code, Added Contact '\n\r\n\r\n\r {role}'");
+
+            }
+            var token = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = $"{NavigationManager.BaseUri}confirmemail?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+            await UserManager.ConfirmEmailAsync(user, token);
+            NavigationManager.NavigateTo("/Identity/Account/Login", true);
+
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine(error.Description);
+            }
+        }
+    }
+    private async Task<string> GetRoleFromCodeAsync(string code)
+    {
+        var role = await RoleManager.Roles.FirstOrDefaultAsync(r => r.NormalizedName == code.ToUpper());
+        return role?.Name;
+    }
+    private string GetRoleFromCode(string code)
+    {
+        switch (code)
+        {
+            case "1234":
+                return "Admin";
+            case "2222":
+                return "organizer";
+            case "3333":
+                return "Driver";
+            case "4444":
+                return "technician";
+            default:
+                return "contact"; // null; // If code doesn't match any specific role, return null
+        }
+    }
+    private List<string> GetRoles()
+    {
+        return RoleManager.Roles.Select(r => r.Name).ToList();
+    }
+
+    public class RegisterModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required]
+        [Compare(nameof(Password))]
+        public string ConfirmPassword { get; set; }
+
+        public string? Role { get; set; }
+
+        [DataType(DataType.Password)]
+        [RegularExpression(@"^\d{4}$", ErrorMessage = "Invalid - Input 4 Digit number")]
+        public string Code { get; set; }
+
+        [Required] // add this if the FriendlyName is required during registration
+        [DisplayName("First Name Last Name")] // Add this line
+        public string FriendlyName { get; set; } // add FriendlyName property
+    }
+
+}
+
+
+@*
+@page "/register"
+@using BlazorApp1.Data;
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@using System.Linq
+@using Microsoft.EntityFrameworkCore;
+@using System.ComponentModel;
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject NavigationManager NavigationManager
+<h3>Register</h3>
+<p>Please fill in the registration form:</p>
+<EditForm Model="@registerModel" OnValidSubmit="HandleRegistration">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="friendlyName">@nameof(RegisterModel.FriendlyName)</label>   
+        $1$<label for="friendlyName">Friendly Name</label>#1#
+        <InputText id="friendlyName" class="form-control" @bind-Value="@registerModel.FriendlyName" />
+        <ValidationMessage For="@(() => registerModel.FriendlyName)" />
+    </div>
+<div class="form-group">
+    <label for="email">Email</label>
+    <InputText id="email" class="form-control" @bind-Value="@registerModel.Email" />
+    <ValidationMessage For="@(() => registerModel.Email)" />
+</div>
+<div class="form-group">
+    <label for="password">Password</label>
+    <InputText id="password" class="form-control" @bind-Value="@registerModel.Password" type="password" />
+    <ValidationMessage For="@(() => registerModel.Password)" />
+</div>
+<div class="form-group">
+    <label for="confirmPassword">Confirm Password</label>
+    <InputText id="confirmPassword" class="form-control" @bind-Value="@registerModel.ConfirmPassword" type="password" />
+    <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+</div>
+<div class="form-group">
+    <label for="role">Role</label>
+    <select id="role" class="form-control" @bind="@registerModel.Role">
+        <option value="">Select Role</option>
+        @foreach (var role in roles)
+        {
+            <option value="@role">@role</option>
+        }
+    </select>
+    <ValidationMessage For="@(() => registerModel.Role)" />
+</div>
+
+
+<div class="form-group">
+    <label for="code">Code</label>
+    <InputText id="code" class="form-control" @bind-Value="@registerModel.Code" />
+    <ValidationMessage For="@(() => registerModel.Code)" />
+</div>
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+
+
+
+@code {
+    private RegisterModel registerModel = new RegisterModel();
+    private List<string> roles { get; set; } = new List<string>();
+    protected override async void OnInitialized()
+    {
+        var roleManager = RoleManager;
+        roles = (await RoleManager.Roles.ToListAsync()).Select(r => r.Name).ToList();
+
+    }
+    private async Task HandleRegistration()
+    {
+        Console.WriteLine("HandleRegistration was called.");
+        //if (registerModel.Code != "1234") // Check the entered code
+        //{
+        //    return;
+        //}
+        Console.WriteLine($"FriendlyName: {registerModel.FriendlyName} ");
+        var user = new ApplicationUser { UserName = registerModel.Email, Email = registerModel.Email, FriendlyName = registerModel.FriendlyName };
+        var result = await UserManager.CreateAsync(user, registerModel.Password);
+
+        if (result.Succeeded)
+        {
+            string role = GetRoleFromCode(registerModel.Code);
+
+            if (!string.IsNullOrEmpty(role))
+            {
+                await UserManager.AddToRoleAsync(user, role);
+                Console.WriteLine($"Added role '\n\r\n\r\n\r {role}'");
+            }
+            else
+            {
+                await UserManager.AddToRoleAsync(user, "Contact");
+            }
+            var token = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = $"{NavigationManager.BaseUri}confirmemail?userId={user.Id}&token={Uri.EscapeDataString(token)}";
+            await UserManager.ConfirmEmailAsync(user, token);
+            NavigationManager.NavigateTo("/Identity/Account/Login");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine(error.Description);
+            }
+        }
+    }
+    private async Task<string> GetRoleFromCodeAsync(string code)
+    {
+        var role = await RoleManager.Roles.FirstOrDefaultAsync(r => r.NormalizedName == code.ToUpper());
+        return role?.Name;
+    }
+    private string GetRoleFromCode(string code)
+    {
+        switch (code)
+        {
+            case "1234":
+                return "Admin";
+            case "2222":
+                return "organizer";
+            case "3333":
+                return "Driver";
+            case "4444":
+                return "technician";
+            default:
+                return "contact"; // null; // If code doesn't match any specific role, return null
+        }
+    }
+    private List<string> GetRoles()
+    {
+        return RoleManager.Roles.Select(r => r.Name).ToList();
+    }
+    
+    public class RegisterModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+        [Required]
+        [Compare(nameof(Password))]
+        public string ConfirmPassword { get; set; }
+
+        public string Role { get; set; }
+
+        [DataType(DataType.Password)]
+        [RegularExpression(@"^\d{4}$", ErrorMessage = "Invalid - Input 4 Digit number")]
+        public string Code { get; set; }
+
+        //[Required] // add this if the FriendlyName is required during registration
+        [DisplayName("FirstName LastName")] // Add this line
+        public string FriendlyName { get; set; } // add FriendlyName property
+    }
+
+}
+*@

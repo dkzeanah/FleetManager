@@ -1,0 +1,12 @@
+﻿
+@foreach( var item in Items)
+{
+<p>@item</p>
+}
+@code {
+    [Parameter]
+    public string Item { get; set; }
+
+    [Parameter]
+    public List<string> Items { get; set; } = new List<string> { "Orange", "Strawberry", "Lime", "Cat", "Shark", "Fly", "America", "England", "Greenland" };
+}

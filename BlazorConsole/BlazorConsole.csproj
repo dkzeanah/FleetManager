@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CustomMSBuildTask" Version="1.0.0" />
+	</ItemGroup>
+
+	<Target Name="RunMyCustomTask" AfterTargets="BeforeCompile">
+		<GenerateProjectStructureTask ProjectDirectory="$(ProjectDir)" OutputFile="$(ProjectDir)ProjectStructure.txt" />
+	</Target>
+
+	<!-- Define a target that uses the custom task -->
+	<!--<Target Name="CustomMSBuildTask" AfterTargets="Build">
+		<GenerateProjectStructureTask ProjectDirectory="$(ProjectDir)" OutputFile="$(ProjectDir)ProjectStructure.txt" />
+	</Target>-->
+	
+
+</Project>

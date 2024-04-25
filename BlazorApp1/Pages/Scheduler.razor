@@ -1,0 +1,475 @@
+﻿@* @page "/scheduler"
+@inject IJSRuntime JSRuntime
+
+
+<div class="scheduler-container">
+    <div class="scheduler-header">
+        @for (int day = 0; day < 7; day++)
+        {
+            <div class="scheduler-header-cell">@((DayOfWeek)day)</div>
+        }
+    </div>
+    <div class="scheduler-grid">
+        @for (int row = 0; row < 4; row++)
+        {
+            <div class="scheduler-row">
+                @for (int col = 0; col < 7; col++)
+                {
+                    <div class="scheduler-cell" id="@($"cell-{row}-{col}")"
+                    @ondrop="e => JSRuntime.InvokeVoidAsync(\" schedulerInterop.drop\", $"cell-{row}-{col}")"
+                    @ondragover="e => JSRuntime.InvokeVoidAsync(\" schedulerInterop.allowDrop\")"
+                        <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                        @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                        {
+                            <div class="scheduler-block" id="@block.Id" @ref="block.Element"
+                                 style="background-color: @block.Color;" draggable="true"
+                            @ondragstart="e => JSRuntime.InvokeVoidAsync(\" schedulerInterop.dragStart\", block.Id)">
+                                <textarea @bind="block.Text"></textarea>
+                                <input type="color" @bind="block.Color" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div> *@
+
+@* @page "/scheduler"
+@inject IJSRuntime JSRuntime
+
+
+<div class="scheduler-container">
+    <div class="scheduler-header">
+        @for (int day = 0; day < 7; day++)
+        {
+            <div class="scheduler-header-cell">@((DayOfWeek)day)</div>
+        }
+    </div>
+    <div class="scheduler-grid">
+        @for (int row = 0; row < 4; row++)
+        {
+            <div class="scheduler-row">
+                @for (int col = 0; col < 7; col++)
+                {
+                    <div class="scheduler-cell"></div>
+                    <div class="scheduler-cell">
+                        <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+
+    .scheduler-block {
+        border: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .scheduler-container {
+        width: 100%;
+    }
+
+    .scheduler-header, .scheduler-row {
+        display: flex;
+    }
+
+    .scheduler-header-cell, .scheduler-cell {
+        flex: 1;
+        border: 1px solid #ccc;
+        text-align: center;
+        padding: 10px;
+    }
+</style>
+
+
+
+
+
+
+<div class="scheduler-container">
+    <div class="scheduler-header">
+        @for (int day = 0; day < 7; day++)
+        {
+            <div class="scheduler-header-cell">@((DayOfWeek)day)</div>
+        }
+    </div>
+    <div class="scheduler-grid">
+        @for (int row = 0; row < 4; row++)
+        {
+            @* <div class="scheduler-row">
+                @for (int col = 0; col < 7; col++)
+                {
+                    <div class="scheduler-cell" id="@($"cell-{row}-{col}")" @ondrop="e => OnDrop(e, row, col)" @ondragover="OnDragOver">
+                        <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                        @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                        {
+                            <div class="scheduler-block" id="@block.Id" style="background-color: @block.Color;" draggable="true" @ondragstart="e => OnDragStart(e, block.Id)">
+                                <textarea @bind="block.Text"></textarea>
+                                <input type="color" @bind="block.Color" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div> *@
+
+           @*  <div class="scheduler-row">
+                @for (int col = 0; col < 7; col++)
+                {
+                    <div class="scheduler-cell" id="@($"cell-{row}-{col}")">
+                        <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                        @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                        {
+                            <div class="scheduler-block" id="@block.Id" @ref="block.Element" style="background-color: @block.Color;">
+                                <textarea @bind="block.Text"></textarea>
+                                <input type="color" @bind="block.Color" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+
+<div class="scheduler-grid">
+    @for (int row = 0; row < 4; row++)
+    {
+        <div class="scheduler-row">
+            @for (int col = 0; col < 7; col++)
+            {
+                <div class="scheduler-cell" id="@($"cell-{row}-{col}")" @ondrop="e => OnDrop(e, row, col)" @ondragover="OnDragOver">
+                    <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                    @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                    {
+                        <div class="scheduler-block" id="@block.Id" @ref="block.Element" style="background-color: @block.Color;" draggable="true" @ondragstart="e => OnDragStart(e, block.Id)">
+                            <textarea @bind="block.Text"></textarea>
+                            <input type="color" @bind="block.Color" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+<div class="scheduler-grid">
+    @for (int row = 0; row < 4; row++)
+    {
+        <div class="scheduler-row">
+            @for (int col = 0; col < 7; col++)
+            {
+                <div class="scheduler-cell" id="@($"cell-{row}-{col}")" @ondrop="() => JSRuntime.InvokeVoidAsync(" schedulerInterop.drop", $"cell-{row}-{col}")" @ondragover="() => JSRuntime.InvokeVoidAsync(" schedulerInterop.allowDrop")">
+                    <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                    @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                    {
+                        <div class="scheduler-block" id="@block.Id" @ref="block.Element" style="background-color: @block.Color;" draggable="true" @ondragstart="() => JSRuntime.InvokeVoidAsync(" schedulerInterop.dragStart", block.Id)">
+                            <textarea @bind="block.Text"></textarea>
+                            <input type="color" @bind="block.Color" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div> 
+ *@
+@* 
+@page "/scheduler"
+@inject IJSRuntime JSRuntime
+@using System.Linq
+
+<div class="scheduler-container">
+    <div class="scheduler-header">
+        @for (int day = 0; day < 7; day++)
+        {
+            <div class="scheduler-header-cell">@((DayOfWeek)day)</div>
+        }
+    </div>
+    <div class="scheduler-grid">
+        @for (int row = 0; row < 4; row++)
+        {
+            <div class="scheduler-row">
+                @for (int col = 0; col < 7; col++)
+                {
+                    <div class="scheduler-cell" id="@($"cell-{row}-{col}")"
+                    @ondrop="e => OnDrop(e, row, col)"
+                    @ondragover="OnDragOver">
+                        <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                        @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                        {
+                            <div class="scheduler-block" id="@block.Id" @ref="block.Element"
+                                 style="background-color: @block.Color;" draggable="true"
+                            @ondragstart="e => OnDragStart(e, block.Id)">
+                                <textarea @bind="block.Text"></textarea>
+                                <input type="color" @bind="block.Color" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .scheduler-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .scheduler-header, .scheduler-row {
+        display: flex;
+    }
+
+    .scheduler-header-cell, .scheduler-cell {
+        flex: 1;
+        border: 1px solid #ccc;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .scheduler-block {
+        border: 2px solid black;
+        background-color: #ff0000; /* default color */
+        color: white;
+        padding: 5px;
+        margin: 5px;
+    }
+</style> *@
+
+@page "/scheduler"
+@inject IJSRuntime JSRuntime
+@using System.Linq
+
+
+<div class="scheduler-grid">
+        @for (int row = 0; row < 4; row++)
+        {
+            <div class="scheduler-row">
+                @for (int col = 0; col < 7; col++)
+                {
+                    <div class="scheduler-cell" id="@($"cell-{row}-{col}")">
+                    
+                        <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                        @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                        {
+                            <div class="scheduler-block" id="@block.Id" @ref="block.Element"
+                                 style="background-color: @block.Color;" draggable="true">
+                            
+                                <textarea @bind="block.Text"></textarea>
+                                <input type="color" @bind="block.Color" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+
+<div class="scheduler-container">
+    <div class="scheduler-header">
+        @for (int day = 0; day < 7; day++)
+        {
+            <div class="scheduler-header-cell">@((DayOfWeek)day)</div>
+        }
+    </div>
+    <div class="scheduler-grid">
+        @for (int row = 0; row < 4; row++)
+        {
+            <div class="scheduler-row">
+                @for (int col = 0; col < 7; col++)
+                {
+                    <div class="scheduler-cell" id="@($"cell-{row}-{col}")"
+                    @ondrop="e => OnDrop(e, row, col)"
+                    @ondragover="OnDragOver">
+                        <button @onclick="() => CreateBlock(row, col)">Add Block</button>
+                        @foreach (var block in Blocks.Where(b => b.Row == row && b.Col == col))
+                        {
+                            <div class="scheduler-block" id="@block.Id" @ref="block.Element"
+                                 style="background-color: @block.Color;" draggable="true"
+                            @ondragstart="e => OnDragStart(e, block.Id)">
+                                <textarea @bind="block.Text"></textarea>
+                                <input type="color" @bind="block.Color" />
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private IJSObjectReference _module;
+    private string selectedColor = "red";
+    private List<Block> Blocks = new List<Block>();
+    private int nextBlockId = 1;
+    private bool newBlockAdded = false;
+
+    private async Task OnDrop(DragEventArgs e, int row, int col)
+    {
+        await JSRuntime.InvokeVoidAsync("schedulerInterop.drop", $"cell-{row}-{col}");
+    }
+
+    private async Task OnDragOver(DragEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("schedulerInterop.allowDrop");
+    }
+
+    private async Task OnDragStart(DragEventArgs e, string blockId)
+    {
+        await JSRuntime.InvokeVoidAsync("schedulerInterop.dragStart", blockId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (newBlockAdded || firstRender)
+        {
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/calendarModule.mjs");
+
+            foreach (var block in Blocks)
+            {
+                await JSRuntime.InvokeVoidAsync("schedulerInterop.enableDragAndDrop", block.Element);
+                await JSRuntime.InvokeVoidAsync("schedulerInterop.enableDrop", block.Element);
+            }
+            newBlockAdded = false;
+        }
+    }
+
+    private void CreateBlock(int row, int col)
+    {
+        var newBlock = new Block
+            {
+                Id = $"block-{nextBlockId++}",
+                Row = row,
+                Col = col,
+                Color = "#ffffff",
+                Text = "New Block"
+            };
+        Blocks.Add(newBlock);
+        newBlockAdded = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void MoveBlock(string blockId, string targetCellId)
+    {
+        var block = Blocks.FirstOrDefault(b => b.Id == blockId);
+        if (block != null)
+        {
+            var parts = targetCellId.Split('-');
+            block.Row = int.Parse(parts[1]);
+            block.Col = int.Parse(parts[2]);
+        }
+    }
+
+    public class Block
+    {
+        public string Id { get; set; }
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public string Color { get; set; }
+        public string Text { get; set; }
+        public ElementReference Element { get; set; }
+    }
+}
+
+   @*  private List<Block> Blocks = new List<Block>();
+    private int nextBlockId = 1;
+
+    private void CreateBlock(int row, int col)
+    {
+        var newBlock = new Block
+            {
+                Id = $"block-{nextBlockId++}",
+                Row = row,
+                Col = col,
+                Color = "#00FF00",  // Default green color
+                Text = "New Block"
+            };
+        Blocks.Add(newBlock);
+        StateHasChanged();
+    }
+    // private void CreateBlock(int row, int col)
+    // {
+    //     var newBlock = new Block
+    //         {
+    //             Id = $"block-{nextBlockId++}",
+    //             Row = row,
+    //             Col = col,
+    //             Color = "#ffffff",
+    //             Text = "New Block"
+    //         };
+    //     Blocks.Add(newBlock);
+    //     newBlockAdded = true;
+    //     StateHasChanged(); *@
+    
+
+
+
+
+
+    private async Task OnDrop(DragEventArgs e, int row, int col)
+    {
+        await JSRuntime.InvokeVoidAsync("schedulerInterop.drop", $"cell-{row}-{col}");
+    }
+
+    private async Task OnDragOver(DragEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("schedulerInterop.allowDrop");
+    }
+
+    private async Task OnDragStart(DragEventArgs e, string blockId)
+    {
+        await JSRuntime.InvokeVoidAsync("schedulerInterop.dragStart", blockId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (newBlockAdded || firstRender)
+        {
+            foreach (var block in Blocks)
+            {
+                await JSRuntime.InvokeVoidAsync("schedulerInterop.enableDragAndDrop", block.Element);
+                await JSRuntime.InvokeVoidAsync("schedulerInterop.enableDrop", block.Element);
+            }
+            newBlockAdded = false;
+        }
+    }
+
+    
+
+    [JSInvokable]
+    public void MoveBlock(string blockId, string targetCellId)
+    {
+        var block = Blocks.FirstOrDefault(b => b.Id == blockId);
+        if (block != null)
+        {
+            var parts = targetCellId.Split('-');
+            block.Row = int.Parse(parts[1]);
+            block.Col = int.Parse(parts[2]);
+        }
+    }
+
+    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+    public class Block
+    {
+        public string Id { get; set; }
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public string Color { get; set; }
+        public string Text { get; set; }
+        public ElementReference Element { get; set; }
+
+        private string GetDebuggerDisplay()
+        {
+            return ToString();
+        }
+    }
+}

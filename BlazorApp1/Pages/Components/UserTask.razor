@@ -1,0 +1,55 @@
+﻿@code {
+    // This Blazor component is designed to display a list of tasks associated with a specific user.
+    // Methods to fetch tasks for this user, if necessary.
+    // Method returns a CSS class based on whether a task is complete or not.
+    // Method toggles the completion status of a task.
+
+
+    // Parameters:
+    [Parameter]
+    public ApplicationUser User { get; set; }
+
+    [Parameter]
+    public List<TaskModel> Tasks { get; set; } = new List<TaskModel>();
+
+    // Include methods to fetch tasks for this user, if necessary.
+    private string GetListItemClass(TaskModel task)
+    {
+        return task.IsComplete ? "list-group-item list-group-item-secondary my-1" : "list-group-item list-group-item-success my-1";
+    }
+
+    private void ToggleTask(TaskModel task)
+    {
+        task.IsComplete = !task.IsComplete;
+    }
+}
+
+
+<!-- This section of HTML displays the user's tasks, their details, and provides interactivity for toggling completion status. -->
+<h4>@User.UserName's Tasks</h4>
+<ul class="list-group">
+    @foreach (var task in Tasks)
+    {
+        <li class="@GetListItemClass(task)" @onclick="()=>ToggleTask(task)">
+            <strong>ID:</strong> @task.Id<br />
+            <strong>User ID:</strong> @task.UserId<br />
+            <strong>User Name:</strong> @task.UserName<br />
+            <strong>Task:</strong> @task.Task<br />
+            <strong>Is Complete:</strong> @task.IsComplete<br />
+            <strong>Importance:</strong> @task.Importance<br />
+            <strong>Date Assigned:</strong> @task.DateAssigned.ToString("yyyy-MM-dd HH:mm:ss")<br />
+            @if (task.DateCompleted.HasValue)
+            {
+                <strong>Date Completed:</strong> @task.DateCompleted.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                <br />
+            }
+            @if (task.DateExpired.HasValue)
+            {
+                <strong>Date Expired:</strong> @task.DateExpired.Value.ToString("yyyy-MM-dd HH:mm:ss")
+
+                <br />
+            }
+        </li>
+    }
+</ul>

@@ -1,0 +1,29 @@
+﻿<!-- Timeline.razor -->
+@page "/timeline"
+
+<div class="timeline">
+    @foreach (var TimelineEvent in TimelineEvents)
+    {
+    <div class="timeline-item">
+        <div class="timeline-item-date">@TimelineEvent.Date.ToString("dd/MM/yyyy")</div>
+        <div class="timeline-item-content">@TimelineEvent.Content</div>
+    </div>
+        }
+</div>
+
+@code {
+    public class TimelineEvent
+    {
+    public DateTime Date { get; set; }
+    public string Content { get; set; }
+    }
+
+    protected List<TimelineEvent> TimelineEvents = new List<TimelineEvent>
+    {
+        new TimelineEvent { Date = new DateTime(2023, 1, 1), Content = "UserCarEvent 1" },
+        new TimelineEvent { Date = new DateTime(2023, 2, 1), Content = "UserCarEvent 2" },
+        new TimelineEvent { Date = new DateTime(2023, 3, 1), Content = "UserCarEvent 3" },
+        // Add more events here
+    };
+}
+

@@ -1,0 +1,214 @@
+﻿@page "/efficiency-calculator"
+
+<h3>Job and Tool Efficiency Calculator</h3>
+
+<div>
+    <h4>Create New Job</h4>
+    <input @bind="jobAttribute" placeholder="Job Attribute" />
+    <input @bind="timeWithoutTool" type="number" placeholder="Time Without Tool (hours)" />
+    <button @onclick="CreateJob">Create Job</button>
+
+    @if (currentJob != null)
+    {
+        <div>
+            <h4>Perform Job Trial</h4>
+            <input @bind="timeWithTool" type="number" placeholder="Time With Tool (hours)" />
+            <button @onclick="PerformTrialRun">Perform Trial</button>
+
+            @if (trialCompleted)
+            {
+                <p>Time Saved: @timeSaved hours</p>
+                <p>New Efficiency Multiplier: @drill.EfficiencyMultiplier</p>
+            }
+        </div>
+    }
+</div>
+
+
+<div>
+    <!-- Baseline Wage Input -->
+    <h4>Input Baseline Wage</h4>
+    <input @bind="baselineWage" type="number" placeholder="Baseline Wage per Hour ($)" />
+    <button @onclick="CalculateRates">Calculate Rates</button>
+
+    <p>Wage Per Minute: @wagePerMinute $/minute</p>
+    <p>Wage Per Second: @wagePerSecond $/second</p>
+
+    <!-- Free Time Calculation -->
+    <h4>Calculate Free Time</h4>
+    <p>Free Time per Day: @freeTime hours/day</p>
+    <p>Total Free Time per Year: @totalFreeTimePerYear hours/year</p>
+
+    <!-- Side Job Input -->
+    <h4>Side Job Details</h4>
+    <input @bind="sideJobValue" type="number" placeholder="Side Job Earnings ($)" />
+    <input @bind="sideJobTime" type="number" placeholder="Time Spent (hours)" />
+    <button @onclick="AddSideJob">Add Side Job</button>
+    <button @onclick="CalculateNewWorth">Calculate New Worth</button>
+
+    <p>New Worth per Hour: @newWorthPerHour $/hour</p>
+
+    <!-- Existing code for job and tool efficiency -->
+    <!-- ... -->
+</div>
+
+
+<div>
+    <!-- Baseline Wage Input -->
+    <h4>Input Baseline Wage</h4>
+    <input @bind="baselineWage" type="number" placeholder="Baseline Wage per Hour ($)" />
+    <button @onclick="CalculateRates">Calculate Rates</button>
+
+    <p>Wage Per Minute: @wagePerMinute $/minute</p>
+    <p>Wage Per Second: @wagePerSecond $/second</p>
+
+    <!-- Free Time Calculation -->
+    <h4>Calculate Free Time</h4>
+    <p>Free Time per Day: @freeTime hours/day</p>
+    <p>Total Free Time per Year: @totalFreeTimePerYear hours/year</p>
+
+    <!-- Progress Bar for Free Time Utilization -->
+    <div style="width: 100%; background-color: #ddd;">
+        <div style="height: 24px; width: @((freeTimeUtilizationPercentage).ToString("0.00"))%; background-color: #4CAF50;">
+            @((freeTimeUtilizationPercentage).ToString("0.00"))%
+        </div>
+    </div>
+
+    <!-- Side Job Input -->
+    <h4>Side Job Details</h4>
+    <input @bind="sideJobValue" type="number" placeholder="Side Job Earnings ($)" />
+    <input @bind="sideJobTime" type="number" placeholder="Time Spent (hours)" />
+    <button @onclick="AddSideJob">Add Side Job</button>
+    <button @onclick="CalculateNewWorth">Calculate New Worth</button>
+
+    <p>New Worth per Hour: @newWorthPerHour $/hour</p>
+
+    <!-- Detailed Grid/List for Side Jobs -->
+    <h4>Side Job Contributions</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Earnings ($)</th>
+                <th>Time Spent (hours)</th>
+                <th>Contribution to Worth</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var job in sideJobs)
+            {
+                <tr>
+                    <td>@job.Value</td>
+                    <td>@job.TimeSpent</td>
+                    <td>@(CalculateIndividualContribution(job).ToString("0.00"))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    // Baseline wage inputs
+    private decimal baselineWage;
+    private decimal wagePerMinute;
+    private decimal wagePerSecond;
+
+    // Free time calculation
+    private const decimal WorkHours = 8; // Average work hours per day
+    private const decimal SleepHours = 7; // Average sleep hours per day
+                                          // private decimal freeTime = 24 - WorkHours - SleepHours;
+    private decimal freeTime = 24 - WorkHours - SleepHours;
+
+    private decimal totalFreeTimePerYear;
+    private decimal freeTimeUtilizationPercentage;
+
+
+    // Side job inputs
+    private decimal sideJobValue;
+    private decimal sideJobTime;
+    private decimal newWorthPerHour;
+    private List<SideJob> sideJobs = new List<SideJob>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        freeTime = 24 - WorkHours - SleepHours;
+        totalFreeTimePerYear = freeTime * 365;
+    }
+    private void CalculateRates()
+    {
+        wagePerMinute = baselineWage / 60;
+        wagePerSecond = wagePerMinute / 60;
+    }
+    private void AddSideJob()
+    {
+        SideJob newJob = new SideJob { Value = sideJobValue, TimeSpent = sideJobTime };
+        sideJobs.Add(newJob);
+    }
+    //accumulate
+    private void CalculateNewWorth()
+    {
+        decimal totalValueEarned = 0;
+        decimal totalHoursSpent = 0;
+
+        foreach (var job in sideJobs)
+        {
+            totalValueEarned += job.Value;
+            totalHoursSpent += job.TimeSpent;
+        }
+
+        decimal effectiveRate = totalValueEarned / totalHoursSpent;
+        decimal proportionOfFreeTimeUsed = totalHoursSpent / totalFreeTimePerYear;
+        newWorthPerHour = (effectiveRate * proportionOfFreeTimeUsed) + (baselineWage * (1 - proportionOfFreeTimeUsed));
+        freeTimeUtilizationPercentage = (totalHoursSpent / totalFreeTimePerYear) * 100;
+
+    }
+    private void CalculateNewWorthNonAccumulate()
+    {
+        decimal totalValueEarned = 0;
+        decimal totalHoursSpent = 0;
+
+        foreach (var job in sideJobs)
+        {
+            totalValueEarned += job.Value;
+            totalHoursSpent += job.TimeSpent;
+        }
+
+        decimal effectiveRate = totalValueEarned / totalHoursSpent;
+        decimal proportionOfFreeTimeUsed = totalHoursSpent / totalFreeTimePerYear;
+        newWorthPerHour = (effectiveRate * proportionOfFreeTimeUsed) + (baselineWage * (1 - proportionOfFreeTimeUsed));
+        freeTimeUtilizationPercentage = (totalHoursSpent / totalFreeTimePerYear) * 100;
+
+    }
+    private decimal CalculateIndividualContribution(SideJob job)
+    {
+        decimal individualRate = job.Value / job.TimeSpent;
+        decimal individualProportion = job.TimeSpent / totalFreeTimePerYear;
+        return (individualRate * individualProportion) + (baselineWage * (1 - individualProportion));
+    }
+    
+
+    private string jobAttribute;
+    private decimal timeWithoutTool;
+    private decimal timeWithTool;
+    private Job<string> currentJob;
+    private Tool drill = new Tool("Drill", 60, 0.67m); // Name, Cost, EfficiencyMultiplier
+
+    private bool trialCompleted;
+    private decimal timeSaved;
+
+    private void CreateJob()
+    {
+        currentJob = new Job<string>(jobAttribute, timeWithoutTool);
+    }
+
+    private void PerformTrialRun()
+    {
+        if (currentJob != null)
+        {
+            // Perform the trial run and adjust tool efficiency
+            drill.AdjustEfficiency(timeWithoutTool, timeWithTool);
+            timeSaved = timeWithoutTool - timeWithTool;
+            trialCompleted = true;
+        }
+    }
+}

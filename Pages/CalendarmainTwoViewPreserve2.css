@@ -1,0 +1,96 @@
+﻿<style >
+.grid-container {
+    display: grid;
+    /*         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+             */
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.grid-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.day-label {
+    flex: 0 0 100px;
+    text-align: center;
+}
+
+.grid-item {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.day-box {
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.task-item {
+    display: inline-block;
+    margin: 2px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+/* Custom CSS for the 365-day calendar */
+.grid-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+}
+
+.day-label {
+    flex: 1;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.user-container {
+    flex: 3;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.task-item {
+    margin: 5px;
+    padding: 5px 10px;
+    border-radius: 12px;
+    background-color: #f1f1f1;
+}
+
+/* Custom CSS for the modal */
+.all-tasks-container {
+    display: flex;
+    flex-direction: column;
+}
+
+    .all-tasks-container h3 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+    }
+
+    .all-tasks-container .task-item {
+        margin: 5px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+.user-badge {
+    font-size: 0.8em;
+    padding: 2px 8px;
+    border-radius: 50px;
+    background-color: #007bff;
+    color: white;
+    margin-right: 5px;
+}
+
+</style >

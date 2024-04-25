@@ -1,0 +1,37 @@
+﻿@using System.Linq
+@using BlazorApp1.Services;
+@inject ISearchService SearchService
+
+@foreach (var item in FilteredItems)
+{
+    <ListItemComponent Item="@item"></ListItemComponent>
+    <ListItemComponent Items="listItems"></ListItemComponent>
+
+}
+
+@* this Maps listInventories() method to 'Inventories' field(List<Inventory> Inventories)of InventoryListItemComponent.razor *@
+ <ListItemComponent Items="listItems"></ListItemComponent>
+
+
+@code {
+    private List<string> listItems = new List<string>();
+
+    [Parameter] public List<string> Items { get; set; } = new List<string> { "Apple", "Banana", "Cherry", "Dog", "Elephant", "Frog", "Germany", "Holland", "Iceland" };
+
+    [Parameter] public string SearchTerm { get; set; } = string.Empty;
+
+    private IEnumerable<string> FilteredItems => Items.Where(item => SearchService.SearchString != null && item.Contains(SearchService.SearchString, StringComparison.OrdinalIgnoreCase));
+
+    /* protected override async Task OnParametersSetAsync()
+    {
+        listItems = await FetchItemsAsync();
+    }
+
+    private async Task<List<string>> FetchItemsAsync()
+    {
+
+        // Simulate asynchronous delay
+        await Task.Delay(1000);
+
+        return item */
+}

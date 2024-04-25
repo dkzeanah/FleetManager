@@ -1,0 +1,30 @@
+﻿@* <select @bind="selectedColor">
+ *@ @* This is auto-2 way binding, but not custom actions on event. so use below *@
+ 
+ <select @bind-value="selectedColor" @bind-value:event="onchange">
+
+ <option value="red">Red</option>
+    <option value="green">Green</option>
+    <option value="blue">Blue</option>
+    <!-- Add more colors if needed -->
+</select>
+
+<button @onclick="OnAddBlockRequested">Add Block</button>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> OnColorSelected { get; set; }
+
+    [Parameter]
+    public EventCallback OnAddBlockRequested { get; set; }
+
+    private string selectedColor = "red";
+
+    private void ColorChanged(ChangeEventArgs e)
+    {
+        Console.WriteLine("TGIP method colorchanged.");
+        selectedColor = e.Value.ToString();
+        OnColorSelected.InvokeAsync(selectedColor);
+    }
+}

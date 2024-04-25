@@ -1,0 +1,59 @@
+﻿@page "/download/{id:int}"
+@using System.Text;
+@inject IExcelDataRecordService ExcelDataService
+@inject NavigationManager NavigationManager
+
+@*@inject IJSRuntime JSRuntime
+*@
+
+<h3>Download Excel File</h3>
+
+<button @onclick="DownloadFile">Download</button>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <p>@message</p>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private string message;
+
+    private async Task DownloadFile2()
+    {
+        try
+        {
+            // Use the IExcelDataService service to generate the file.
+            var file = await ExcelDataService.GenerateExcelFile(Id);
+
+            // Prompt the user to download the file.
+            var bytes = Encoding.UTF8.GetBytes(file);
+            var fileContent = Convert.ToBase64String(bytes);
+            NavigationManager.NavigateTo($"data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{fileContent}");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error generating file: {ex.Message}";
+        }
+    }
+    private async Task DownloadFile()
+    {
+        try
+        {
+            // Use the IExcelDataService service to generate the file.
+            var fileContent = await ExcelDataService.GenerateExcelFile(Id);
+
+            // Convert base64 string to byte array.
+            var bytes = Convert.FromBase64String(fileContent);
+
+            // Use JavaScript Interop to trigger file download.
+            //await JSRuntime.InvokeVoidAsync("downloadFile", $"data_{Id}.xlsx", bytes);
+        }
+        catch (Exception ex)
+        {
+            message = $"Error generating file: {ex.Message}";
+        }
+    }
+}

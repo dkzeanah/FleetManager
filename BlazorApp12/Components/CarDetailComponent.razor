@@ -1,0 +1,9 @@
+@page "/CarStaticDetailcomponent"
+
+<p>You currently have the following car booked: @CurrentCar.ToString()</p>
+<p>You currently have the following car booked: @CurrentCar.Model</p>
+
+@code {
+    [Parameter]
+    public Car CurrentCar { get; set; }
+}

@@ -1,0 +1,15 @@
+﻿<div>
+    <h5>Child Component</h5>
+    <input type="text" value="@GrandParent.GrandParentProperty" @oninput="InputChange" />
+</div>
+
+@code {
+    [CascadingParameter(Name = "GrandParent")]
+    public GrandParentComponent GrandParent { get; set; }
+
+    private async Task InputChange(ChangeEventArgs e)
+    {
+        GrandParent.GrandParentProperty = e.Value.ToString();
+        StateHasChanged();
+    }
+}

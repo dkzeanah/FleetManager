@@ -1,0 +1,36 @@
+﻿@using BlazorApp1.Pages.Components
+@using BlazorApp1.Pages
+@using Microsoft.AspNetCore.Components
+
+
+<TBGipComponent OnColorSelected="HandleColorSelected" OnAddBlockRequested="HandleAddBlockRequested"></TBGipComponent>
+
+<!-- Calendar -->
+<CalGipComponent SelectedColor="_selectedColor" IsAddBlockMode="_isAddBlockMode"></CalGipComponent>
+@*
+    In the parent component:
+-It listens for the OnColorSelected event from TBGipComponent.
+-When this event is emitted, the parent's HandleColorSelected method is called.
+-The HandleColorSelected method then updates the _selectedColor property based on the color received from the event.
+
+*@
+
+
+@code {
+    private string _selectedColor;
+    private bool _isAddBlockMode = false;
+
+    private void HandleColorSelected(string color)
+    {
+        Console.WriteLine("MainGip method handlecolorselect.");
+
+        _selectedColor = color;
+    }
+
+    private void HandleAddBlockRequested()
+    {
+        Console.WriteLine("MainGip method handleblockrequested.");
+
+        _isAddBlockMode = true;
+    }
+}

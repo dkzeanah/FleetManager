@@ -1,0 +1,54 @@
+﻿.current-booking-card {
+    background-color: #1b1e23;
+    color: #fff;
+}
+
+    .current-booking-card .dashboard-card-header {
+        background-color: #e67e22;
+    }
+
+    .current-booking-card .dashboard-card-body p {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+
+
+.Mysection-container {
+    border: 2px solid #e67e22; /* You can change the color as needed */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px; /* rounded corners */
+    box-shadow: 2px 2px 12px #aaa; /* subtle shadow for depth */
+    font-color: white;
+}
+
+.Mytoolbar {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+
+.theme-default .Mysection-container {
+    background-color: white;
+    color: black;
+    font-color: white;
+}
+
+.theme-dark .Mysection-container {
+    background-color: #1b1e23;
+    color: white;
+    font-color: white;
+}
+
+.theme-blue .Mysection-container {
+    background-color: #007BFF;
+    color: white;
+    font-color: white;
+}

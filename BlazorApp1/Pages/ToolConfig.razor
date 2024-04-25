@@ -1,0 +1,25 @@
+﻿@page "/tool-configurator"
+
+<h3>Tool Configurator</h3>
+
+<p>@description</p>
+<p>Total Cost: @cost.ToString("C")</p>
+
+<button @onclick="AddLaser">Add Laser Upgrade</button>
+<button @onclick="AddWarranty">Add Extended Warranty</button>
+
+@code {
+  ITool tool = new BasicTool();
+  string description => tool.GetDescription();
+  decimal cost => tool.GetCost();
+
+  void AddLaser()
+  {
+    tool = new LaserUpgrade(tool);
+  }
+
+  void AddWarranty()
+  {
+    tool = new ExtendedWarrantyUpgrade(tool);
+  }
+}

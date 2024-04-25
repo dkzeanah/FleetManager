@@ -1,0 +1,221 @@
+﻿@page "/d"
+
+@inject ICarService CarService
+@inject IUserService UserService
+@inject IEventService EventService
+@inject IEventTypeService EventTypeService
+
+@inject IUserEventDetailService UserEventDetailService
+
+<!-- Section for showing the currently booked car -->
+@if (currentCar == null)
+{
+    <p><em>You currently have no car booked.</em></p>
+}
+else
+{
+    <p>You currently have the following car booked: @currentCar.ToString()</p>
+    <p>You currently have the following car booked: @currentCar.Model</p>
+
+}
+<select @bind="selectedCarId">
+    @foreach (var car in cars)
+    {
+        <option value="@car.CarId">@car.ToString();</option>
+    }
+</select>
+@*
+<!-- Section for choosing a car -->
+<select @bind="selectedCarId">
+    @foreach (var car in cars)
+    {
+        <option value="@car.CarId">@car.ToString();</option>
+    }
+</select>
+*@
+
+<h2>Add Event</h2>
+
+@foreach (var userEvent in userEvents)
+{
+    var eventType = eventTypes.FirstOrDefault(et => et.Id == userEvent.Id);
+    <p class="card-text">@eventType?.Name: @userEvent.StartTime - @userEvent.EndTime</p>
+    <EventVisualizerComponent Event="@userEvent" AddEventToTimeline="AddToTimeline" />
+}
+
+@*
+<EventVisualizerComponent Event="@userEvent" AddEventToTimeline="AddToTimeline" />
+*@
+
+
+@code {
+   // private Event userEvent = new Event { /* Set necessary properties here */ };
+
+    [Parameter]
+    public Event Event { get; set; }
+    [Parameter]
+    public EventCallback<Event> AddEventToTimeline { get; set; }
+
+    private string BarWidth
+    {
+        get
+        {
+            TimeSpan? duration = Event?.EndTime - Event?.StartTime;
+            return duration.HasValue ? $"{duration.Value.TotalHours * 10}px" : "0px";
+        }
+    }
+    public List<Event> TimelineEvents { get; set; } = new List<Event>();
+    private void AddToTimeline(Event e)
+    {
+        TimelineEvents.Add(e);
+    }
+    private List<Car> cars = new List<Car>();
+    private List<EventType> eventTypes = new List<EventType>();
+    private List<Event> userEvents = new List<Event>();
+    private List<UserEventDetail> userEventDetails;
+    private Car currentCar;
+    private int selectedCarId;
+    private Event newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+    protected override async Task OnInitializedAsync()
+    {
+        string currentUserId = await UserService.GetCurrentUserIdAsync();
+    
+        if (!string.IsNullOrEmpty(currentUserId))
+        {
+            var currentCarId = await CarService.GetCurrentCarIdForUserIdAsync(currentUserId);
+            currentCar = await CarService.GetCarByIdAsync(currentCarId); // Get the current Car object
+        }
+        else 
+        {
+    // Handle the situation when currentUserId is null or empty. 
+        }
+    
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+        eventTypes = (await EventTypeService.GetEventTypesAsync()).ToList();
+        userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId);
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            if (!newEvent.StartTime.HasValue || newEvent.StartTime.Value.Year < 1753
+                || !newEvent.EndTime.HasValue || newEvent.EndTime.Value.Year < 1753)
+            {
+                return;
+            }
+            newEvent.CarId = selectedCarId;
+            newEvent.UserId = await UserService.GetCurrentUserIdAsync();
+            var currentUserId = newEvent.UserId;  // Save the user ID
+            newEvent = await EventService.AddEventAsync(newEvent);
+            //UserEventDetail newUserEventDetail = new UserEventDetail
+            //    {
+            //        EventId = newEvent.EventId,
+            //        UserId = newEvent.UserId,
+            //    };
+            //await UserEventDetailService.AddUserEventDetailAsync(UserEventDetail); // Assuming you have UserEventDetailService injected
+            newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+            userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message); // Replace this with a proper logging solution
+        }
+        StateHasChanged();
+    }
+}
+
+@*
+@code {
+    private Event userEvent; // Define and populate your Event object
+
+    public void AddToTimeline(Event e)
+    {
+        userEvents.Add(e);
+    }
+   
+    private List<Car> cars = new List<Car>();
+    private List<EventType> eventTypes = new List<EventType>();
+    private List<Event> userEvents = new List<Event>();
+    private List<UserEventDetail> userEventDetails;
+    private Car currentCar;
+
+    private int selectedCarId;
+    private Event newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEvents = userEvents ?? new List<Event>();
+
+        string? currentUserId = await UserService.GetCurrentUserIdAsync();
+        var currentCarId = await CarService.GetCurrentCarIdForUserAsync(currentUserId);
+
+        currentCar = await CarService.GetCarByIdAsync(currentCarId); // Get the current Car object
+    
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+    
+        eventTypes = (await EventTypeService.GetEventTypesAsync()).ToList();
+    
+        currentUserId = await UserService.GetCurrentUserIdAsync();
+
+        userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId);
+    }
+
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            if (!newEvent.StartTime.HasValue || newEvent.StartTime.Value.Year < 1753
+                || !newEvent.EndTime.HasValue || newEvent.EndTime.Value.Year < 1753)
+            {
+                return;
+            }
+
+            newEvent.CarId = selectedCarId;
+            newEvent.UserId = await UserService.GetCurrentUserIdAsync();
+            var currentUserId = newEvent.UserId;  // Save the user ID
+
+    // Assuming AddEventAsync returns the newly created Event
+            newEvent = await EventService.AddEventAsync(newEvent);
+
+    // Create a new UserEventDetail for this event
+            UserEventDetail newUserEventDetail = new UserEventDetail
+            {
+                EventId = newEvent.EventId,
+                UserId = newEvent.UserId,
+    // Set other fields as needed
+            };
+            await UserEventDetailService.AddUserEventDetailAsync(newUserEventDetail); // Assuming you have UserEventDetailService injected
+
+    // Clear the form
+            newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+
+    // Reload the user's events
+            userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId);
+        }
+        catch (Exception e)
+        {
+    // Log the exception and show an error message
+            Console.WriteLine(e.Message); // Replace this with a proper logging solution
+        }
+
+        StateHasChanged();
+        //userEventDetails = List<UserEventDetail> await UserEventDetailService.GetUserEventDetailsByUserIdAsync(newEvent.UserId);  // Assuming you have this method in your service
+
+    }
+
+    
+
+    // Reload the user's event details
+ 
+
+}  
+*@
+
+        
+    
+
+
+

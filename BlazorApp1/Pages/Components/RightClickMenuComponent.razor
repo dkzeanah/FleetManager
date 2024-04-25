@@ -1,0 +1,56 @@
+﻿@inject IJSRuntime JSRuntime
+
+<div style="@(IsVisible ? $"display:block;position:absolute;top:{Y}px;left:{X}px;" : "display:none;")"
+     class="right-click-menu">
+  <ul>
+  @*   <li @onclick="OnFirstOption">First Option</li>
+    <li @onclick="OnSecondOption">Second Option</li> *@
+    <li onclick="() => SelectOption(" First Option")">First Option</li>
+    <li onclick="() => SelectOption(" Second Option")">Second Option</li>
+    <!-- Add more menu items here -->
+  </ul>
+</div>
+
+@code {
+  private bool IsVisible = false;
+  private double X, Y;
+  [Parameter]
+  public EventCallback<string> OnOptionSelected { get; set; }
+
+  private async Task SelectOption(string option)
+  {
+    Console.WriteLine($"Option selected: {option}");
+    IsVisible = false;
+    await OnOptionSelected.InvokeAsync(option);
+    StateHasChanged();
+  }
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./custom.js");
+      await module.InvokeVoidAsync("setupRightClick", DotNetObjectReference.Create(this));
+    }
+  }
+
+  [JSInvokable]
+  public void ShowMenu(double x, double y)
+  {
+    X = x;
+    Y = y;
+    IsVisible = true;
+    StateHasChanged();
+  }
+
+  private void OnFirstOption()
+  {
+    // Handle the first option click
+    IsVisible = false;
+  }
+
+  private void OnSecondOption()
+  {
+    // Handle the second option click
+    IsVisible = false;
+  }
+}

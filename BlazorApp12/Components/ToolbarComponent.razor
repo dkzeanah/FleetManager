@@ -1,0 +1,142 @@
+﻿<div>
+    <input type="text" @bind="UserName" placeholder="User name" />
+    <input type="date" @bind="Date" />
+    <input type="number" @bind="Span" min="1" max="7" placeholder="Span" />
+    <button @onclick="AddBlock">Add block</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<Block> OnBlockAdded { get; set; }
+
+    private string UserName { get; set; }
+    private DateTime Date { get; set; }
+    private int Span { get; set; }
+
+    private void AddBlock()
+    {
+        var block = new Block { UserName = UserName, Date = Date, Span = Span };
+        OnBlockAdded.InvokeAsync(block);
+    }
+}
+
+
+@*<div>
+@*    <input type="number" @bind="UserId" placeholder="User ID" />
+    <input type="text" @bind="applicationUsers" placeholder="Users" />
+
+
+    <select @bind="UserId">
+        @foreach (var user in applicationUsers)
+        {
+            <option value="@user.Id">@user.UserName</option>
+        }
+    </select>
+    <input type="number" @bind="Position" min="1" max="30" placeholder="Position (1-30)" />
+    <input type="number" @bind="Span" min="1" max="7" placeholder="Span (1-7)" />
+    <input type="color" @bind="Color" />
+    <button @onclick="AddBlock">Add block</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<BlockModel> OnBlockAdded { get; set; }
+
+    private List<ApplicationUser> applicationUsers = new List<ApplicationUser>();
+    private string UserId { get; set; }
+    private ApplicationUser User { get; set; }
+    private int Position { get; set; }
+    private int Span { get; set; }
+    private string Color { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var applicationUsers = await US.GetAllUsersAsync();
+
+        if(applicationUsers is not null)
+        {
+            Console.WriteLine("team users loaded");
+        }
+        else
+        {
+            applicationUsers = new List<ApplicationUser>();
+            Console.WriteLine();
+        }
+
+    }
+
+    private void AddBlock()
+    {
+        var block = new BlockModel { UserId = UserId, User = User, Position = Position, Span = Span, Color = Color };
+        OnBlockAdded.InvokeAsync(block);
+    }
+}
+*@
+
+@*<div>
+    <input type="text" @bind="UserName" placeholder="User name" />
+    <input type="number" @bind="Position" min="1" max="30" placeholder="Position (1-30)" />
+    <input type="number" @bind="Span" min="1" max="7" placeholder="Span (1-7)" />
+    <input type="color" @bind="Color" />
+    <button @onclick="AddBlock">Add block</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<BlockModel> OnBlockAdded { get; set; }
+
+    private string UserName { get; set; }
+    private int Position { get; set; }
+    private int Span { get; set; }
+    private string Color { get; set; }
+
+    private void AddBlock()
+    {
+        var block = new BlockModel { UserName = UserName, Position = Position, Span = Span, Color = Color };
+        OnBlockAdded.InvokeAsync(block);
+    }
+}*@
+
+
+@*<div>
+    <input type="text" @bind="UserName" placeholder="User name" />
+    <input type="date" @bind="Date" />
+    <input type="number" @bind="Span" min="1" max="7" placeholder="Span" />
+    <button @onclick="AddBlock">Add block</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<Block> OnBlockAdded { get; set; }
+
+    private string UserName { get; set; }
+    private DateTime Date { get; set; }
+    private int Span { get; set; }
+
+    private void AddBlock()
+    {
+        var block = new Block { UserName = UserName, Date = Date, Span = Span };
+        OnBlockAdded.InvokeAsync(block);
+    }
+}
+*@
+
+@*<div>
+    <input type="text" @bind="UserName" placeholder="User name" />
+    <input type="date" @bind="Date" />
+    <button @onclick="AddBlock">Add block</button>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<Block> OnBlockAdded { get; set; }
+
+    private string UserName { get; set; }
+    private DateTime Date { get; set; }
+
+    private void AddBlock()
+    {
+        var block = new Block { UserName = UserName, Date = Date };
+        OnBlockAdded.InvokeAsync(block);
+    }
+}
+*@

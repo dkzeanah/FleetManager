@@ -1,0 +1,423 @@
+﻿@* Calendar Component *@
+
+ 
+
+ 
+
+<style>
+
+    .calendar {
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+    }
+
+ 
+
+    .calendar-header {
+
+        display: flex;
+
+        align-items: center;
+
+    }
+
+ 
+
+    .calendar-weekdays,
+
+    .calendar-week {
+
+        display: grid;
+
+        grid-template-columns: repeat(7, 1fr);
+
+        gap: 5px;
+
+    }
+
+ 
+
+    .calendar-day {
+
+        border: 1px solid #ccc;
+
+        padding: 5px;
+
+        display: flex;
+
+        flex-direction: column;
+
+    }
+
+ 
+
+    .day-notes {
+
+        margin-top: 5px;
+
+        width: 100%;
+
+    }
+
+    .calendar-days-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(7, 1fr); /* Creates 7 equally spaced columns */
+
+    gap: 10px; /* Spacing between individual boxes */
+    max-width: 90%;
+        margin: 20px auto;
+
+}
+
+ 
+
+.calendar-week {
+
+    display: contents; /* Ensures the week div doesn't interfere with the grid layout */
+
+}
+
+ 
+
+.calendar-day {
+
+    /* You can style individual days here, for example: */
+
+   color: #ecf0f1;
+        padding: 10px;
+        border-radius: 7px;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s;
+
+}
+  .calendar-day:hover {
+            transform: scale(1.05);
+        }
+
+.context-menu {
+        position: fixed; /* Use 'fixed' to position relative to the viewport */
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ccc;
+        box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+        display: none; /* Will be displayed by Blazor, not CSS */
+    }
+    .current-day {
+        background-color: #ff5733; /* Change this color to your desired highlight color */
+        color: white; /* Text color for the highlighted day */
+    }
+    /* ... */
+</style>
+
+ 
+
+@* Calendar Component *@
+
+<div class="calendar">
+
+ 
+
+    @* Calendar Header *@
+
+    <div class="calendar-header">
+
+        <button class="calendar-button" @onclick="PreviousMonth">&lt;</button>
+
+        <span>@currentMonth.ToString("MMMM yyyy")</span>
+
+        <button class="calendar-button" @onclick="NextMonth">&gt;</button>
+
+    </div>
+
+ 
+
+    @* Weekdays *@
+
+    <div class="calendar-weekdays">
+
+        @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
+
+        {
+
+            <div class="calendar-weekday">@day</div>
+
+        }
+
+    </div>
+
+ 
+
+    @* Calendar Grid *@
+
+    <div class="calendar-days-grid">
+
+        @for (int i = 0; i < calendarDays.Count; i++)
+
+        {
+
+            // Open a new week
+
+            if (i % 7 == 0)
+
+            {
+
+                @:<div class="calendar-week">
+
+            }
+
+ 
+
+            <div class="calendar-day @(i < calendarDays.Count ? GetDayClass(calendarDays[i]) : string.Empty)" @onclick="() => SelectDate(i < calendarDays.Count ? calendarDays[i] : (DateTime?)null)">
+
+ 
+
+    @*            <div class="calendar-day @GetDayClass(calendarDays[i])" @onclick="() => SelectDate(calendarDays[i])">
+
+    *@
+
+        @calendarDays[i].Day
+
+@*     <textarea class="day-notes" placeholder="Add your note..." @onclick:stopPropagation></textarea>
+ *@
+
+        
+
+
+
+</div>
+
+ 
+
+
+@if (showContextMenu)
+    {
+        <div class="context-menu" style="@($"left:{contextMenuX}px; top:{contextMenuY}px; display:block;")">
+            <ul>
+                @foreach (var user in Users)
+                {
+                    <li @onclick="() => AddUserNote(user, contextMenuDay)">
+                        @user.UserName
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+            // Close the week
+
+            if (i % 7 == 6 || i == calendarDays.Count - 1)
+
+            {
+
+                @:</div>
+
+            }
+
+        }
+
+    </div>
+
+</div>
+
+ @if (showContextMenu)
+    {
+        <div class="context-menu" style="@($"left:{contextMenuX}px; top:{contextMenuY}px;")">
+            <ul>
+                @foreach (var user in Users)
+                {
+                    <li @onclick="() => AddUserNote(user, contextMenuDay)">
+                        @user.UserName
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+ 
+
+@code {
+     [Parameter] public DateTime SelectedDate { get; set; }
+    [Parameter] public EventCallback<DateTime> SelectedDateChanged { get; set; }
+    [Parameter] public int Days { get; set; }
+    [Parameter] public List<ApplicationUser> Users { get; set; }
+    [Parameter] public Func<string, DateTime, List<TaskModel>> GetTasks { get; set; }
+    [Parameter] public Action<int, ApplicationUser> OnDayClick { get; set; }
+
+    bool showContextMenu = false;
+    int contextMenuX, contextMenuY;
+    DateTime? contextMenuDay;
+    ApplicationUser selectedUser;
+
+    public bool OnContextMenu(MouseEventArgs e, DateTime day)
+    {
+        contextMenuDay = day;
+        contextMenuX = (int)e.ClientX;
+        contextMenuY = (int)e.ClientY;
+        showContextMenu = !showContextMenu; // Toggle visibility on click
+        Console.WriteLine($"menu shown: {showContextMenu}");
+        return showContextMenu;
+        // Prevent the default context menu from showing
+
+    }
+
+    void AddUserNote(ApplicationUser user, DateTime? day)
+    {
+        if(day.HasValue)
+        {
+            selectedUser = user;
+            // Logic to create the note for the selected user on the given day.
+            // This could involve setting some state, opening a dialog, or whatever fits your application.
+            // ...
+
+            showContextMenu = false;
+        }
+    }
+
+    // Close the context menu if the user clicks outside of it
+ void CloseContextMenu()
+    {
+        if (showContextMenu)
+        {
+            showContextMenu = false;
+        }
+    }
+
+   
+
+    DateTime currentMonth = DateTime.Now;
+    List<DateTime> calendarDays = new List<DateTime>();
+
+
+
+    protected override void OnInitialized()
+
+    {
+
+        UpdateCalendarDays();
+
+    }
+    void PreviousMonth()
+
+    {
+        Console.WriteLine("PreviousMonth in CalendarComponent");
+        currentMonth = currentMonth.AddMonths(-1);
+
+        UpdateCalendarDays();
+
+    }
+    void NextMonth()
+
+    {
+        Console.WriteLine("NextMonth in CalendarComponent");
+        currentMonth = currentMonth.AddMonths(1);
+
+        UpdateCalendarDays();
+
+    }
+    void UpdateCalendarDays()
+
+{
+    Console.WriteLine("UpdateCeldnarDays in CalendarComponent");
+    calendarDays.Clear();
+
+ 
+
+    // Get the first day of the month
+
+    var firstDayOfMonth = new DateTime(currentMonth.Year, currentMonth.Month, 1);
+
+ 
+
+    // Calculate how many days to add from the previous month
+
+    int daysFromPreviousMonth = (int)firstDayOfMonth.DayOfWeek;
+
+ 
+
+    // Add days from the previous month
+
+    for (int i = daysFromPreviousMonth - 1; i >= 0; i--)
+
+    {
+
+        calendarDays.Add(firstDayOfMonth.AddDays(-i - 1));
+
+    }
+
+ 
+
+    // Add days of the current month
+
+    var daysInCurrentMonth = DateTime.DaysInMonth(currentMonth.Year, currentMonth.Month);
+
+    for (int i = 0; i < daysInCurrentMonth; i++)
+
+    {
+
+        calendarDays.Add(firstDayOfMonth.AddDays(i));
+
+    }
+
+ 
+
+    // Add days from the next month to complete the grid
+
+    var totalCells = 42; // 6 weeks x 7 days
+
+    int daysFromNextMonth = totalCells - calendarDays.Count;
+
+    for (int i = 0; i < daysFromNextMonth; i++)
+
+    {
+
+        calendarDays.Add(firstDayOfMonth.AddDays(daysInCurrentMonth + i));
+
+    }
+
+}
+    string GetDayClass(DateTime day)
+
+    {
+        //Console.WriteLine("GetDayClass in CalendarCOmponent");
+        if (day.Month != currentMonth.Month)
+
+            return "calendar-day-disabled";
+
+        if (day == SelectedDate)
+
+            return "calendar-day-selected";
+
+ 
+
+        return string.Empty;
+
+    }
+    void SelectDate(DateTime? date)
+
+{
+
+    if(date == null) return;
+
+    SelectedDate = date.Value;
+
+    if (SelectedDateChanged.HasDelegate)
+
+    {
+
+        SelectedDateChanged.InvokeAsync(SelectedDate);
+
+    }
+
+}
+
+}
+
+ 

@@ -1,0 +1,54 @@
+﻿@using BlazorApp1.Data
+@using BlazorApp1.Interfaces
+@using BlazorApp1.Services
+
+@inject ICarService CarService
+
+@inject IModuleService ModuleService
+@inject ILoggerService LoggerService
+
+<div class="form-group">
+    <label>Modules</label>
+    @if (ExistingModules != null)
+    {
+        <ul>
+            @foreach (var module in ExistingModules)
+            {
+                <li>
+                    @module.Name (@module.ModuleId)
+                    <br />Description: @module.Description
+                    <br />Current Software Version: @module.CurrentSoftwareVersion
+                    <br />Next Software Version: @module.NextSoftwareVersion
+                    <br />Last Updated: @module.LastUpdated
+                    <br />Projected Release: @module.ProjectedRelease
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No modules available.</p>
+    }
+</div>
+
+<!-- Add New Module -->
+<div class="form-group">
+    <label>Add New Module</label>
+    <input class="form-control" @bind="@NewModule.Name" placeholder="Module Name" />
+    <input class="form-control" @bind="@NewModule.Description" placeholder="Description" />
+    <input class="form-control" @bind="@NewModule.CurrentSoftwareVersion" placeholder="Current Software Version" />
+    <input class="form-control" @bind="@NewModule.NextSoftwareVersion" placeholder="Next Software Version" />
+    <input type="date" class="form-control" @bind="@NewModule.LastUpdated" placeholder="Last Updated" />
+    <input type="date" class="form-control" @bind="@NewModule.ProjectedRelease" placeholder="Projected Release" />
+    <button class="btn btn-primary" @onclick="() => OnAddModule.InvokeAsync(NewModule.ModuleId)">Add</button>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public List<BlazorApp1.CarModels.Module> ExistingModules { get; set; }
+    [Parameter]
+    public EventCallback<int> OnAddModule { get; set; }
+    public BlazorApp1.CarModels.Module NewModule { get; set; } = new BlazorApp1.CarModels.Module();
+}

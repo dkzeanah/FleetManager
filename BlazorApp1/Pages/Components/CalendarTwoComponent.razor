@@ -1,0 +1,354 @@
+
+ 
+@namespace BlazorApp1.Pages.Components
+@using BlazorApp1.CarModels;
+@using BlazorApp1.Data;
+@using BlazorApp1.Interfaces;
+@using BlazorApp1.Services;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.EntityFrameworkCore;
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ILogger<Calendar> logger
+
+
+ 
+ <style>
+
+    .calendar {
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+    }
+
+ 
+
+    .calendar-header {
+
+        display: flex;
+
+        align-items: center;
+        grid-template-columns: repeat(7, 1fr);
+
+
+    }
+
+ 
+
+    .calendar-weekdays,
+
+    .calendar-week {
+
+        display: grid;
+
+        grid-template-columns: repeat(7, 1fr);
+
+        gap: 5px;
+
+    }
+
+ 
+
+    .calendar-day {
+
+        border: 1px solid #ccc;
+
+        padding: 5px;
+
+        display: flex;
+
+        flex-direction: column;
+
+    }
+
+ 
+
+    .day-notes {
+
+        margin-top: 5px;
+
+        width: 100%;
+
+    }
+
+    .calendar-days-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(7, 1fr); /* Creates 7 equally spaced columns */
+
+    gap: 10px; /* Spacing between individual boxes */
+
+}
+
+ 
+
+.calendar-week {
+
+    display: contents; /* Ensures the week div doesn't interfere with the grid layout */
+
+}
+
+ 
+
+.calendar-day {
+
+    /* You can style individual days here, for example: */
+
+    border: 1px solid #ddd;
+
+    padding: 10px;
+
+    min-height: 100px;
+
+}
+
+</style>
+
+
+@* Calendar Component *@
+
+<div class="calendar">
+
+ 
+
+    @* Calendar Header *@
+
+    <div class="calendar-header">
+        <!-- Navigate to the previous month -->
+        <button class="calendar-button" @onclick="PreviousMonth">&lt;</button>
+
+        <!-- Display the current month and year -->
+        <span>@currentMonth.ToString("MMMM yyyy")</span>
+
+        <!-- Navigate to the next month -->
+        <button class="calendar-button" @onclick="NextMonth">&gt;</button>
+    </div>
+
+
+ 
+
+    @* Weekdays *@
+    <div class="calendar-weekdays">
+        <!-- Loop through all days of the week (Sun, Mon, Tue, etc.) and display them -->
+        @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
+        {
+            <div class="calendar-weekday">@day</div>
+        }
+    </div>
+
+ 
+
+    @* Calendar Grid *@
+    <div class="calendar-days-grid">
+        <!-- Loop through all days in the calendar grid -->
+        @for (int i = 0; i < calendarDays.Count; i++)
+        {
+            // Start a new week
+            if (i % 7 == 0)
+            {
+                @:<div class="calendar-week">
+            }
+
+            <!-- Display each day in the calendar -->
+            <div class="calendar-day @(i < calendarDays.Count ? GetDayClass(calendarDays[i]) : string.Empty)" @onclick="() => SelectDate(i < calendarDays.Count ? calendarDays[i] : (DateTime?)null)">
+                @calendarDays[i].Day
+                <!-- Text area to add notes for each day -->
+                 <div @onclick="() => OpenDayTasks(i)" class="grid-item day-box">
+
+     @i
+
+     @foreach (var user in users)
+
+     {
+
+         <input class="form-control mb-1 user-input" placeholder="@user.UserName" />
+
+     }
+
+ </div>
+            </div>
+
+            // Close the week
+            if (i % 7 == 6 || i == calendarDays.Count - 1)
+            {
+                @:</div>
+            }
+        }
+
+    </div>
+
+</div>
+
+ 
+
+ 
+
+@code {
+
+
+
+    [Parameter]
+
+    public DateTime SelectedDate { get; set; }
+
+    [Parameter]
+
+    public EventCallback<DateTime> SelectedDateChanged { get; set; }
+
+    List<ApplicationUser> users;
+    List<TaskModel> taskModels;
+
+    DateTime currentMonth = DateTime.Now;
+
+    List<DateTime> calendarDays = new List<DateTime>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUsersAsync();
+        taskModels = await TaskModelService.GetAllTaskModels();
+    }
+
+    protected override void OnInitialized()
+
+    {
+
+        UpdateCalendarDays();
+
+    }
+
+ 
+
+    void PreviousMonth()
+
+    {
+
+        currentMonth = currentMonth.AddMonths(-1);
+
+        UpdateCalendarDays();
+
+    }
+
+ 
+
+    void NextMonth()
+
+    {
+
+        currentMonth = currentMonth.AddMonths(1);
+
+        UpdateCalendarDays();
+
+    }
+
+    void UpdateCalendarDays()
+
+{
+
+    calendarDays.Clear();
+
+ 
+
+    // Get the first day of the month
+
+    var firstDayOfMonth = new DateTime(currentMonth.Year, currentMonth.Month, 1);
+
+ 
+
+    // Calculate how many days to add from the previous month
+
+    int daysFromPreviousMonth = (int)firstDayOfMonth.DayOfWeek;
+
+ 
+
+    // Add days from the previous month
+
+    for (int i = daysFromPreviousMonth - 1; i >= 0; i--)
+
+    {
+
+        calendarDays.Add(firstDayOfMonth.AddDays(-i - 1));
+
+    }
+
+ 
+
+    // Add days of the current month
+
+    var daysInCurrentMonth = DateTime.DaysInMonth(currentMonth.Year, currentMonth.Month);
+
+    for (int i = 0; i < daysInCurrentMonth; i++)
+
+    {
+
+        calendarDays.Add(firstDayOfMonth.AddDays(i));
+
+    }
+
+ 
+
+    // Add days from the next month to complete the grid
+
+    var totalCells = 42; // 6 weeks x 7 days
+
+    int daysFromNextMonth = totalCells - calendarDays.Count;
+
+    for (int i = 0; i < daysFromNextMonth; i++)
+
+    {
+
+        calendarDays.Add(firstDayOfMonth.AddDays(daysInCurrentMonth + i));
+
+    }
+
+}
+
+ 
+
+    string GetDayClass(DateTime day)
+
+    {
+
+        if (day.Month != currentMonth.Month)
+
+            return "calendar-day-disabled";
+
+        if (day == SelectedDate)
+
+            return "calendar-day-selected";
+
+ 
+
+        return string.Empty;
+
+    }
+
+ 
+
+    void SelectDate(DateTime? date)
+
+{
+
+    if(date == null) return;
+
+    SelectedDate = date.Value;
+
+    if (SelectedDateChanged.HasDelegate)
+
+    {
+
+        SelectedDateChanged.InvokeAsync(SelectedDate);
+
+    }
+
+}
+
+}
+
+ 

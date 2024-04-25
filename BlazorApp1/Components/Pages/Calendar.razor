@@ -1,0 +1,446 @@
+﻿@page "/Calendar"
+@using BlazorApp1.Data
+@using BlazorApp1.CarModels
+@inject IJSRuntime jsRuntime
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ILogger<Calendar> logger
+
+
+<h1>Calendar Entry</h1>
+<p>Current Day: @DateTime.Now.Day</p>
+
+<div class="grid-container" style="border: 5px solid yellow;">
+    @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+    {
+        int day = i;  
+        <div @onclick="() => OpenDayTasksForGroup(day)" class="grid-item day-box @(day == DateTime.Now.Day ? "current-day" : "")">
+            @day
+
+            @foreach (var user in users)
+            {
+                <input class="form-control mb-1 user-input"
+                @onfocus="() => OpenDayTasksForUser(day, user)"
+                       placeholder="@user.UserName" />
+            }
+        </div>
+    }
+</div>
+
+
+
+
+
+
+<p>///// IFS ==========================\\\\\\</p>
+
+@if (isGroupDayTasksModalOpen)
+{
+
+<div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay</h2>
+
+            @foreach (var user in users)
+            {
+                <div style="border: 1px solid #00FFEE;">
+                    @user.UserName <TaskListComponent taskList="@GetTasksForSelectedUserAndDay()" userId="@user.Id" />
+                    
+                     <button @onclick="() => AddTaskForUser(user)" class="btn btn-sm btn-secondary ml-2">Add Task</button>
+                </div>
+            }
+        </div>
+    </div>
+}  
+@if (isUserDayTasksModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay for @selectedUser.UserName</h2>
+            <button @onclick="() => AddTaskForUser(selectedUser)" class="btn btn-sm btn-secondary ml-2">Add Task</button>
+            
+                <TaskListComponent taskList="@GetTasksForSelectedUserAndDay()" UserId="@selectedUser.Id" SelectedDay="@selectedDate" />
+
+        </div>
+    </div>
+}
+@if (isDayTasksModalOpen)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay for @selectedUser.UserName</h2>
+
+            @{
+                var taskList = GetTasksForSelectedUserAndDay();
+                if (taskList != null)
+                {
+                    @* <TaskListComponent taskList="@taskList" UserId="@selectedUser.Id" /> *@
+                    <TaskListComponent taskList="@GetTasksForSelectedUserAndDay()" UserId="@selectedUser.Id" SelectedDay="@selectedDate" />
+
+                }
+                else
+                {
+                    <p>No tasks found for the selected day and user.</p>
+                }
+            }
+
+</div>
+    </div>
+}
+@if (isDayTasksModalOpen && selectedUser != null)
+{
+    <div class="modal">
+        <div class="modal-content">
+            <span class="close" @onclick="CloseDayTasks">&times;</span>
+            <h2>Tasks for day: @selectedDay for @selectedUser.UserName</h2>
+
+            <EditForm Model="@newTaskModel" OnValidSubmit="AddTaskForUser">
+                <InputText @bind-Value="newTaskModel.Task" placeholder="Enter new task..." />
+                <button type="submit" class="btn btn-lg btn-secondary ml-2">Add Task</button>
+            </EditForm>
+
+            <TaskListComponent taskList="@GetTasksForSelectedUserAndDay()" UserId="@selectedUser.Id" />
+        </div>
+    </div>
+}
+@if (isGroupDayTasksModalOpen)
+{
+    <DayModal Users="@users" Tasks="@taskModels" SelectedDay="@selectedDay" IsGroup="true" CloseModal="CloseDayTasks" />
+}
+@if (isDayTasksModalOpen && selectedUser != null)
+{
+    <DayModal Users="new List<ApplicationUser> { selectedUser }" Tasks="@taskModels" SelectedDay="@selectedDay" IsGroup="false" CloseModal="CloseDayTasks" />
+}
+
+
+
+<p>///// END ==========================\\\\\\</p>
+
+
+
+
+@code {
+    private IJSObjectReference _interopModule;
+    // private IJSObjectReference _chart;
+
+    private ApplicationUser? selectedUser = new ApplicationUser(); // Initialize to a default value
+    private ApplicationUser? currentUser = new ApplicationUser();               //{ get; set; }
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+
+
+    private TaskModel newTaskModel = new TaskModel();
+    private List<TaskModel> taskModels = new List<TaskModel>();
+
+    private string? message;
+    private int selectedDay;
+    private int _squareCount = 0;
+
+    private bool firstRender = true;
+    private bool isDayTasksModalOpen = false;
+    private bool isGroupDayTasksModalOpen = false;
+    private bool isUserDayTasksModalOpen = false;
+
+
+    public DateTime selectedDate { get; set; } = DateTime.Now;
+
+
+
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //string currentUserId = await UserService.GetCurrentUserIdAsync();
+        //ApplicationUser currentUser = await UserService.GetUserByIdAsync(currentUserId);
+        users = await UserService.GetAllUsersAsync();
+        var taskModels = await TaskModelService.GetAllTaskModels();
+    }
+    private List<TaskModel> GetTasksForSelectedUserAndDay()
+    {
+        // Assuming TaskModel has a DateAssigned property of type DateTime
+        return taskModels.Where(t => t.UserId == selectedUser.Id && t.DateAssigned.Day == selectedDay).ToList();
+    }
+    private List<TaskModel> GetTasksForUser(ApplicationUser user)
+    {
+        return taskModels.Where(t => t.UserId == user.Id).ToList();
+    }
+    private void PreloadTasksForSelectedUserAndDay(int day, ApplicationUser user)
+    {
+        selectedDay = day;
+        selectedUser = user;
+        taskModels = GetTasksForSelectedUserAndDay();
+    }
+    private async void AddTaskForUser(ApplicationUser user)
+    {
+        Console.WriteLine($"Adding task for user: {user}");
+        if (selectedDay > 0 && selectedDay <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+        {
+            newTaskModel.UserId = user.Id;
+            newTaskModel.UserName = user.FriendlyName; // Assuming FriendlyName is a property on ApplicationUser
+            newTaskModel.DateAssigned = new DateTime(DateTime.Now.Year, DateTime.Now.Month, selectedDay);
+            newTaskModel.Importance = 1;
+            newTaskModel.DateExpired = newTaskModel.DateAssigned.AddDays(7); // One week from DateAssigned
+
+            await TaskModelService.AddTaskModel(newTaskModel);
+            taskModels = (await TaskModelService.GetAllTaskModels()).ToList(); // Refresh the task list
+            newTaskModel = new TaskModel(); // Clear the input field
+            StateHasChanged(); // Update the UI
+        }
+        else
+        {
+            // Handle invalid day
+        }
+
+    }
+    private async void AddTaskForUser()
+    {
+        if (selectedDay > 0 && selectedDay <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+        {
+            newTaskModel.UserId = selectedUser.Id;
+            newTaskModel.UserName = selectedUser.FriendlyName; // Assuming FriendlyName is a property on ApplicationUser
+            newTaskModel.DateAssigned = new DateTime(DateTime.Now.Year, DateTime.Now.Month, selectedDay);
+            newTaskModel.Importance = 1;
+            newTaskModel.DateExpired = newTaskModel.DateAssigned.AddDays(7); // One week from DateAssigned
+
+            await TaskModelService.AddTaskModel(newTaskModel);
+            taskModels = (await TaskModelService.GetAllTaskModels()).ToList(); // Refresh the task list
+            GetTasksForSelectedUserAndDay();
+            newTaskModel = new TaskModel(); // Clear the input field
+            StateHasChanged(); // Update the UI
+        }
+        else
+        {
+            Console.WriteLine("Invalid if section");
+            // Handle invalid day
+        }
+
+
+    }
+
+    private void OpenDayTasksForUser(int day, ApplicationUser user)
+    {
+        PreloadTasksForSelectedUserAndDay(day, user);
+
+        selectedDay = day;
+        selectedUser = user;
+        selectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, day);  // Update the selectedDate
+
+        isGroupDayTasksModalOpen = false;  // Close group modal if open
+        isDayTasksModalOpen = true;
+        StateHasChanged();
+
+    }
+    private void OpenDayTasks(int day, ApplicationUser user)
+    {
+        selectedDay = day;
+        selectedUser = user;
+        selectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, day);  // Update the selectedDate
+
+        isGroupDayTasksModalOpen = false;  // Close group modal if open
+        isDayTasksModalOpen = true;
+
+    }
+    private void OpenDayTasksForGroup(int day)
+    {
+        try
+        {
+            selectedDay = day;
+            isGroupDayTasksModalOpen = true;
+            selectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, day);  // Update the selectedDate
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred: {ex.Message}");
+        }
+    }
+    private void OpenDay(int day)
+    {
+        try
+        {
+            selectedDay = day;
+            selectedDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, day);  // Update the selectedDate
+
+            isGroupDayTasksModalOpen = true;  // group modal open
+
+            isDayTasksModalOpen = false;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"An error occurred: {ex.Message}");
+        }
+    }
+    
+    
+    private void CloseDayTasks()
+    {
+        isDayTasksModalOpen = false;
+        isGroupDayTasksModalOpen = false;  // Ensure that both are closed    
+    }
+    private void CloseGroupDayTasks()
+    {
+        isGroupDayTasksModalOpen = false;
+    }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.firstRender = false;
+            _interopModule = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./interop.js");
+            Console.WriteLine("Interop module imported");
+            // Initialize your chart here if needed
+            // _chart = await _interopModule.InvokeAsync<IJSObjectReference>("createChart", element, initialData);
+        }
+    }
+
+
+
+    
+}
+
+<style>
+
+
+    .modal {
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        max-height: 800px; /* Set the maximum height for scrollability */
+        overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 20px;
+        width: 60%;
+        z-index: 1001;
+        border-radius: 15px;
+        box-shadow: 0px 0px 30px #000;
+    }
+
+    .close {
+        color: #e74c3c;
+        float: right;
+        font-size: 28px;
+        cursor: pointer;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        max-width: 90%;
+        margin: 20px auto;
+    }
+
+    .day-box {
+        /*         background-color: #34495e;
+         */ background-color: #ff5733;
+        color: #ecf0f1;
+        padding: 10px;
+        border-radius: 7px;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s;
+    }
+
+        .day-box:hover {
+            transform: scale(1.05);
+        }
+
+    .current-day {
+        background-color: #ff5733; /* Change this color to your desired highlight color */
+        color: white; /* Text color for the highlighted day */
+    }
+
+    .user-input {
+        background: transparent;
+        border: 1px solid #ecf0f1;
+        color: #ecf0f1;
+        border-radius: 4px;
+    }
+    .modal {
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        max-height: 800px; /* Set the maximum height for scrollability */
+        overflow-y: auto; /* Enable vertical scrolling if content exceeds max height */
+
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 20px;
+        width: 60%;
+        z-index: 1001;
+        border-radius: 15px;
+        box-shadow: 0px 0px 30px #000;
+    }
+    .close {
+        color: #e74c3c;
+        float: right;
+        font-size: 28px;
+        cursor: pointer;
+    }
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        max-width: 90%;
+        margin: 20px auto;
+    }
+    .day-box {
+        background-color: #34495e;
+        color: #ecf0f1;
+        padding: 10px;
+        border-radius: 7px;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s;
+    }
+        .day-box:hover {
+            transform: scale(1.05);
+        }
+
+    .current-day {
+        background-color: #ff5733; /* Change this color to your desired highlight color */
+        color: white; /* Text color for the highlighted day */
+    }
+    .user-input {
+        background: transparent;
+        border: 1px solid #ecf0f1;
+        color: #ecf0f1;
+        border-radius: 4px;
+    }
+
+</style> 

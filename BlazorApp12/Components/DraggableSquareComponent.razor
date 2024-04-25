@@ -1,0 +1,90 @@
+﻿@inject IJSRuntime JSRuntime
+
+@for (var i = 0; i < Squares.Count; i++)
+{
+    <DraggableItemComponent Id="@Squares[i].Id.ToString()" Color="@Squares[i].Color"></DraggableItemComponent>
+}
+
+<div id="myContainer" style="width: 500px; height: 500px; position: relative; border: 1px solid black;">
+    <!-- Draggable Items Here -->
+</div>
+<button @onclick="AddSquare">Add square</button>
+
+@code {
+    private static List<Square> Squares { get; set; } = new List<Square>();
+
+    private IJSObjectReference? module;
+
+
+    // Code related to draggable squaresy
+    [JSInvokable]
+    public static async Task UpdateSquarePosition(string id, int posX, int posY)
+    {
+        // Check if id is null or empty
+        if (string.IsNullOrEmpty(id))
+        {
+            Console.WriteLine("ID is null or empty");
+            return;
+        }
+
+        // Check if id is in valid guid format
+        if (!Guid.TryParse(id, out var squareId))
+        {
+            Console.WriteLine("ID is not in valid GUID format");
+            return;
+        }
+
+        // Find square by id
+        var square = Squares.Find(s => s.Id == squareId);
+
+        if (square != null)
+        {
+            // Update square position
+            square.PositionX = posX;
+            square.PositionY = posY;
+
+            // Here you could also persist the square's new position to a database
+        }
+    }
+
+    /*[JSInvokable]
+    
+    
+    
+    async Task AddSquare()
+    {
+        Squares.Add(new Square
+            {
+                Id = Guid.NewGuid(),
+                Color = "red", // Or pick a color from user input
+                PositionX = 0,
+                PositionY = 0
+
+            });
+        /*
+        JSRuntime.InvokeVoidAsync("EnableDragAndDrop"); // Call your JavaScript function here
+        
+        //await JSRuntime.InvokeVoidAsync("enableDragAndDrop");
+
+        StateHasChanged();
+
+    } */
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./custom.js");
+        }
+    }
+
+    private async Task AddSquare()
+    {
+         module?.InvokeVoidAsync("addSquare");
+    }
+
+    private async Task MakeDraggable(string elementId)
+    {
+         module?.InvokeVoidAsync("makeDraggable", elementId);
+    }
+}

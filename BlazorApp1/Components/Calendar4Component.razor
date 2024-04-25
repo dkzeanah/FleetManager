@@ -1,0 +1,287 @@
+﻿@using System.Globalization
+@using System.ComponentModel.DataAnnotations
+@using BlazorApp1.Data
+@inject IJSRuntime jsRuntime
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject ILogger<Calendar4Component> Logger
+
+
+@if (_isCollapsed)
+{
+    <button @onclick="ToggleCollapse">Expand</button>
+}
+else
+{
+
+    <div class="toolbar">
+        <button @onclick="ToggleCollapse">Collapse</button>
+        <button @onclick="PreviousMonth">←</button>
+        <span>@_currentMonth.ToString("MMMM yyyy")</span>
+        <button @onclick="NextMonth">→</button>
+
+        </div>
+
+        @if (_showRangePicker)
+        {
+            <div class="range-picker">
+
+                <input type="date" @bind="_rangeStart" />
+                <input type="date" @bind="_rangeEnd" />
+                <select @bind="newTaskModel.UserId">
+                    <option value="">Select User</option>
+                    @foreach (var user in users)
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
+                </select>
+                <input type="text" @bind="newTaskModel.Task" placeholder="Task Description" />
+                <button @onclick="AddTaskRange">Add Task</button>
+            </div>
+        }
+
+    
+    <p>Calendar</p>
+    @RenderCalendar()
+
+
+    
+
+}
+
+
+
+
+
+@code {
+
+    private DateTime _rangeStart;
+    private DateTime _rangeEnd;
+    private string _taskDescription;
+    private string _selectedUserId;
+
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private ApplicationUser selectedUser;
+
+
+
+    private List<TaskModel> taskModels = new List<TaskModel>();
+    private TaskModel newTaskModel = new TaskModel();
+    private TaskModel selectedTask;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUsersAsync();
+        taskModels = await TaskModelService.GetAllTaskModels();
+        _rangeStart = DateTime.Today;
+        _rangeEnd = DateTime.Today;
+    }
+
+    private DateTime _currentMonth = DateTime.Today;
+    private DateTime? _selectedDay;
+
+    private Dictionary<DateTime, string> _dayTexts = new Dictionary<DateTime, string>();
+
+    private bool _isCollapsed = false;
+    private bool _showRangePicker = true;
+    private List<(DateTime start, DateTime end)> _ranges = new();
+    private DateTime? _selectedRangeStart;
+    private DateTime? _selectedRangeEnd;
+    private Dictionary<DateTime, List<string>> _dayUsers = new Dictionary<DateTime, List<string>>();
+    private List<string> _users = new List<string> { "Andreas", "Shannon", "Lamar", "Marty", "Tim", "Donovan", "Nathaniel", "Hendrik", "Charlie", "Sawyer" };
+
+    private Dictionary<string, string> _userColors = new Dictionary<string, string>
+{
+    {"Andreas", "red"},
+    {"Shannon", "green"},
+    {"Lamar", "blue"},
+    {"Marty", "orange"},
+    {"Tim", "purple"},
+    {"Donovan", "cyan"},
+    {"Nathaniel", "magenta"},
+    {"Hendrik", "yellow"},
+    {"Charlie", "pink"},
+    {"Sawyer", "brown"}
+};
+
+    private string _userToEdit;
+    private string _colorToAssign;
+    private string _inputForSelectedDay;
+    // private TaskModel _inputForSelectedDay;
+
+
+    private async Task AddTaskRange()
+    {
+        if (string.IsNullOrEmpty(newTaskModel.UserId))
+        {
+            Logger.LogInformation("no user selected");
+            newTaskModel.UserId = "3de00zzz - 2828 - 0000 - 0000 - 3de000000000";
+            newTaskModel.User = await UserService.GetUserByIdAsync("3de00zzz-2828-0000-0000-3de000000000");
+            Console.WriteLine($"set {newTaskModel.UserId} and {newTaskModel.User} for User");
+            return;
+        }
+
+        newTaskModel.RangeStart = _rangeStart;
+        newTaskModel.RangeEnd = _rangeEnd;
+        taskModels.Add(newTaskModel); // Add to local list for immediate UI update
+        await TaskModelService.AddTaskModelAsync(newTaskModel); // Persist to service or database
+        newTaskModel = new TaskModel(); // Reset for next input
+        RefreshCalendar();
+
+    }
+    private void RefreshCalendar()
+    {
+        Console.WriteLine("RefreshCalendar Method");
+        StateHasChanged();
+    }
+    // add method to delete from an already 'picked' range.
+    private void ShowRangePicker()
+    {
+        _rangeStart = DateTime.Today;
+        _rangeEnd = DateTime.Today.AddDays(3);
+        _showRangePicker = true;
+    }
+
+   
+
+    private void OnDayClick(DateTime day)
+    {
+        var tasksForDay = taskModels.Where(task => day >= task.RangeStart && day <= task.RangeEnd);
+
+        // Check if the day is part of a range
+        var range = _ranges.FirstOrDefault(r => day >= r.start && day <= r.end);
+        if (range.start != default)
+        {
+            _selectedRangeStart = range.start;
+            _selectedRangeEnd = range.end;
+            Logger.LogInformation($"Day in range clicked: {day.ToShortDateString()} in range {range.start.ToShortDateString()} to {range.end.ToShortDateString()}");
+
+        }
+        else
+        {
+            _selectedDay = day; // If it's not part of a range, select the day
+            Logger.LogInformation($"Day clicked: {day.ToShortDateString()}");
+
+        }
+        // Check if the clicked day has any tasks and take necessary actions
+        // For example, activating the task input field for editing
+    }
+
+    
+
+
+
+
+
+
+    
+    private void ToggleCollapse()
+    {
+        _isCollapsed = !_isCollapsed;
+        Logger.LogInformation($"Calendar collapsed status: {_isCollapsed}");
+    }
+
+
+
+    private void AddRange()
+    {
+        _ranges.Add((_rangeStart, _rangeEnd));
+        Logger.LogInformation($"Added range: {_rangeStart.ToShortDateString()} - {_rangeEnd.ToShortDateString()}");
+        _showRangePicker = false;
+    }
+
+    private void PreviousMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(-1);
+        Logger.LogInformation($"Navigated to {_currentMonth.ToString("MMMM yyyy")}");
+    }
+
+    private void NextMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(1);
+        Logger.LogInformation($"Navigated to {_currentMonth.ToString("MMMM yyyy")}");
+    }
+
+    private RenderFragment RenderCalendar() => builder =>
+{
+    int seq = 0; // Sequence number for Blazor rendering
+    var daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
+    var startDayOfMonth = new DateTime(_currentMonth.Year, _currentMonth.Month, 1).DayOfWeek;
+    var dayOffset = (int)startDayOfMonth - (int)DayOfWeek.Monday; // Adjust for Monday start
+    dayOffset = dayOffset < 0 ? 7 + dayOffset : dayOffset;
+
+    // Render calendar header (day names)
+    builder.OpenElement(seq++, "div");
+    builder.AddAttribute(seq++, "class", "calendar-header");
+    for (int i = 0; i < 7; i++)
+    {
+    builder.OpenElement(seq++, "div");
+    builder.AddContent(seq++, CultureInfo.CurrentCulture.DateTimeFormat.GetDayName((DayOfWeek)((i + (int)DayOfWeek.Monday) % 7)));
+    builder.CloseElement();
+    }
+    builder.CloseElement();
+
+    // Render calendar days
+    builder.OpenElement(seq++, "div");
+    builder.AddAttribute(seq++, "class", "calendar-days");
+
+    int dayCounter = 1;
+    for (int cell = 0; cell < daysInMonth + dayOffset; cell++)
+    {
+
+        builder.OpenElement(seq++, "div");
+        builder.AddAttribute(seq++, "class", "calendar-day");
+
+        if (cell >= dayOffset)
+        {
+            DateTime currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, dayCounter);
+            builder.AddContent(seq++, currentDate.Day.ToString());
+            dayCounter++;
+            // Group tasks by user for the current day
+            var tasksGroupedByUser = taskModels
+                .Where(task => currentDate >= task.RangeStart && currentDate <= task.RangeEnd)
+                .GroupBy(task => GetUserFriendlyName(task.UserId));
+
+            // Render user names and tasks
+            foreach (var group in tasksGroupedByUser)
+            {
+                // Render user's FriendlyName
+                builder.OpenElement(seq++, "div");
+                builder.AddAttribute(seq++, "class", "user-name");
+                builder.AddContent(seq++, group.Key);
+                builder.CloseElement();
+
+                // Render tasks for this user
+                foreach (var task in group)
+                {
+                    builder.OpenElement(seq++, "div");
+                    builder.AddAttribute(seq++, "class", "user-task");
+                    builder.AddContent(seq++, task.Task);
+                    builder.CloseElement();
+                }
+            }
+
+         
+        }
+        else
+        {
+            builder.AddAttribute(seq++, "class", "calendar-day empty");
+        }
+
+        builder.CloseElement(); // Close the calendar-day div
+    }
+
+    builder.CloseElement(); // Close the calendar days container
+};
+
+    private string GetUserFriendlyName(string userId)
+    {
+        var user = users.FirstOrDefault(u => u.Id == userId);
+        return user != null ? user.FriendlyName : "Unknown";
+    }
+
+
+}
+

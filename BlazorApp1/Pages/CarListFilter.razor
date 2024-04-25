@@ -1,0 +1,65 @@
+﻿@page "/carlistfilter"
+@inject ICarService CarService
+
+
+
+<button class="header-btn" @onclick="FilterLogger"></button>
+<button class="header-btn" @onclick="FilterHarness"></button>
+<button class="header-btn" @onclick="FilterAdas"></button>
+<button class="header-btn" @onclick="FilterTag"></button>
+
+@foreach (var car in FilteredCars)
+{
+    <CarCard CarItem="car"></CarCard>
+}
+
+@code {
+    private List<Car> cars { get; set; } = new List<Car>();
+    private List<Car> FilteredCars { get; set; } = new List<Car>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+        FilteredCars = cars;
+    }
+
+    private void FilterLogger()
+    {
+        FilteredCars = cars.Where(car => car.Loggers?.Count > 0).ToList();
+    }
+
+    private void FilterHarness()
+    {
+        FilteredCars = cars.Where(car => car.HasHarness == true).ToList();
+    }
+
+    private void FilterAdas()
+    {
+        FilteredCars = cars.Where(car => car.IsAdas == true).ToList();
+    }
+
+    private void FilterTag()
+    {
+        FilteredCars = cars;  // Assuming this is to reset the filter and show all cars
+    }
+
+    private void FilterCars(string filterType)
+    {
+        switch (filterType)
+        {
+            case "Logger":
+                FilteredCars = cars.Where(car => car.Loggers?.Count > 0).ToList();
+                break;
+            case "Harness":
+                FilteredCars = cars.Where(car => car?.HasHarness == true).ToList();
+                break;
+            case "Adas":
+                FilteredCars = cars.Where(car => car?.IsAdas == true).ToList();
+                break;
+            default:
+                FilteredCars = cars;
+                break;
+        }
+    }
+}
+

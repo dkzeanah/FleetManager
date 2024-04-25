@@ -1,0 +1,34 @@
+﻿@page "/mycomponent"
+@inject IJSRuntime JS
+
+
+<style>
+    /* CSS here */
+</style>
+
+<div>
+    <!-- HTML here -->
+
+</div>
+
+@code {
+    // Properties
+    private IJSObjectReference? module;
+
+
+    // Page Methods
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // await jsRuntime.InvokeVoidAsync("myJsFunction");
+
+            module = await JS.InvokeAsync<IJSObjectReference>("import",
+                "./script.js");
+
+
+        }
+    }
+
+}
+

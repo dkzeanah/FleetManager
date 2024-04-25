@@ -1,0 +1,71 @@
+﻿@page "/CalendarGPT"
+@using BlazorApp1.Data
+@inject IJSRuntime jsRuntime
+@inject IUserService UserService
+@inject ITaskModelService TaskModelService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILogger<Calendar> logger
+
+<button @onclick="CreateSquare">Create Square</button>
+
+<h1>Calendar</h1>
+
+<div class="grid-container">
+    @for (int i = 1; i <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); i++)
+    {
+        int day = i;
+        <DayBox Day="@day" IsCurrentDay="@(day == DateTime.Now.Day)" OnDayClick="OpenDayTasks" Users="@users" />
+    }
+</div>
+
+<!-- Modal for a Specific User -->
+<DayModal IsOpen="@isDayTasksModalOpen" CloseModal="CloseDayTasks" SelectedDay="@selectedDay" SelectedUser="@selectedUser" />
+
+<h1>Calendar 2</h1>
+<CalendarGridGPTComponent OnDayClicked="OpenDayTasks" OnUserDayClicked="@(e => OpenDayTasksForUser(selectedDay, selectedUser))"></CalendarGridGPTComponent>
+
+<h1>Calendar 3</h1>
+<CalendarGridGPTComponent OnDayClicked="OpenDayTasks"></CalendarGridGPTComponent>
+
+@* <TaskModalGPTComponent @* SelectedUser="@selectedUser" SelectedDay="@selectedDay" OnAddTask="AddTaskForUser"  ></TaskModalGPTComponent>
+*@
+
+@code {
+    private List<ApplicationUser> users = new List<ApplicationUser>(); // Initialize an empty list of users
+    private IJSObjectReference _interopModule = null!; // Placeholder. You'll need to initialize this properly
+    private ApplicationUser? selectedUser;
+    private int selectedDay;
+    private bool isDayTasksModalOpen;
+    private int _squareCount = 0; // Initialize _squareCount
+
+    private async Task AddTaskForUser()
+    {
+        // Implementation to add a task
+    }
+
+    private void OpenDayTasks(int day)
+    {
+        selectedDay = day;
+        isDayTasksModalOpen = true;
+    }
+
+    private void OpenDayTasksForUser(int day, ApplicationUser user)
+    {
+        selectedDay = day;
+        selectedUser = user;
+        isDayTasksModalOpen = true;
+    }
+
+    private void CloseDayTasks()
+    {
+        isDayTasksModalOpen = false;
+    }
+
+    private async Task CreateSquare()
+    {
+        string squareId = $"square{_squareCount++}";
+        // Add implementation for the _interopModule
+        Console.WriteLine($"Created square with ID: {squareId}");
+        // Add further JavaScript interop calls
+    }
+}

@@ -1,0 +1,20 @@
+
+@using BlazorApp1.CarModels;
+@using Microsoft.AspNetCore.Components
+
+<div class="event-visualizer" style="border: 1px solid #000; margin: 10px;">
+    @foreach (var timelineEvent in Events)
+    {
+        <div>
+            
+            <p>test1</p>
+            @*//<p>@timelineEvent.Name on @timelineEvent.Date</p>
+           // <p>@timelineEvent.Description</p>*@
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public List<UserCarEvent> Events { get; set; }
+}

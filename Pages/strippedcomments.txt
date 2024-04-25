@@ -1,0 +1,14 @@
+/* Provides a consistent gap between items */
+
+//loggers = (await LoggerService.GetAllLoggerAsync()).ToList();
+// Fetch all loggers
+// Filter loggers based on CarId
+// for now, set it to null // This can be adjusted later when you decide on a default value
+//example expclusion- loggers = allLoggers.Where(l => l.TypeLogger != Logger.LoggerType.BluePirate && l.TypeLogger != Logger.LoggerType.BluePirateRapid).ToList();
+//();
+// for UI feedback
+// for displaying a message to the user
+// Resetting properties after successful addition
+// Reset to a default or meaningful value
+// Provide feedback to the user
+// Handle any exceptions that may have occurred

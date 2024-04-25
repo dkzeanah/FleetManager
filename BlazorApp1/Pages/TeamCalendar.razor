@@ -1,0 +1,24 @@
+﻿
+@page "/chessy"
+@using BlazorApp1.Pages
+<style>
+    grid-container {
+        display: grid;
+        grid-template-control: repeat(auto-fill, winmax(100px,1fr));
+    grid-gap: 10px;
+    }
+</style>
+
+<ToolbarComponent OnBlockAdded="AddBlock" />
+
+<GridComponent Users="Users" Blocks="Blocks" />
+
+@code{
+    private List<string> Users { get; set; } = new List<string> { "User1", "User2", "User3" };
+    private List<Block> Blocks { get; set; } = new List<Block>();
+
+    private void AddBlock(Block block)
+    {
+        Blocks.Add(block);
+    }
+} 

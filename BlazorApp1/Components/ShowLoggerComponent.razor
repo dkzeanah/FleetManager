@@ -1,0 +1,173 @@
+@inject ILoggerService LoggerService
+
+
+
+@if (loggers == null || !loggers.Any())
+{
+    <AddLoggerComponent ExistingLoggers="@existingLoggers" CarId="CarId" OnAddLogger="HandleLoggerAdded" />
+}
+else
+{
+
+    @foreach (var logger in loggers)
+    {
+        if (!logger.IsEditing)
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><strong>Logger Type:</strong> <span class="text-primary">@logger.TypeLogger</span></h5>
+                    <h5 class="card-title"><strong>Logger NumLoggers :</strong> <span class="text-primary">@logger.NumLoggers</span></h5>
+
+                    <p class="card-text"><strong>Logger Id:</strong> <span class="text-info">@logger.Id</span></p>
+                    <p class="card-text"><strong>Logger CarId:</strong> <span class="text-info">@logger.CarId</span></p>
+                    <p class="card-text"><strong>Logger Natural Id:</strong> <span class="text-success">@logger.NaturalId</span></p>
+
+                    <button class="btn btn-primary" @onclick="() => ToggleEditMode(logger)">Edit</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card mb-3">
+                <div class="card-body">
+                    <InputSelect @bind-Value="logger.TypeLogger" class="form-control" id="typeLogger">
+                        @foreach (var type in Enum.GetValues(typeof(Logger.LoggerType)))
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                    <InputNumber @bind-Value="logger.NumLoggers" class="form-control" id="numLoggers" />
+
+                    <button class="btn btn-success" @onclick="() => SaveLogger(logger)">Save</button>
+                    <button class="btn btn-secondary" @onclick="() => ToggleEditMode(logger)">Cancel</button>
+                </div>
+            </div>
+        }
+    }
+    <AddLoggerComponent ExistingLoggers="@existingLoggers" CarId="CarId" OnAddLogger="HandleLoggerAdded" />
+
+}
+
+@*
+
+<EditForm Model="NewLogger" OnValidSubmit="HandleValidLoggerSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="carId">Car ID:</label>
+        <InputNumber @bind-Value="NewLogger.CarId" class="form-control" id="carId" />
+    </div>
+
+    <div class="form-group">
+        <label for="typeLogger">Logger Type:</label>
+        <InputSelect @bind-Value="NewLogger.TypeLogger" class="form-control" id="typeLogger">
+            @foreach (var type in Enum.GetValues(typeof(Logger.LoggerType)))
+            {
+                <option value="@type">@type</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group">
+        <label for="numLoggers">Number of Loggers:</label>
+        <InputNumber @bind-Value="NewLogger.NumLoggers" class="form-control" id="numLoggers" />
+    </div>
+
+    <div class="form-group form-check">
+        <InputCheckbox @bind-Value="NewLogger.isAssigned" class="form-check-input" id="isAssigned" />
+        <label class="form-check-label" for="isAssigned">Is Assigned?</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Logger</button>
+</EditForm>
+
+*@
+
+@code {
+
+    [Parameter]
+    public int CarId { get; set; }
+
+    private List<Logger> loggers = new List<Logger>();
+    private List<Logger> existingLoggers = new List<Logger>();
+
+    private Logger newLogger = new Logger();
+    private bool showModal = false;
+    private bool isLoggerSuccess = false;
+
+    private void ToggleEditMode(Logger logger)
+    {
+        logger.IsEditing = !logger.IsEditing; 
+    }
+    private async Task SaveLogger(Logger logger)
+    {
+        await LoggerService.UpdateLoggerAsync(logger);
+        logger.IsEditing = false;
+    }
+    private async Task HandleLoggerAdded()
+    {
+        Console.WriteLine($" HandleLoggerAdded method called. CarId: {CarId}. ");
+        if (CarId > 0)
+        {
+            loggers = await LoggerService.GetLoggersByCarIdAsync(CarId);
+        }
+        StateHasChanged();
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine($" CarId {CarId}");
+        if (CarId > 0)
+        {
+            loggers = await LoggerService.GetLoggersByCarIdAsync(CarId);
+        }
+
+        if (loggers != null)
+        {
+
+            foreach (var logger in loggers)
+            {
+                Console.WriteLine($"Module ID: {logger.CarId}, Module Name: {logger.TypeLogger}");
+            }
+
+        }
+
+    }
+    private void ShowAddLoggerModal()
+    {
+        newLogger.CarId = CarId;
+        Console.WriteLine($"{newLogger.CarId} is the newLogger.CarId being set from CarId {CarId}");
+        showModal = true;
+
+    }
+    private void HideAddLoggerModal()
+    {
+        showModal = false;
+    }
+    private async Task HandleValidLoggerSubmit()
+    {
+        Console.WriteLine($"{newLogger.CarId} is the newLogger.CarId being set from CarId {CarId}");
+
+        try
+        {
+           // newLogger.LastUpdated = DateTime.Now; // Set the LastUpdated date to now
+           // newLogger.ProjectedRelease = newModule.LastUpdated.Value.AddDays(7); // Set ProjectedRelease to one week after LastUpdated
+
+            await LoggerService.AddLoggerAsync(newLogger);
+
+            newLogger = new Logger(); // Reset the model to allow further additions
+            isLoggerSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            //Logger.LogError(ex, "Error adding module");
+            isLoggerSuccess = false; // Set flag to false in case of error
+        }
+        finally
+        {
+            HideAddLoggerModal();
+        }
+    }
+
+
+}

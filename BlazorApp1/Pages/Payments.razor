@@ -1,0 +1,51 @@
+﻿@page "/payments"
+@inject PaymentService PaymentService
+
+<h3>Payments</h3>
+
+<button @onclick="ShowAddPaymentForm">Add Payment</button>
+
+@if (showAddPaymentForm)
+{
+    <PaymentForm OnPaymentAdded="PaymentAdded" />
+}
+
+@if (payments.Any())
+{
+    <PaymentTable Payments="payments" OnPaymentEdited="PaymentEdited" OnPaymentDeleted="PaymentDeleted" />
+}
+else
+{
+    <p>No payments found. Add a payment to start tracking.</p>
+}
+
+@code {
+    private List<Payment> payments = new List<Payment>();
+    private bool showAddPaymentForm = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        payments = (await PaymentService.GetPaymentsAsync()).ToList();
+    }
+
+    private void ShowAddPaymentForm()
+    {
+        showAddPaymentForm = true;
+    }
+
+    private void PaymentAdded(Payment newPayment)
+    {
+        payments.Add(newPayment);
+        showAddPaymentForm = false;
+    }
+
+    private void PaymentEdited(Payment updatedPayment)
+    {
+        // Update payment in the list
+    }
+
+    private void PaymentDeleted(int paymentId)
+    {
+        payments.RemoveAll(p => p.PaymentId == paymentId);
+    }
+}

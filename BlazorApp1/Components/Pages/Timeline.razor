@@ -1,0 +1,118 @@
+﻿
+
+<!-- Timeline.razor -->
+@page "/timeline"
+
+@inject IJSRuntime JSRuntime
+
+@using System.Diagnostics;
+@for (var i = 0; i < Squares.Count; i++)
+{
+    <DraggableItemComponent Id="@Squares[i].Id.ToString()" Color="@Squares[i].Color"></DraggableItemComponent>
+}
+
+
+
+<div id="myContainer" style="width: 500px; height: 500px; position: relative; border: 1px solid black;">
+    <div class="myDraggableItem" style="width: 100px; height: 100px; position: absolute; background-color: red;"></div>
+
+    @foreach (var square in Squares)
+    {
+        <div class="myDraggableItem" style="width: 100px; height: 100px; position: absolute; background-color: @square.Color;"
+             data-id="@square.Id"></div>
+    }
+</div>
+
+@*<button @onclick="AddSquare">Add square</button>
+*@
+
+<div class="timeline">
+    @foreach (var TimelineEvent in TimelineEvents)
+    {
+    <div class="timeline-item">
+        <div class="timeline-item-date">@TimelineEvent.Date.ToString("dd/MM/yyyy")</div>
+        <div class="timeline-item-content">@TimelineEvent.Content</div>
+    </div>
+        }
+</div>
+
+@code {
+    public class TimelineEvent
+    {
+        public DateTime Date { get; set; }
+        public string Content { get; set; }
+    }
+    private static List<Square> Squares { get; set; } = new List<Square>();
+
+    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+    public class Square
+    {
+        public Guid Id { get; set; }
+        public string Color { get; set; }
+        public int PositionX { get; set; }
+        public int PositionY { get; set; }
+
+        private string GetDebuggerDisplay()
+        {
+            return ToString();
+        }
+    }
+    protected List<TimelineEvent> TimelineEvents = new List<TimelineEvent>
+    {
+        new TimelineEvent { Date = new DateTime(2023, 1, 1), Content = "Event 1" },
+        new TimelineEvent { Date = new DateTime(2023, 2, 1), Content = "Event 2" },
+        new TimelineEvent { Date = new DateTime(2023, 3, 1), Content = "Event 3" },
+        // Add more events here
+    };
+
+    [JSInvokable]
+    public static async Task UpdateSquarePosition(string id, int posX, int posY)
+    {
+        // Check if id is null or empty
+        if (string.IsNullOrEmpty(id))
+        {
+            Console.WriteLine("ID is null or empty");
+            return;
+        }
+
+        // Check if id is in valid guid format
+        if (!Guid.TryParse(id, out var squareId))
+        {
+            Console.WriteLine("ID is not in valid GUID format");
+            return;
+        }
+
+        // Find square by id
+        var square = Squares.Find(s => s.Id == squareId);
+
+        if (square != null)
+        {
+            // Update square position
+            square.PositionX = posX;
+            square.PositionY = posY;
+
+            // Here you could also persist the square's new position to a database
+        }
+    }
+
+    [JSInvokable]
+     async Task AddSquare()
+    {
+        Squares.Add(new Square
+        {
+            Id = Guid.NewGuid(),
+            Color = "red", // Or pick a color from user input
+            PositionX = 0,
+            PositionY = 0
+
+        });
+        /*
+        JSRuntime.InvokeVoidAsync("EnableDragAndDrop"); // Call your JavaScript function here
+        */
+        await JSRuntime.InvokeVoidAsync("enableDragAndDrop");
+
+        StateHasChanged();
+
+    }
+}
+

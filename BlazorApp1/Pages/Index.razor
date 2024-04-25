@@ -1,0 +1,199 @@
+﻿@page "/"
+@inject IJSRuntime JS
+@using BlazorApp1.Pages.Components
+
+<Calendar2Component></Calendar2Component>
+
+
+<RightClickMenuComponent OnOptionSelected="HandleMenuOption"></RightClickMenuComponent>
+
+<RightClickMenuComponent />
+<Calendar4Component></Calendar4Component>
+<p>c3</p>
+
+
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+<p id="currentCount">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick='mouseEvent => HandleClick(mouseEvent, "Hello")'>Click me</button>
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+<HxAccordion>
+	<HxAccordionItem>
+		<HeaderTemplate>Accordition Item 1</HeaderTemplate>
+		<BodyTemplate>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel pharetra mi, ut ullamcorper nisl. Morbi efficitur metus eu mauris finibus suscipit ac vel nibh.
+			Suspendisse eu ipsum orci. Donec sit amet fringilla ante, at facilisis metus. Fusce leo elit, cursus sed rutrum vel, elementum eu justo.
+		</BodyTemplate>
+	</HxAccordionItem>
+	<HxAccordionItem>
+		<HeaderTemplate>Accordition Item 2</HeaderTemplate>
+		<BodyTemplate>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel pharetra mi, ut ullamcorper nisl. Morbi efficitur metus eu mauris finibus suscipit ac vel nibh.
+			Suspendisse eu ipsum orci. Donec sit amet fringilla ante, at facilisis metus. Fusce leo elit, cursus sed rutrum vel, elementum eu justo.
+		</BodyTemplate>
+	</HxAccordionItem>
+</HxAccordion>
+
+<p> //======[break]</p>
+
+<!-- Your Modal Form -->
+<FormModalComponent @ref="FormModalRef" TModel="Person" OnSubmit="SaveChanges">
+    <FormTemplate Context="person">
+        <div>
+            <label>First Name:</label>
+            <InputText @bind-Value="person.FirstName" />
+        </div>
+        <div>
+            <label>Last Name:</label>
+            <InputText @bind-Value="person.LastName" />
+        </div>
+    </FormTemplate>
+</FormModalComponent>
+
+<!-- Button to Show the Modal -->
+<button @onclick="ShowModal">Show Modal</button>
+
+<!-- List of People -->
+<ul>
+    @foreach (var person in people)
+    {
+        <li>@person.FirstName @person.LastName</li>
+    }
+</ul>
+
+<style>
+    .container {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+    .heading {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .button-style {
+        color: white;
+        background-color: #007bff;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    .list-style {
+        list-style-type: disc;
+        padding-left: 40px;
+    }
+
+        .list-style li {
+            color: #555;
+            font-size: 16px;
+        }
+
+    .modal {
+        display: block; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0); /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+    }
+</style>
+ 
+
+<div>@message</div>
+
+
+<GenericList TItem="string" Items="@stringList" />
+<GenericList TItem="int" Items="@intList" />
+
+@code {
+  private List<string> stringList = new List<string> { "Apple", "Banana", "Cherry" };
+  private List<int> intList = new List<int> { 1, 2, 3 };
+  private string message = "";
+  private async Task SelectOption(string option)
+  {
+    Console.WriteLine($"Option selected: {option}");
+    Console.WriteLine($"Menu option selected: {option}");
+    StateHasChanged();
+  }
+  private void HandleMenuOption(string option)
+  {
+    Console.WriteLine($"Menu option selected: {option}");
+    message = $"You selected: {option}";
+
+  }
+    private FormModalComponent<Person> FormModalRef;
+    private List<Person> people = new List<Person>();
+
+    // private FormModalComponent<Person> FormModalRef;
+
+
+    // private async Task SaveChanges(Person person)
+    // {
+    //     Console.WriteLine($"SaveChanges invoked for {person.FirstName} {person.LastName}");
+    //     people.Add(person);
+    //     StateHasChanged();  // To refresh the UI
+    // }
+
+    // private void ShowModal()
+    // {
+    //     Console.WriteLine("ShowModal clicked");
+    //     // Here, you'd usually have logic to open the modal, for simplicity let's assume it opens automatically.
+    // }
+
+    private async Task SaveChanges(Person person)
+    {
+        Console.WriteLine($"SaveChanges invoked for {person.FirstName} {person.LastName}");
+        people.Add(person);
+        StateHasChanged(); // To refresh the UI
+    }
+
+    private void ShowModal()
+    {
+        Console.WriteLine("ShowModal clicked");
+        FormModalRef.Show();  // This will now actually show the modal.
+    }
+
+
+    private string ButtonText = "Click me!";
+    private string ImageUrl = "https://example.com/my-image.jpg";
+    private string LinkUrl = "https://example.com";
+
+    private int currentCount = 0;
+
+    private async Task HandleClick(MouseEventArgs e, string msg)
+    {
+        if (e.CtrlKey) // Ctrl key pressed as well
+        {
+            await JS.InvokeVoidAsync("alert", msg);
+            currentCount += 5;
+        }
+        else
+        {
+            currentCount++;
+        }
+    }
+}

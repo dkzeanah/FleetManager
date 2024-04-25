@@ -1,0 +1,64 @@
+﻿<div class="input-group" style="border: 1px solid red;">
+
+    <input type="text"
+           class="form-control"
+           placeholder="Search for..."
+           @bind-value="@itemNameToSearch"
+           @oninput="OnSearch" />
+
+
+    <button type="button"
+            class="btn-success input-group-text"
+            @onclick="OnSearch">
+        Search
+    </button>
+</div> @* Two-way bind *@@*added style="border: 1px solid red;"*@
+
+
+<br />
+
+<SearchBar SearchTerm="@itemNameToSearch" OnSearchItem="OnItemSearch"></SearchBar>
+
+<ListComponent SearchTerm="@itemNameToSearch"></ListComponent>
+
+@*added SearchTerm="@inventoryNameToSearch"*@
+
+
+@* @inventoryNameToSearch *@
+@*one-way data binding (string-interpolation)*@
+
+@code {
+    private string itemNameToSearch = string.Empty;
+
+    [Parameter]
+    public string? SearchTerm { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnSearchItem { get; set; }
+
+    private async Task OnSearch()
+    {
+        await OnSearchItem.InvokeAsync(itemNameToSearch);
+    }
+
+    protected override void OnParametersSet()
+    {
+        itemNameToSearch = SearchTerm;
+    }
+    private async Task FilterItems()
+    {
+        await OnSearchItem.InvokeAsync(SearchTerm);
+    }
+    /*Then, in the main page, you would need to modify the SearchInventoryComponent to pass the searchTerm value to the OnSearchInventory event:
+    <SearchInventoryComponent SearchTerm="@searchTerm" OnSearchInventory="OnInventorySearch"></SearchInventoryComponent>
+    And remove the InventoryListComponent from the main page:
+    <InventoryListComponent SearchTerm="@searchTerm"></InventoryListComponent>
+    Finally, you need to update the OnInventorySearch method to set the searchTerm value:
+    private void OnInventorySearch(string searchTerm)
+        {
+        this.searchTerm = searchTerm;
+    }
+    With these changes, the InventoryListComponent should be updated with the search term entered in the SearchInventoryComponent.
+    */
+
+}

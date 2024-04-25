@@ -1,0 +1,48 @@
+﻿@page "/blanks"
+@inject IBlankService BlankService
+
+<h3>Blanks</h3>
+
+@if (blanks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @foreach (var blank in blanks)
+    {
+        <p>@blank.Name: @blank.String</p>
+    }
+}
+
+<h1>Havit</h1>
+<HxAccordion><p>Hello</p></HxAccordion>
+<Radzen.Blazor.RadzenColorPicker></Radzen.Blazor.RadzenColorPicker>
+
+<h3>Add a Blank</h3>
+<EditForm Model="@newBlank" OnValidSubmit="AddBlank">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="name" @bind-Value="newBlank.Name" placeholder="Name" />
+    <InputText id="string" @bind-Value="newBlank.String" placeholder="String" />
+
+    <button type="submit">Add Blank</button>
+</EditForm>
+
+@code {
+    private IEnumerable<Blank> blanks;
+    private Blank newBlank = new Blank();
+
+    protected override async Task OnInitializedAsync()
+    {
+        blanks = await BlankService.GetAllBlanks();
+    }
+
+    private async Task AddBlank()
+    {
+        await BlankService.AddBlank(newBlank);
+        newBlank = new Blank(); // Reset the form
+        blanks = await BlankService.GetAllBlanks(); // Refresh the list
+    }
+}

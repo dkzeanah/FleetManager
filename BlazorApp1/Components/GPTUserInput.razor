@@ -1,0 +1,19 @@
+﻿
+
+<input class="form-control mb-1 user-input" @onfocus="Focused" placeholder="@User.UserName" />
+@code {
+    [Parameter] public ApplicationUser User { get; set; }
+    [Parameter] public EventCallback OnFocusDay { get; set; }
+
+    private void Focused()
+    {
+        try
+        {
+            OnFocusDay.InvokeAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+    }
+}

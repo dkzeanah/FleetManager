@@ -1,0 +1,50 @@
+﻿
+
+@page "/your-page"
+@using Microsoft.AspNetCore.SignalR;
+
+@inject IJSRuntime JSRuntime
+@inject IHubContext<UpdateHub> HubContext
+
+
+
+<!-- HTML to display the update -->
+@if (showUpdate)
+{
+    <div class="update-alert">
+        An update has been posted!
+    </div>
+}
+@code {
+    private bool showUpdate = false;  // Flag to control the display of the update
+
+    private bool firstRender = true;
+    private IJSObjectReference _interopModule;
+    private async Task StartConnectionAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("startSignalRConnection");
+    }
+
+    private async Task SendMessage()
+    {
+        await HubContext.Clients.All.SendAsync("ReceiveMessage", "Your message here");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.firstRender = false;
+            _interopModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./interop2.js");
+            Console.WriteLine("Interop module imported");
+            await StartConnectionAsync();
+        }
+    }
+
+    
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("stopSignalR");
+    }
+}

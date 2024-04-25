@@ -1,0 +1,100 @@
+﻿
+
+
+
+<style>
+
+    .modal {
+/*border: 3px solid red;  Red/Orange border for modal */ 
+    }
+
+    .btn {
+        background-color: lightblue; /* Light blue background for buttons */
+        color: black; /* Black text for buttons */
+        font-weight: bold; /* Bold text for button title */
+    }
+
+        .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+    }
+.modal-dialog.small {
+        border: 3px solid #FF0F00; /* Red/Orange border for modal */
+
+    max-width: 300px;
+}
+
+.modal-dialog.medium {
+        border: 3px solid #FF0F00; /* Red/Orange border for modal */
+
+    max-width: 600px;
+}
+
+.modal-dialog.large {
+        border: 3px solid #FF0F00; /* Red/Orange border for modal */
+
+    max-width: 900px;
+}
+
+.modal-dialog.extra-large {
+        border: 3px solid #FF0F00; /* Red/Orange border for modal */
+
+    max-width: 1200px;
+}
+</style>
+
+
+<ModalHeaderComponent CloseButtonClicked="OnModalClosed"></ModalHeaderComponent>
+
+<div class="modal @(IsOpen ? "show d-block" : "")" tabindex="-1" role="dialog" style="display: @(IsOpen ? "block" : "none")">
+    <div class="modal-dialog @(ModalSize)" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="OnModalClosed">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @ChildContent
+            </div>
+            <div class="modal-footer">
+                @Footer
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ModalComponent modal;
+
+    private void OnModalClosed()
+    {
+        // Handle closing logic here, like setting IsOpen to false.
+        CloseButtonClicked.InvokeAsync(null);
+    }
+    [Parameter]
+    public string ModalSize { get; set; } = "";
+    [Parameter]
+    public EventCallback CloseButtonClicked { get; set; }
+
+    [Parameter]
+    public bool IsOpen { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment Footer { get; set; }
+
+    private void Close()
+    {
+        IsOpen = false;
+    }
+}
+
+

@@ -1,0 +1,33 @@
+﻿@page "/test"
+
+
+@inject ICarService CarService
+@inject IUserCarEventService EventService
+
+
+<h3>Car Details</h3>
+
+@if (car == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <p><strong>Car Id:</strong> @car.Id</p>
+        <p><strong>Car Make:</strong> @car.Make</p>
+        <p><strong>Car Model:</strong> @car.Model</p>
+        <p><strong>Car Year:</strong> @car.Year</p>
+        <!-- Add more fields as needed -->
+    </div>
+}
+
+@code {
+    private Car? car;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var Id = 1; // Get this from somewhere, like a parameter
+        car = await CarService.GetById(Id);
+    }
+}

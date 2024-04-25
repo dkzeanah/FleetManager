@@ -1,0 +1,115 @@
+﻿<!-- Module Update Modal HTML -->
+
+ <div class="modal" style="display: @(IsVisible ? "block" : "none")">
+        <div class="modal-content">
+            <h2>Update Module</h2>
+            <!-- ...existing fields... -->
+            <button @onclick="CloseModal">Close</button>
+        </div>
+    </div>
+
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1;
+    }
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #282c34; /* Deep space color */
+        padding: 20px;
+        border-radius: 8px;
+        color: #ffffff; /* Text color */
+    }
+    .form-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px; /* Provides a consistent gap between items */
+    }
+    .modal {
+        display: block;
+        /* ... Other CSS ... */
+    }
+
+</style>
+
+
+    <div class="form-container">
+
+<div class="modal">
+    <div class="modal-content">
+        <h2>Update Module</h2>
+        <!-- ... Your existing code ... -->
+    </div>
+</div>
+
+<div class="modal">
+    <div class="modal-content">
+        <h2>Update Module</h2>
+        <input @bind="ModuleToUpdate.Name" placeholder="Module Name" />
+        <input @bind="ModuleToUpdate.CurrentSoftwareVersion" type="number" step="0.01" placeholder="Current Software Version" />
+        <!-- Add other fields here -->
+        <button @onclick="UpdateModule">Update</button>
+    </div>
+</div>
+
+<button @onclick="CloseModal">Close</button>
+</div>
+<p> ===================================================================== </p>
+
+
+
+@code {
+    [Parameter] public Module ModuleToUpdate { get; set; }
+    [Parameter] public EventCallback OnUpdate { get; set; }
+    protected override void OnParametersSet()
+    {
+        if (ModuleToUpdate == null)
+        {
+            Console.WriteLine("ModuleToUpdate is null");
+        }
+    }
+    private async Task UpdateModule()
+    {
+        try
+        {
+            // Call your method to update the module in the database
+            // For example: await YourService.UpdateModuleAsync(ModuleToUpdate);
+            Console.WriteLine("Entering UpdateModule in ModuleUpdateModalComponent");
+
+            // Notify the parent component that the module has been updated
+            await OnUpdate.InvokeAsync(null);
+        }
+        catch (NullReferenceException ex)
+        {
+            Console.WriteLine($"An exception occurred: {ex.Message}");
+        }
+    }
+    
+
+    
+
+        [Parameter]
+        public bool IsVisible { get; set; }
+        [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+
+        private async Task CloseModal()
+        {
+            IsVisible = false;
+            await IsVisibleChanged.InvokeAsync(IsVisible);
+        }
+    }
+
+   
+
+

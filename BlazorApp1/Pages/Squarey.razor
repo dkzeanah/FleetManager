@@ -1,0 +1,60 @@
+﻿@page "/squarey"
+@inject IJSRuntime JS
+
+<button @onclick="CreateSquare">Create Square</button>
+
+@code {
+    private bool firstRender = true;
+    private IJSObjectReference _interopModule;
+    private IJSObjectReference _chart;
+    private int _squareCount = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.firstRender = false;
+            _interopModule = await JS.InvokeAsync<IJSObjectReference>("import", "./interop.js");
+            Console.WriteLine("Interop module imported");  
+
+            // Initialize your chart here if needed
+            // _chart = await _interopModule.InvokeAsync<IJSObjectReference>("createChart", element, initialData);
+        }
+    }
+
+    // private async Task CreateSquare()
+    // {
+    //     string squareId = $"square{_squareCount++}";
+    //     var squareReference = await _interopModule.InvokeAsync<IJSObjectReference>("createSquare", squareId);
+
+    //     // Change color after 2 seconds
+    //     await Task.Delay(2000);
+    //     await _interopModule.InvokeVoidAsync("changeColor", squareId, "red");
+    // } first working vers
+
+    private async Task CreateSquare()
+    {
+        string squareId = $"square{_squareCount++}";
+        var squareReference = await _interopModule.InvokeAsync<IJSObjectReference>("createSquare", squareId);
+        Console.WriteLine($"Created square with ID: {squareId}");  // Debugging
+
+        await _interopModule.InvokeVoidAsync("addButtonsToSquare", squareId);
+        Console.WriteLine("Added buttons to square");  
+
+        await Task.Delay(2000);
+        await _interopModule.InvokeVoidAsync("changeColor", squareId, "red");
+        Console.WriteLine("Changed square color");  
+    }
+
+    private async Task UpdateChartData(List<int> newData)
+    {
+        await _chart.InvokeVoidAsync("updateData", newData);
+    }
+
+    private async Task ApplyChartTransformation(string transformation)
+    {
+        await _chart.InvokeVoidAsync("applyTransformation", transformation);
+    }
+}
+
+

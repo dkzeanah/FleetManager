@@ -1,0 +1,221 @@
+﻿@page "/dashboard3"
+@using BlazorApp1.Interfaces;
+
+@inject ICarService CarService
+@inject IUserService UserService
+@inject IEventService EventService
+@inject IEventTypeService EventTypeService
+@inject IUserEventDetailService UserEventDetailService
+
+
+@*@if (currentCar == null)
+{
+    <p><em>You currently have no car booked.</em></p>
+}
+else
+{
+    if (userEvents != null)
+    {
+        @foreach (var userEvent in userEvents)
+        {
+            var eventType = eventTypes?.FirstOrDefault(et => et.EventTypeId == userEvent.EventTypeId);
+            var userEventDetail = userEventDetails?.FirstOrDefault(ued => ued.EventId == userEvent.EventId);
+
+            if (eventType != null)
+            {
+                <p class="card-text">@eventType?.EventTypeName: @userEvent.StartTime - @userEvent.EndTime</p>
+                if (userEventDetail != null)
+                {
+                    <EventVisualizerComponent Event="@userEvent" UserEventDetail="@userEventDetail" />
+                }
+                else
+                {
+                    var newDetail = new UserEventDetail { EventId = userEvent.EventId, UserId = userEvent.UserId };
+                    <p>No details available for this event.</p>
+                    <p>Enter details:</p>
+                        <EditForm Model="@newDetail" OnValidSubmit="@(() => HandleValidSubmit(newDetail))">
+                        <InputText id="notes" @bind-Value="newDetail.Notes" placeholder="Enter notes..." />
+                        <InputNumber id="milesDriven" @bind-Value="newDetail.MilesDriven" placeholder="Enter miles driven..." />
+                        <button type="submit">Submit</button>
+                    </EditForm>
+                }
+            }
+        }
+    }*@
+@if (currentCar == null)
+{
+    <p><em>You currently have no car booked.</em></p>
+}
+else
+{
+
+    <p>You currently have the following car booked: @currentCar.ToString()</p>
+    <p>You currently have the following car booked: @currentCar.Model</p>
+}
+
+<select @bind="selectedCarId">
+    @foreach (var car in cars)
+    {
+        <option value="@car.CarId">@car.ToString();</option>
+    }
+</select>
+
+<h2>Add Event</h2>
+<div class="card">
+    <div class="card-header">My Events</div>
+
+    <div class="card-body">
+        @if (userEvents == null)
+        {
+            <p class="card-text"><em>Loading...</em></p>
+        }
+        else
+        {
+            @foreach (var userEvent in userEvents)
+            {
+                var eventType = eventTypes.FirstOrDefault(et => et.Id == userEvent.Id);
+                <p class="card-text">@eventType?.Name: @userEvent.StartTime - @userEvent.EndTime</p>
+                <EventVisualizer Event="@userEvent" AddEventToTimeline="AddToTimeline" />
+            }
+        }
+    </div>
+</div>
+<div class="event-visualizer" style="border: 1px solid #000; margin: 10px;">
+    <div class="event-bar" style="width: @BarWidth; background-color: #007bff; height: 30px;"></div>
+    <p>@Event?.StartTime.Value.ToString("g") - @Event?.EndTime.Value.ToString("g")</p>
+    <button @onclick="() => AddEventToTimeline.InvokeAsync(Event)">Add to timeline</button>
+</div>
+
+<h3>Component</h3>
+@foreach (var userEvent in userEvents)
+{
+    var eventType = eventTypes.FirstOrDefault(et => et.Id == userEvent.Id);
+    <p class="card-text">@eventType?.Name: @userEvent.StartTime - @userEvent.EndTime</p>
+    <EventVisualizerComponent Event="@userEvent" AddEventToTimeline="AddToTimeline" />
+}
+<h3>CloseComponent</h3>
+
+
+@foreach (var userEvent in userEvents)
+{
+    <EventVisualizerComponent Event="@userEvent" AddEventToTimeline="AddToTimeline" />
+}
+
+<style>
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .card-header {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        margin-bottom: 10px;
+    }
+
+    .event-visualizer {
+        border: 1px solid #000;
+        margin: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+</style>
+
+
+
+@code {
+
+    private async Task HandleValidSubmit(UserEventDetail detail)
+    {
+        await UserEventDetailService.AddUserEventDetailAsync(detail); // Assuming you have UserEventDetailService injected
+        // Update userEventDetails to reflect the new detail
+        userEventDetails = (await UserEventDetailService.GetUserEventDetailsByUserIdAsync(detail.UserId)).ToList();
+    }
+
+    [Parameter]
+    public Event Event { get; set; }
+    [Parameter]
+    public EventCallback<Event> AddEventToTimeline { get; set; }
+    
+
+    private List<EventType> eventTypes = new List<EventType>();
+    private List<Event> userEvents = new List<Event>();
+    private List<UserEventDetail> userEventDetails;
+    public List<Event> TimelineEvents { get; set; } = new List<Event>();
+
+    private List<Car> cars = new List<Car>();
+    
+    private Car currentCar;
+    private int selectedCarId;
+    private Event newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+    private async Task UpdateUserEventDetail(MouseEventArgs e, UserEventDetail userEventDetail)
+    {
+        await UserEventDetailService.UpdateUserEventDetailAsync(userEventDetail);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        string? currentUserId = await UserService.GetCurrentUserIdAsync();
+
+        var currentCarId = await CarService.GetCurrentCarIdForUserIdAsync(currentUserId);
+        currentCar = await CarService.GetCarByIdAsync(currentCarId); // Get the current Car object
+        userEvents = userEvents ?? new List<Event>();
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+        eventTypes = (await EventTypeService.GetEventTypesAsync()).ToList(); // Assuming you have this method in your service
+        currentUserId = await UserService.GetCurrentUserIdAsync();
+        userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId); //(currentUserId); // Assuming you have this method in your service
+
+        userEventDetails = (await UserEventDetailService.GetUserEventDetailsByUserIdAsync(currentUserId)).ToList();
+
+    }
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            if (!newEvent.StartTime.HasValue || newEvent.StartTime.Value.Year < 1753
+                || !newEvent.EndTime.HasValue || newEvent.EndTime.Value.Year < 1753)
+            {
+                return;
+            }
+            newEvent.CarId = selectedCarId;
+            newEvent.UserId = await UserService.GetCurrentUserIdAsync();
+            var currentUserId = newEvent.UserId;  // Save the user ID
+            newEvent = await EventService.AddEventAsync(newEvent);
+            //UserEventDetail newUserEventDetail = new UserEventDetail
+            //{
+            //    EventId = newEvent.EventId,
+            //    UserId = newEvent.UserId,
+            //};
+            //await UserEventDetailService.AddUserEventDetailAsync(userEventDetail); // Assuming you have UserEventDetailService injected
+            newEvent = new Event { StartTime = DateTime.Now, EndTime = DateTime.Now };
+            userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message); // Replace this with a proper logging solution
+        }
+        StateHasChanged();
+    }
+    private string BarWidth
+    {
+        get
+        {
+            TimeSpan? duration = Event?.EndTime - Event?.StartTime;
+            return duration.HasValue ? $"{duration.Value.TotalHours * 10}px" : "0px";
+        }
+    }
+    private void AddToTimeline(Event e)
+    {
+        TimelineEvents.Add(e);
+    }
+}  

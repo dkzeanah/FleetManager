@@ -1,0 +1,43 @@
+﻿@page "/"
+@namespace BlazorApp1.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_Layout";
+}
+
+@*
+1. Lazy Loading Assemblies
+One of the least used but very effective techniques in Blazor Server is lazy-loading of assemblies. 
+This allows you to load the required assemblies on-demand, thus improving the startup time.
+*@
+<component type="typeof(App)" render-mode="ServerPrerendered" />
+
+@* <component type="typeof(App)" render-mode="ServerPrerendered" lazyAssembly="true" />
+ *@
+
+<script>
+    function showModal() {
+        document.getElementById("userNotFoundModal").style.display = "block";
+    }
+
+    function hideModal() {
+        document.getElementById("userNotFoundModal").style.display = "none";
+    }
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+@* <script src="~/custom.js"></script>
+
+<!-- Quill library -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<script src="BlazorQuill.js"></script> *@
+
+@*In this JavaScript code, the showModal function is called from the Blazor component to display the modal by setting its display style property to "block". The hideModal function is called when the user clicks the close button to hide the modal by setting its display style property to "none".
+With these changes, when the user variable is null in your Razor file, the UserNotFoundPopup component will be rendered, and the JavaScript code will show the modal to display the user not found message.
+*@
+
+
+
+
+
+

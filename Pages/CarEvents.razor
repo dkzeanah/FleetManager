@@ -1,0 +1,110 @@
+﻿@page "/Carevents"
+@inject IEventService eventService
+
+@inject ICarService CarService
+@inject IUserService UserService
+@inject IEventService EventService
+@inject IEventTypeService EventTypeService
+@inject IUserEventDetailService UserEventDetailService
+
+
+
+<Parameter Name="CarId" Type="int"/>
+@if (events == null || !events.Any())
+{
+    <p>Loading...</p>
+}
+else
+{
+    @foreach (var e in events)
+    {
+        <div>
+            <h3>@e.SimpleEventType?.Name</h3>
+            <p>Start time: @e.StartTime</p>
+            <p>End time: @e.EndTime</p>
+            <p>User: @e.User?.FriendlyName</p>
+            <button @onclick="() => NavigateToEventDetail(e.Id)">View Details</button>
+        </div>
+    }
+}
+
+
+@code {
+    private List<EventType> eventTypes = new List<EventType>();
+
+    //private Event[] events;
+    private List<Event> events;
+
+    private Car currentCar;
+    private List<Event> userEvents = new List<Event>();
+    private List<Car> cars = new List<Car>();
+    private List<UserEventDetail> userEventDetails;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        string? currentUserId = await UserService.GetCurrentUserIdAsync();
+
+        var currentCarId = await CarService.GetCurrentCarIdForUserIdAsync(currentUserId);
+        currentCar = await CarService.GetCarByIdAsync(currentCarId); // Get the current Car object
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+
+        eventTypes = (await EventTypeService.GetEventTypesAsync()).ToList();
+
+        userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId);
+
+        userEventDetails = (await UserEventDetailService.GetUserEventDetailsByUserIdAsync(currentUserId)).ToList();
+
+        //userEvents = await (EventService.GetAllEventsByUserIdAsync(currentUserId)).ToString();
+    }
+
+   /* {
+        string? currentUserId = await UserService.GetCurrentUserIdAsync();
+
+        var currentCarId = await CarService.GetCurrentCarIdForUserAsync(currentUserId);
+        currentCar = await CarService.GetCarByIdAsync(currentCarId); // Get the current Car object
+        userEvents = userEvents ?? new List<Event>();
+        cars = await CarService.GetAllCarsWithDetailsAsync();
+        eventTypes = (await EventTypeService.GetEventTypesAsync()).ToList(); // Assuming you have this method in your service
+        //currentUserId = await UserService.GetCurrentUserIdAsync();
+        userEvents = await EventService.GetAllEventsByUserIdAsync(currentUserId); //(currentUserId); // Assuming you have this method in your service
+
+        userEventDetails = (await UserEventDetailService.GetUserEventDetailsByUserIdAsync(currentUserId)).ToList();
+
+        events = await EventService.GetAllEventsByUserIdAsync(currentUserId);
+    } */
+
+    
+
+    void NavigateToEventDetail(int eventId)
+    {
+        //NavigationManager.NavigateTo($"/event/{eventId}");
+    }
+
+/*
+<Parameter Name="CarId" Type="int"/>
+
+@foreach (var e in events)
+{
+    <div>
+        <h3>@e.EventType?.EventTypeName</h3>
+        <p>Start time: @e.StartTime</p>
+        <p>End time: @e.EndTime</p>
+        <p>User: @e.User?.FriendlyName</p>
+        <button @onclick="() => NavigateToEventDetail(e.EventId)">View Details</button>
+    </div>
+}
+
+@code {
+    private Event[] events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        events = await eventService.Get(CarId);
+    }
+
+    void NavigateToEventDetail(int eventId)
+    {
+        NavigationManager.NavigateTo($"/event/{eventId}");
+    } */
+}

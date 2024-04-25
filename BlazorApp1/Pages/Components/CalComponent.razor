@@ -1,0 +1,49 @@
+﻿@code {
+    [Parameter] public int Days { get; set; }
+    [Parameter] public List<ApplicationUser> Users { get; set; }
+    [Parameter] public Func<string, DateTime, List<TaskModel>> GetTasks { get; set; }
+    [Parameter] public Action<int, ApplicationUser> OnDayClick { get; set; }
+
+    // Your existing cod
+    private DateTime CurrentDate = DateTime.Now;
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+    private int selectedDay;
+    private bool isDayTasksModalOpen = false;
+
+    // Injected services would be defined here
+
+    // Life-cycle methods for initialization can be added here
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     // Fetch users, etc.
+    // }
+
+    // private List<TaskModel> GetTasksForUserAndDay(string userId, DateTime date)
+    // {
+    //     // Implementation for fetching tasks for a user for a given day
+    //     return new List<TaskModel>();
+    // }
+
+    // private void OpenDayTasksForUser(int day, ApplicationUser user)
+    // {
+    //     selectedDay = day;
+    //     isDayTasksModalOpen = true;
+    // }
+
+    // private void CloseDayTasks()
+    // {
+    //     isDayTasksModalOpen = false;
+    // }
+
+    // private void MoveToNextMonth()
+    // {
+    //     CurrentDate = CurrentDate.AddMonths(1);
+    // }
+
+    // private void MoveToPreviousMonth()
+    // {
+    //     CurrentDate = CurrentDate.AddMonths(-1);
+    // }
+
+    // Any other utility methods or event handlers would be added here
+}

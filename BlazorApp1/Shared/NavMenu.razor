@@ -1,0 +1,300 @@
+﻿@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href=""></a>
+        
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="masterdashboard">
+                <span class="oi oi-plus" aria-hidden="true"></span> Master Dashboard
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="dashboard">
+                <span class="oi oi-plus" aria-hidden="true"></span> User Dashboard
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Reports">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Reporting
+            </NavLink>
+        </div> 
+
+                <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Tasks">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Tasks
+            </NavLink>
+        </div> 
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="cars">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Cars
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="ContactIndex">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> To Impliment
+            </NavLink>
+        </div> 
+
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Timeline">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Timeline
+            </NavLink>
+        </div> 
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Calendar">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Calendar Entry
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Calendarmain">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Cal Entry and Viewer
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Calendarmaintwo">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Cal Entry +View 365
+            </NavLink>
+        </div> 
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Calendarmaintwoview">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Calendar Viewer
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Calendar">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Calendar
+            </NavLink>
+        </div> 
+
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="toastrwrapper">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Toastr Wrapper
+
+            </NavLink>
+        </div> 
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="your-page">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> your-page
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="virtualdemo2">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> virtualdemo2
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="virtualdemo">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> virtualdemo
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="time-value-demo">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> time-value-demo
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="payments">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> payments
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="loan-calculator">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> loan-calculator
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="json-upload">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> json-upload
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="job-management">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> job-management
+
+            </NavLink>
+        </div>
+    <div class="nav-item px-3">
+      <NavLink class="nav-link" href="image-to-ascii-demo">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> image-to-ascii-demo
+
+      </NavLink>
+    </div>
+    <div class="nav-item px-3">
+      <NavLink class="nav-link" href="image-to-ascii">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> image-to-ascii
+
+      </NavLink>
+    </div>
+    <div class="nav-item px-3">
+      <NavLink class="nav-link" href="grandexchange">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> grandexchange
+
+      </NavLink>
+    </div>
+    <div class="nav-item px-3">
+            <NavLink class="nav-link" href="fuzzy-matcher">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> fuzzy-matcher
+
+            </NavLink>
+        </div>
+    <div class="nav-item px-3">
+      <NavLink class="nav-link" href="efficiency-calculator">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> efficiency-calculator
+
+      </NavLink>
+    </div>
+    <div class="nav-item px-3">
+            <NavLink class="nav-link" href="toolcalculatordynamic">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> toolcalculatordynamic
+
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="dynamic-job-creator">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> dynamic-job-creator
+
+            </NavLink>
+        </div>
+
+    <div class="nav-item px-3">
+      <NavLink class="nav-link" href="dynamic-calculator">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> dynamic-calculator
+
+      </NavLink>
+    </div>
+    <div class="nav-item px-3">
+
+    <NavLink class="nav-link" href="consume">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> consume
+
+      </NavLink>
+    </div>
+    <div class="nav-item px-3">
+      <NavLink class="nav-link" href="carmanagement">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> carmanagement
+      </NavLink>
+      </div>
+
+
+    <div class="nav-item px-3">
+      <NavLink class="nav-link" href="orderdelivery">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> orderdelivery
+
+       </NavLink>
+    </div>
+
+     <div class="nav-item px-3">
+        <NavLink class="nav-link" href="op">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> op
+        </NavLink>
+    </div>
+
+    <div class="nav-item px-3">
+
+        <NavLink class="nav-link" href="toolcalculator">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> toolcalculator
+
+        </NavLink>
+    </div>
+
+     <div class="nav-item px-3">
+
+        <NavLink class="nav-link" href="blanks">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> blanks
+        </NavLink>
+     </div>
+
+     <div class="nav-item px-3">
+
+        <NavLink class="nav-link" href="blankpage">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> blankpage
+
+        </NavLink>
+    </div>
+
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="timeline">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> timeline
+        </NavLink>
+    </div>
+
+    <div class="nav-item px-3">
+
+        <NavLink class="nav-link" href="timeline">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> timeline
+        </NavLink>
+    </div>
+
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="timeline">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> timeline
+         </NavLink>
+    </div>
+
+        @* end *@
+    </nav>
+</div>
+
+@code {
+    private CancellationTokenSource cts = new CancellationTokenSource();
+    private ApplicationUser? CurrentUser { get; set; }
+
+    private bool collapseNavMenu = true;
+    private string UserRole { get; set; } = "QRD";
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    //  protected override async Task OnInitializedAsync()
+    // {
+    //     CurrentUser = await UserManager.GetUserAsync((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User);
+    //     if (CurrentUser != null)
+    //     {
+    //         var roles = await UserManager.GetRolesAsync(CurrentUser);
+    //         if (roles.Count > 0)
+    //         {
+    //             UserRole = roles[0];
+    //         }
+    //     }
+    //     else
+    //     {
+    //         UserRole = "Contact"; // Provide a default role name here
+    //     }
+    //     //await SomeOperation(cts.Token);
+
+    // }
+    public void Dispose()
+    {
+        cts.Cancel();
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    } 
+}

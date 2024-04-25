@@ -1,0 +1,77 @@
+﻿@page "/Issueinput"
+@*@inject IIssueService IssueService
+*@
+<h3>Submit Issue</h3>
+
+<div>
+    <textarea rows="20" @bind="issueData"></textarea>
+</div>
+
+<div>
+    <button @onclick="SubmitIssue">Submit</button>
+</div>
+
+@code {
+    private string issueData;
+
+    private async Task SubmitIssue()
+    {
+        var lines = issueData.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var line in lines)
+        {
+            var issue = ParseIssue(line);
+            if (issue != null)
+            {
+               // await IssueService.CreateIssue(issue);
+            }
+        }
+
+        // Clear the textarea after submitting the issues
+        issueData = string.Empty;
+    }
+
+    private Issue ParseIssue(string line)
+    {
+        // Parse the line and extract the necessary data
+        // Implement your parsing logic based on the format of the input line
+        // Create an Issue object with the extracted data
+
+        // Example parsing logic
+        var parts = line.Split('\t');
+        if (parts.Length >= 11)
+        {
+            if (int.TryParse(parts[0].TrimStart('[').TrimEnd(']'), out int issueId))
+            {
+                var summary = parts[1].Trim();
+                var status = parts[2].Trim();
+                var priority = parts[3].Trim();
+                var assignedTo = parts[4].Trim();
+                var system = parts[5].Trim();
+                var modifiedBy = parts[6].Trim();
+                var modifiedAt = parts[7].Trim();
+                var modifiedByUser = parts[8].Trim();
+                var submittedBy = parts[9].Trim();
+                var submittedAt = parts[10].Trim();
+
+                return new Issue
+                    {
+                        IssueId = issueId,
+                        Summary = summary,
+                        Status = status,
+                        Priority = priority,
+                        AssignedTo = assignedTo,
+                        System = system,
+                        ModifiedBy = modifiedBy,
+                        ModifiedAt = modifiedAt,
+                        ModifiedByUser = modifiedByUser,
+                        SubmittedBy = submittedBy,
+                        SubmittedAt = submittedAt
+                    };
+            }
+        }
+
+        return null;
+    }
+
+}

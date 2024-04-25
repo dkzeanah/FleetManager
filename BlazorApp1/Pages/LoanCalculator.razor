@@ -1,0 +1,39 @@
+﻿@page "/loan-calculator"
+
+@using BlazorApp1.CarModels 
+<h3>Loan Calculator</h3>
+
+<EditForm Model="@loan" OnValidSubmit="CalculateLoan">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Principal Amount:</label>
+        <InputNumber @bind-Value="loan.PrincipalAmount" />
+    </div>
+    <div>
+        <label>Annual Interest Rate (%):</label>
+        <InputNumber @bind-Value="loan.AnnualInterestRate" />
+    </div>
+    <div>
+        <label>Loan Term (Years):</label>
+        <InputNumber @bind-Value="loan.LoanTermYears" />
+    </div>
+
+    <button type="submit">Calculate</button>
+</EditForm>
+
+@if (monthlyPayment.HasValue)
+{
+    <p>Monthly Payment: @monthlyPayment.Value.ToString("C")</p>
+}
+
+@code {
+    private Loan loan = new Loan();
+    private decimal? monthlyPayment;
+
+    private void CalculateLoan()
+    {
+        monthlyPayment = loan.CalculateMonthlyPayment();
+    }
+}

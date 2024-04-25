@@ -1,0 +1,54 @@
+﻿@code {
+    // Parameters for the GPanel component
+    [Parameter] public string HeaderText { get; set; } // The text to display in the panel's header
+    [Parameter] public bool IsCollapsible { get; set; } // Whether the panel can be collapsed
+    [Parameter] public bool IsInitiallyCollapsed { get; set; } // Whether the panel is initially collapsed
+    [Parameter] public RenderFragment ChildContent { get; set; } // The child content of the panel
+
+    // Field to track whether the panel is collapsed
+    private bool isCollapsed;
+
+    // Method to run when the component is initialized
+    protected override void OnInitialized()
+    {
+        // Set the initial collapsed state of the panel
+        isCollapsed = IsInitiallyCollapsed;
+    }
+
+    // Method to toggle the collapsed state of the panel
+    private void ToggleCollapse()
+    {
+        // Only toggle the collapsed state if the panel is collapsible
+        if (IsCollapsible)
+        {
+            isCollapsed = !isCollapsed;
+        }
+    }
+}
+
+<div class="gpanel">
+    <!-- The panel's header, which toggles the collapsed state when clicked -->
+    <div class="gpanel-header" @onclick="ToggleCollapse">@HeaderText</div>
+    <!-- The panel's content, which is shown or hidden based on the collapsed state -->
+    <div class="gpanel-content" style="display: @(isCollapsed ? "none" : "block")">
+        @ChildContent
+    </div>
+</div>
+@*
+     The custom component has four parameters: HeaderText, IsCollapsible, IsInitiallyCollapsed, and ChildContent. 
+      HeaderText, IsCollapsible, and IsInitiallyCollapsed are similar to the HxPanel parameters. 
+      ChildContent is a special parameter of type RenderFragment that represents the child content of the component.
+
+    The @code block defines a field isCollapsed that tracks whether the panel is collapsed,
+     and a method ToggleCollapse that toggles the collapsed state of the panel when the header is clicked.
+
+    The markup for the component is a div element with two child div elements for the header and the content. 
+     The @onclick directive on the header div attaches the ToggleCollapse method as a click event handler. 
+     The style attribute on the content div sets the display style based on the isCollapsed field, 
+     effectively showing or hiding the content when the panel is collapsed or expanded.
+    
+     }
+     *@
+
+
+

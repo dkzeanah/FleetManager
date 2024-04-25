@@ -1,0 +1,23 @@
+﻿@page "/filereceiver"
+@inject IJSRuntime JS
+
+<h3>File Receiver</h3>
+
+<div>
+    <InputFile OnChange="HandleFileChange" />
+</div>
+
+<p>@fileContent</p>
+
+@code {
+    private string fileContent;
+
+    private async Task HandleFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        using (var streamReader = new StreamReader(file.OpenReadStream()))
+        {
+            fileContent = await streamReader.ReadToEndAsync();
+        }
+    }
+}

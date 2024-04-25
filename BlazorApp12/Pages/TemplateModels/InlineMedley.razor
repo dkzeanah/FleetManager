@@ -1,0 +1,28 @@
+﻿@page "/mycomponent"
+@inject IJSRuntime jsRuntime
+
+<style>
+    /* CSS here */
+</style>
+
+<div>
+    <!-- HTML here -->
+
+</div>
+
+@code {
+    // C# here
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("myJsFunction");
+        }
+    }
+}
+
+@*<script>
+    window.myJsFunction = function() {
+        // JavaScript here
+    };
+</script>*@

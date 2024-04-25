@@ -1,0 +1,215 @@
+﻿@using BlazorApp1.CarModels
+@using BlazorApp1.Services
+@inject ILoggerService LoggerService
+
+
+@* 
+    @using BlazorApp1.Data
+@using BlazorApp1.Interfaces
+@using BlazorApp1.Services
+
+@inject ICarService CarService
+
+@inject ILoggerService LoggerService
+@inject ILoggerService LoggerService
+
+<div class="form-group">
+    <label>Loggers</label>
+    @if (ExistingLoggers != null)
+    {
+        <ul>
+            @foreach (var logger in ExistingLoggers)
+            {
+                <li>
+                  @*   @logger.Name (@logger.)
+                    <br />Description: @logger
+                    <br />Current Software Version: @logger.CurrentSoftwareVersion
+                    <br />Next Software Version: @logger.NextSoftwareVersion
+                    <br />Last Updated: @logger.LastUpdated
+                    <br />Projected Release: @logger.ProjectedRelease 
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No loggers available.</p>
+    }
+</div>
+
+<!-- Add New Logger -->
+<div class="form-group">
+    <label>Add New Logger</label>
+@*     <input class="form-control" @bind="@NewLogger.Id" placeholder="Logger Name" />
+ 
+ <input class="form-control" @bind="@NewLogger.Logger" placeholder="Description" />
+    <input class="form-control" @bind="@NewLogger.CurrentSoftwareVersion" placeholder="Current Software Version" />
+    <input class="form-control" @bind="@NewLogger.NextSoftwareVersion" placeholder="Next Software Version" />
+    <input type="date" class="form-control" @bind="@NewLogger.LastUpdated" placeholder="Last Updated" />
+    <input type="date" class="form-control" @bind="@NewLogger.ProjectedRelease" placeholder="Projected Release" />
+    <button class="btn btn-primary" @onclick="() => OnAddLogger.InvokeAsync(NewLogger.LoggerId)">Add</button>
+</div>
+
+*@
+
+
+
+@*
+@if (Logger == null)
+{
+    <p>Loading...</p>
+}
+else
+{ 
+*@
+
+<button class="btn btn-primary" @onclick="ShowAddLoggerModal">Add Logger</button>
+
+<ModalComponent IsOpen="@showModal" ModalSize="medium" Title="Add New Logger" CloseButtonClicked="HideAddLoggerModal">
+    <ChildContent>
+
+        <EditForm Model="@newLogger" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            @* Logger ID - Display only, not editable *@
+            <div class="form-group">
+                <label for="loggerId">Logger ID:</label>
+                <input class="form-control" id="loggerId" @bind="@newLogger.Id" disabled />
+            </div>
+
+            @* Logger Type - Dropdown based on enum *@
+            <div class="form-group">
+                <label for="loggerType">Logger Type:</label>
+                <select @bind="@newLogger.TypeLogger" class="form-control" id="loggerType">
+                    @foreach (var type in Enum.GetValues<Logger.LoggerType>())
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </select>
+            </div>
+
+            @* Other properties of Logger entity (e.g., TruckId, CarId) *@
+            <div class="form-group">
+                <label for="truckId">Truck ID:</label>
+                <input type="number" class="form-control" id="truckId" @bind="@newLogger.TruckId" />
+            </div>
+
+            <div class="form-group">
+                <label for="carId">Car ID:</label>
+                <input type="number" class="form-control" id="carId" @bind="@newLogger.CarId" />
+            </div>
+
+            @* Additional properties here as needed *@
+
+            @* Submit button *@
+            <button type="submit" class="btn btn-primary">Save Logger</button>
+        </EditForm>
+
+    </ChildContent>
+</ModalComponent>
+
+
+@code {
+    // [Parameter]
+    // public Logger newLogger { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        // Logic to handle submission of the form
+        // This may involve calling a service to save or update the Logger entity
+        Console.WriteLine("Save Logger button clicked in last modal."); // Log a message
+
+        try
+        {
+            //newLogger.LastUpdated = DateTime.Now;
+            //newLogger.ProjectedRelease = newLogger.LastUpdated.Value.AddDays(7);
+
+            await LoggerService.AddLoggerAsync(newLogger);
+
+            // *** Notify the parent component of new logger added ***
+            await OnAddLogger.InvokeAsync();
+
+
+            // Reset the form and hide the modal
+            newLogger = new BlazorApp1.CarModels.Logger();
+            isLoggerSuccess = true;
+            HideAddLoggerModal();
+
+            // Log a success message
+            Console.WriteLine("Logger added successfully!");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error adding logger: {ex.Message}");
+            isLoggerSuccess = false; // Set flag to false in case of error
+        }
+
+        // await LoggerService.AddLoggerAsync(newLogger);
+
+        // Optionally, add logic to redirect or update UI after successful submission
+    }
+    [Parameter]
+    public List<BlazorApp1.CarModels.Logger> ExistingLoggers { get; set; }
+
+    [Parameter]
+    public EventCallback<Logger> OnAddLogger { get; set; }
+    [Parameter]
+    public int CarId { get; set; }
+
+    private BlazorApp1.CarModels.Logger newLogger = new BlazorApp1.CarModels.Logger();
+    private bool showModal = false;
+    private bool isLoggerSuccess = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine($" CarId {CarId} from OnParameterSetAsync (addloggercomponent)");
+    }
+    private void ShowAddLoggerModal()
+    {
+        newLogger.CarId = CarId; // Set CarId for the new logger
+
+        showModal = true;
+    }
+
+    private void HideAddLoggerModal()
+    {
+        showModal = false;
+    }
+
+   // private async Task HandleValidLoggerSubmit()
+    //{
+    private async Task HandleValidLoggerSubmit()
+    {
+        Console.WriteLine("Save Logger button clicked in last modal."); // Log a message
+
+        try
+        {
+            //newLogger.LastUpdated = DateTime.Now;
+            //newLogger.ProjectedRelease = newLogger.LastUpdated.Value.AddDays(7);
+
+            await LoggerService.AddLoggerAsync(newLogger);
+
+            // *** Notify the parent component of new logger added ***
+            await OnAddLogger.InvokeAsync();
+
+
+            // Reset the form and hide the modal
+            newLogger = new BlazorApp1.CarModels.Logger();
+            isLoggerSuccess = true;
+            HideAddLoggerModal();
+
+            // Log a success message
+            Console.WriteLine("Logger added successfully!");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error adding logger: {ex.Message}");
+            isLoggerSuccess = false; // Set flag to false in case of error
+        }
+    }
+}
+}
+ 

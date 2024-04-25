@@ -1,0 +1,73 @@
+﻿@inject IUserEventDetailService UserEventDetailService
+
+@*<div class="event-visualizer" style="border: 1px solid #000; margin: 10px;">
+    <div class="event-bar" style="width: ; background-color: #007bff; height: 30px;"></div>
+    @if (Event?.StartTime.HasValue == true && Event?.EndTime.HasValue == true)
+    {
+        <p>@Event.StartTime.Value.ToString("g") - @Event.EndTime.Value.ToString("g")</p>
+        <p>@Event.StartTime.Value.ToString("g") - @Event.EndTime.Value.ToString("g")</p>
+    }
+    <button @onclick="() => AddEventToTimeline.InvokeAsync(Event)">Add to timeline</button>
+</div>*@
+
+<div class="event-visualizer" style="border: 1px solid #000; margin: 10px;">
+    <div class="event-bar" style="width: @BarWidth; background-color: #007bff; height: 30px;"></div>
+    <p>@Event?.StartTime.Value.ToString("g") - @Event?.EndTime.Value.ToString("g")</p>
+    @if (UserEventDetail != null)
+    {
+        <form @onsubmit="e => UpdateUserEventDetail(e, UserEventDetail)">
+            <label>
+                Notes:
+                <input type="text" @bind="UserEventDetail.Value" />
+            </label>
+
+            <label>
+                User Entered Value:
+                <input type="text" @bind="UserEventDetail.Value" />
+            </label>
+
+            <button type="submit">Update Event Detail</button>
+        </form>
+    }
+</div>
+
+   @* @if (UserEventDetail != null)
+    {
+        <form @onsubmit="e => UpdateUserEventDetail(e, UserEventDetail)">
+            <label>
+                Notes:
+                <input type="text" @bind="UserEventDetail.Note" />
+            </label>
+           @* <label>
+                Miles Driven:
+                <input type="number" @bind="UserEventDetail.MilesDriven" />
+            </label>
+            <button type="submit">Update Event Detail</button>
+        </form>
+
+    }
+*@
+
+
+
+@code {
+    [Parameter]
+    public Event Event { get; set; }
+    [Parameter]
+    public UserEventDetail UserEventDetail { get; set; }
+    [Parameter]
+    public EventCallback<Event> AddEventToTimeline { get; set; }
+    private string BarWidth
+    {
+        get
+        {
+            TimeSpan? duration = Event?.EndTime - Event?.StartTime;
+            return duration.HasValue ? $"{duration.Value.TotalHours * 10}px" : "0px";
+        }
+    }
+
+    private async Task UpdateUserEventDetail(EventArgs e, UserEventDetail userEventDetail)
+    {
+        await UserEventDetailService.UpdateUserEventDetailAsync(userEventDetail);
+    }
+}

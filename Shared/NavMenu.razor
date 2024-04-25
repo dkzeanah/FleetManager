@@ -1,0 +1,104 @@
+﻿@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">User</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="masterdashboard">
+                <span class="oi oi-plus" aria-hidden="true"></span> Master Dashboard
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="dashboard">
+                <span class="oi oi-plus" aria-hidden="true"></span> User Dashboard
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Reports">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Reporting
+            </NavLink>
+        </div>
+
+                <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Tasks">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Tasks
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="cars">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Cars
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="ContactIndex">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> To Impliment
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Timeline">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Timeline
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Calendar">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Calendar
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private CancellationTokenSource cts = new CancellationTokenSource();
+
+    private bool collapseNavMenu = true;
+    private string UserRole { get; set; } = "QRD";
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    /* protected override async Task OnInitializedAsync()
+    {
+        var user = await UserManager.GetUserAsync((await AuthenticationStateProvider.GetAuthenticationStateAsync()).User);
+        if (user != null)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            if (roles.Count > 0)
+            {
+                UserRole = roles[0];
+            }
+        }
+        else
+        {
+            UserRole = "Contact"; // Provide a default role name here
+        }
+        //await SomeOperation(cts.Token);
+
+    }*/
+    public void Dispose()
+    {
+        cts.Cancel();
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    } 
+}

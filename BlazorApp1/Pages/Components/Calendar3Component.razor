@@ -1,0 +1,601 @@
+﻿@using System.Globalization
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Rendering;
+@inject ILogger<Calendar3Component> Logger
+@inject IUserService UserService
+
+<style>
+    .calendar-day.in-range {
+        background-color: #c0e0f0; /* Color to indicate selected range */
+    }
+
+    .calendar {
+        border: 1px solid #ddd;
+        padding: 10px;
+        width: 300px;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+    }
+
+    .calendar-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+    }
+
+    .calendar-day {
+        padding: 5px;
+        border: 1px solid #eee;
+    }
+
+    .range-picker {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .range-picker input {
+            margin-right: 5px;
+        }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-around; /* Changed to space-around for equal spacing */
+        align-items: center;
+        padding: 10px 0;
+        background-color: #f4f4f4; /* Light grey background for the toolbar */
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+        .toolbar > * {
+            margin: 0 5px; /* Adds some space around toolbar items */
+        }
+
+        .toolbar select,
+        .toolbar input[type="text"],
+        .toolbar input[type="color"],
+        .toolbar input[type="date"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            line-height: 1.5;
+        }
+
+        .toolbar button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+            .toolbar button:hover {
+                background-color: #0056b3;
+            }
+
+</style>
+
+@if (_isCollapsed)
+{
+    <button @onclick="ToggleCollapse">Expand</button>
+}
+else
+{
+
+    <!-- Toolbar with neat and elegant styling -->
+    <div class="toolbar">
+        <!-- Previous and Next month buttons -->
+        <button @onclick="PreviousMonth">←</button>
+        <span>@_currentMonth.ToString("MMMM yyyy")</span>
+        <button @onclick="NextMonth">→</button>
+
+
+        <!-- User Dropdown -->
+         <select @bind="_userToEdit">
+            <option value="">Select User</option>
+            @foreach (var user in _users)
+            {
+                <option value="@user">@user</option>
+            }
+        </select> 
+        <!-- User Dropdown -->
+        @*  <select @bind="_selectedUser">
+            <option value="">Select User</option>
+            @foreach (var user in _users)
+            {
+                <option value="@user">@user</option>
+            }
+        </select>  *@
+
+        <!-- Button to add the selected user to the selected day -->
+        <button @onclick="SetUserForSelectedDay">Add User to Day</button>
+
+        <!-- Apply Text and Change Color -->
+        <input type="text" @bind="_inputForSelectedDay" placeholder="Enter text" />
+        <input type="color" @bind="_colorToAssign" />
+        <button @onclick="ApplyInputToSelectedDay">Apply Text</button>
+        <button @onclick="ChangeUserColor">Change Color</button>
+
+        <!-- Range-related actions -->
+        @if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+        {
+            <button @onclick="DeleteSelectedRange">Delete Range</button>
+            <button @onclick="UngroupSelectedRange">Ungroup Range</button>
+        }
+
+        <!-- Show and Collapse buttons -->
+        <button @onclick="ShowRangePicker">Add Range</button>
+        <button @onclick="ToggleCollapse">Collapse</button>
+    </div>
+
+    @RenderCalendar()
+
+    <!-- Range Picker -->
+    @if (_showRangePicker)
+    {
+        <div class="range-picker">
+            <input type="date" @bind="_rangeStart" />
+            <input type="date" @bind="_rangeEnd" />
+            <button @onclick="AddRange">Add</button>
+        </div>
+    }
+}
+
+
+
+
+@code {
+    private DateTime _currentMonth = DateTime.Today;
+    private DateTime? _selectedDay;
+    private string _inputForSelectedDay;
+    //  private List<string> _users = new List<string> { "User1", "User2", "User3" };
+    //private DateTime _currentMonth = DateTime.Today;
+    private bool _isCollapsed = false;
+    private bool _showRangePicker = false;
+    private DateTime _rangeStart;
+    private DateTime _rangeEnd;
+    private List<(DateTime start, DateTime end)> _ranges = new();
+    private DateTime? _selectedRangeStart;
+    private DateTime? _selectedRangeEnd;
+    private string _userToEdit; // Holds the username of the user to edit
+    private string _colorToAssign; // Holds the color to assign to the user
+
+    private Dictionary<DateTime, List<string>> _dayUsers = new Dictionary<DateTime, List<string>>();
+    private List<string> _users = new List<string> { "Andreas", "Shannon", "Lamar", "Marty", "Tim", "Donovan", "Nathaniel", "Hendrik", "Charlie", "Sawyer" };
+    private Dictionary<DateTime, string> _dayTexts = new Dictionary<DateTime, string>();
+    // Dictionary to store tasks for each day
+    private Dictionary<DateTime, List<TaskModel>> _dayTasks = new Dictionary<DateTime, List<TaskModel>>();
+    private Dictionary<DateTime, List<UserDayEntry>> _dayEntries = new Dictionary<DateTime, List<UserDayEntry>>();
+
+    private class UserDayEntry
+    {
+        public ApplicationUser User { get; set; }
+        public string Text { get; set; }
+        public string Color { get; set; }
+    }
+    private ApplicationUser _selectedUser;
+
+
+    private void ApplyInputToSelectedDay()
+    {
+        if (!string.IsNullOrEmpty(_inputForSelectedDay) && _selectedDay.HasValue && _selectedUser != null)
+        {
+            var task = new TaskModel
+                {
+                    DateAssigned = _selectedDay.Value,
+                    Task = _inputForSelectedDay,
+                    User = _selectedUser,
+                    // Set other TaskModel properties as needed
+                };
+
+            if (!_dayTasks.ContainsKey(_selectedDay.Value))
+                _dayTasks[_selectedDay.Value] = new List<TaskModel>();
+
+            _dayTasks[_selectedDay.Value].Add(task);
+            _inputForSelectedDay = ""; // Clear after applying
+        }
+    }
+
+    // private void ApplyInputToSelectedDay()
+    // {
+    //     if (!string.IsNullOrEmpty(_inputForSelectedDay) && _selectedDay.HasValue)
+    //     {
+    //         var entry = new UserDayEntry
+    //             {
+    //                 User = _selectedUser ?? GetDefaultUser(), // Use selected user or default
+    //                 Text = _inputForSelectedDay,
+    //                 Color = _userColors[_selectedUser?.FriendlyName ?? "Default"]
+    //             };
+
+    //         if (!_dayEntries.ContainsKey(_selectedDay.Value))
+    //             _dayEntries[_selectedDay.Value] = new List<UserDayEntry>();
+
+    //         _dayEntries[_selectedDay.Value].Add(entry);
+    //         _inputForSelectedDay = ""; // Clear after applying
+    //     }
+    // }
+
+    private ApplicationUser GetDefaultUser()
+    {
+        // Logic to return the 'office' user
+        return new ApplicationUser { FriendlyName = "Office" };
+    }
+
+    // Method to handle omnibox input
+    private void HandleOmniboxInput(string input)
+    {
+        // Parse the input to extract commands and act accordingly
+        // Example: "add text blahhh to 14" or "add user to 13"
+        Logger.LogInformation($"Omnibox input received: {input}");
+        // Logic to handle various commands
+    }
+    private void ShowRangePicker()
+    {
+        // Set default range from current day to 3 days after
+        _rangeStart = DateTime.Today;
+        _rangeEnd = DateTime.Today.AddDays(3);
+        _showRangePicker = true;
+    }
+    // private void ApplyInputToSelectedDay()
+    // {
+    //     if (!string.IsNullOrEmpty(_inputForSelectedDay))
+    //     {
+    //         if (_selectedDay.HasValue)
+    //         {
+    //             _dayTexts[_selectedDay.Value] = _inputForSelectedDay;
+    //             Logger.LogInformation($"Added text to {_selectedDay.Value.ToShortDateString()}: {_inputForSelectedDay}");
+    //         }
+    //         else if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+    //         {
+    //             // Apply text to all days in the range
+    //             for (DateTime date = _selectedRangeStart.Value; date <= _selectedRangeEnd.Value; date = date.AddDays(1))
+    //             {
+    //                 _dayTexts[date] = _inputForSelectedDay;
+    //             }
+    //             Logger.LogInformation($"Added text to range from {_selectedRangeStart.Value.ToShortDateString()} to {_selectedRangeEnd.Value.ToShortDateString()}: {_inputForSelectedDay}");
+    //         }
+    //         _inputForSelectedDay = ""; // Clear input after applying
+    //     }
+    // }
+    // Call this method when you want to change the color associated with a user
+    private void ChangeUserColor()
+    {
+        if (!string.IsNullOrWhiteSpace(_userToEdit) && !string.IsNullOrWhiteSpace(_colorToAssign))
+        {
+            if (_userColors.ContainsKey(_userToEdit))
+            {
+                _userColors[_userToEdit] = _colorToAssign;
+            }
+            else
+            {
+                _userColors.Add(_userToEdit, _colorToAssign);
+            }
+        }
+    }
+
+    // Call this method when a day is clicked
+    private void OnDayClick(DateTime day)
+    {
+        // Check if the day is part of a range
+        var range = _ranges.FirstOrDefault(r => day >= r.start && day <= r.end);
+        if (range.start != default)
+        {
+            _selectedRangeStart = range.start;
+            _selectedRangeEnd = range.end;
+        }
+        else
+        {
+            _selectedDay = day; // If it's not part of a range, select the day
+        }
+    }
+
+    // Call this method to delete the selected range
+    private void DeleteSelectedRange()
+    {
+        if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+        {
+            _ranges.Remove(_ranges.First(r => r.start == _selectedRangeStart.Value && r.end == _selectedRangeEnd.Value));
+            _selectedRangeStart = null;
+            _selectedRangeEnd = null;
+        }
+    }
+
+
+
+
+
+    private Dictionary<string, string> _userColors = new Dictionary<string, string>
+ {
+     {"Andreas", "red"},
+     {"Shannon", "green"},
+     {"Lamar", "blue"},
+     {"Marty", "orange"},
+     {"Tim", "purple"},
+     {"Donovan", "cyan"},
+     {"Nathaniel", "magenta"},
+     {"Hendrik", "yellow"},
+     {"Charlie", "pink"},
+     {"Sawyer", "brown"},
+     {"Default", "#000000"}
+ };
+
+
+    private void DeleteSelectedRange2()
+    {
+        if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+        {
+            var datesToRemove = _dayUsers.Keys
+                                         .Where(date => date >= _selectedRangeStart.Value && date <= _selectedRangeEnd.Value)
+                                         .ToList();
+
+            foreach (var date in datesToRemove)
+            {
+                _dayUsers.Remove(date);
+            }
+
+            _selectedRangeStart = null;
+            _selectedRangeEnd = null;
+            Logger.LogInformation("Selected range deleted");
+        }
+    }
+
+    private void UngroupSelectedRange()
+    {
+        if (_selectedRangeStart.HasValue && _selectedRangeEnd.HasValue)
+        {
+            _selectedRangeStart = null;
+            _selectedRangeEnd = null;
+            Logger.LogInformation("Selected range ungrouped");
+        }
+    }
+
+    private void SetUserForSelectedDay()
+    {
+        //        _selectedUser = _users.FirstOrDefault(u => u.FriendlyName == _userToEdit);
+
+        if (!string.IsNullOrEmpty(_userToEdit) && _selectedDay.HasValue)
+        {
+            if (!_dayUsers.ContainsKey(_selectedDay.Value))
+                _dayUsers[_selectedDay.Value] = new List<string>();
+
+            // Check if _userToEdit exists in _users list
+            if (_users.Contains(_userToEdit))
+            {
+                if (!_dayUsers[_selectedDay.Value].Contains(_userToEdit))
+                {
+                    _dayUsers[_selectedDay.Value].Add(_userToEdit);
+                    Logger.LogInformation($"Added user {_userToEdit} for {_selectedDay.Value.ToShortDateString()}");
+                }
+            }
+            else
+            {
+                Logger.LogWarning($"User {_userToEdit} does not exist in the list of users.");
+            }
+        }
+    }
+
+    private void ToggleCollapse()
+    {
+        _isCollapsed = !_isCollapsed;
+        Logger.LogInformation($"Calendar collapsed status: {_isCollapsed}");
+    }
+
+
+
+    private void AddRange()
+    {
+        _ranges.Add((_rangeStart, _rangeEnd));
+        Logger.LogInformation($"Added range: {_rangeStart.ToShortDateString()} - {_rangeEnd.ToShortDateString()}");
+        _showRangePicker = false;
+    }
+
+    private void PreviousMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(-1);
+        Logger.LogInformation($"Navigated to {_currentMonth.ToString("MMMM yyyy")}");
+    }
+
+    private void NextMonth()
+    {
+        _currentMonth = _currentMonth.AddMonths(1);
+        Logger.LogInformation($"Navigated to {_currentMonth.ToString("MMMM yyyy")}");
+    }
+    // private void RenderUserEntries(RenderTreeBuilder builder, DateTime date)
+    // {
+    //     if (_dayEntries.TryGetValue(date, out var entries))
+    //     {
+    //         foreach (var entry in entries)
+    //         {
+    //             builder.OpenElement(); // Render user name in their color
+    //             builder.AddContent(, $"{entry.User.FriendlyName}: {entry.Text}");
+    //             builder.CloseElement();
+    //         }
+    //     }
+    // }
+    private RenderFragment RenderCalendar() => builder =>
+    {
+        var daysInMonth = DateTime.DaysInMonth(_currentMonth.Year, _currentMonth.Month);
+        var startDayOfMonth = new DateTime(_currentMonth.Year, _currentMonth.Month, 1).DayOfWeek;
+        var dayOffset = (int)startDayOfMonth - (int)DayOfWeek.Monday; // Adjust for Monday start
+        dayOffset = dayOffset < 0 ? 7 + dayOffset : dayOffset;
+
+        // Calendar header
+        builder.OpenElement(0, "div");
+        builder.AddAttribute(1, "class", "calendar-header");
+        for (int i = 0; i < 7; i++)
+        {
+            builder.OpenElement(2, "div");
+            builder.AddContent(3, CultureInfo.CurrentCulture.DateTimeFormat.GetDayName((DayOfWeek)((i + (int)DayOfWeek.Monday) % 7)));
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+
+        // Calendar days
+        builder.OpenElement(4, "div");
+        builder.AddAttribute(5, "class", "calendar-days");
+        int dayCounter = 1;
+        for (int cell = 0; cell < daysInMonth + dayOffset; cell++)
+        {
+            builder.OpenElement(6, "div");
+            // ... Existing day cell setup ...
+            if (cell < dayOffset)
+            {
+                // Empty cells before start of month
+                builder.AddAttribute(7, "class", "calendar-day empty");
+            }
+            else
+            {
+                // Actual days of the month
+                DateTime currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, dayCounter);
+                bool isInRange = _ranges.Any(range => currentDate >= range.start && currentDate <= range.end);
+                string additionalClass = isInRange ? " in-range" : "";
+                builder.AddAttribute(7, "class", $"calendar-day{additionalClass}");
+                builder.AddAttribute(8, "onclick", EventCallback.Factory.Create(this, () => OnDayClick(currentDate)));
+
+                if (_dayUsers.TryGetValue(currentDate, out var users))
+                {
+                    foreach (var user in users)
+                    {
+                        // Add user colored dot or marker
+                        builder.OpenElement(9, "span");
+                        builder.AddAttribute(10, "style", $"color: {_userColors[user]}; margin-right: 5px;");
+                        builder.AddContent(11, $"● {user} ");
+                        builder.CloseElement();
+                    }
+                }
+
+                if (_dayTexts.TryGetValue(currentDate, out var dayText))
+                {
+                    // Add the text for the day
+                    builder.AddContent(12, $" {dayCounter} - {dayText}");
+                }
+                else
+                {
+                    // Add the day number
+                    builder.AddContent(12, dayCounter.ToString());
+                }
+                // New logic for rendering tasks for each day
+                foreach (var day in _dayTasks.Keys)
+                {
+                    // Get the tasks for the day
+                    var tasks = _dayTasks[day];
+                    foreach (var task in tasks)
+                    {
+                        // Render task with user information and text
+                        // Style the task based on the user's color
+                        var userColor = _userColors[task.User.UserName];
+                        builder.OpenElement(0, "div");
+                        builder.AddAttribute(1, "style", $"color: {userColor};");
+                        builder.AddContent(2, $"{task.User.FriendlyName}: {task.Task}");
+                        builder.CloseElement();
+                    }
+                }
+                dayCounter++;
+            }
+            // if (cell >= dayOffset)
+            // {
+            //     DateTime currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, dayCounter);
+
+            //     // ... Existing logic to render the day ...
+
+            //     // Render tasks for the day
+            //     if (_dayTasks.TryGetValue(currentDate, out var tasks))
+            //     {
+            //         foreach (var task in tasks)
+            //         {
+            //             builder.OpenElement(13, "div");
+            //             builder.AddAttribute(14, "style", $"color: {_userColors[task.User.FriendlyName]};");
+            //             builder.AddContent(15, $"{task.User.FriendlyName}: {task.Task}");
+            //             builder.CloseElement();
+            //         }
+            //     }
+
+            //     dayCounter++; // Increment day counter only if it's a valid day of the month
+            // }
+            // else
+            // {
+            //     builder.AddAttribute(7, "class", "calendar-day empty");
+            // }
+
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
+        // for (int cell = 0; cell < daysInMonth + dayOffset; cell++)
+        // {
+        //     builder.OpenElement(6, "div");
+        //     if (cell < dayOffset)
+        //     {
+        //         // Empty cells before start of month
+        //         builder.AddAttribute(7, "class", "calendar-day empty");
+        //     }
+        //     else
+        //     {
+        //         // Actual days of the month
+        //         DateTime currentDate = new DateTime(_currentMonth.Year, _currentMonth.Month, dayCounter);
+        //         bool isInRange = _ranges.Any(range => currentDate >= range.start && currentDate <= range.end);
+        //         string additionalClass = isInRange ? " in-range" : "";
+        //         builder.AddAttribute(7, "class", $"calendar-day{additionalClass}");
+        //         builder.AddAttribute(8, "onclick", EventCallback.Factory.Create(this, () => OnDayClick(currentDate)));
+
+        //         if (_dayUsers.TryGetValue(currentDate, out var users))
+        //         {
+        //             foreach (var user in users)
+        //             {
+        //                 // Add user colored dot or marker
+        //                 builder.OpenElement(9, "span");
+        //                 builder.AddAttribute(10, "style", $"color: {_userColors[user]}; margin-right: 5px;");
+        //                 builder.AddContent(11, $"● {user} ");
+        //                 builder.CloseElement();
+        //             }
+        //         }
+
+        //         if (_dayTexts.TryGetValue(currentDate, out var dayText))
+        //         {
+        //             // Add the text for the day
+        //             builder.AddContent(12, $" {dayCounter} - {dayText}");
+        //         }
+        //         else
+        //         {
+        //             // Add the day number
+        //             builder.AddContent(12, dayCounter.ToString());
+        //         }
+        //         // New logic for rendering tasks for each day
+        //         foreach (var day in _dayTasks.Keys)
+        //         {
+        //             // Get the tasks for the day
+        //             var tasks = _dayTasks[day];
+        //             foreach (var task in tasks)
+        //             {
+        //                 // Render task with user information and text
+        //                 // Style the task based on the user's color
+        //                 var userColor = _userColors[task.User.UserName];
+        //                 builder.OpenElement(0, "div");
+        //                 builder.AddAttribute(1, "style", $"color: {userColor};");
+        //                 builder.AddContent(2, $"{task.User.FriendlyName}: {task.Task}");
+        //                 builder.CloseElement();
+        //             }
+        //         }
+        //         dayCounter++;
+        //     }
+        //     builder.CloseElement();
+        // }
+        // builder.CloseElement();
+        // };
+
+
+    };
+    }

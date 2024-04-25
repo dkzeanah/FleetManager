@@ -1,0 +1,620 @@
+@page "/cars"
+@inject ICarService CarService
+@inject IUserService UserService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<!-- High-Level Toolbar for operations -->
+<div class="toolbar">
+    
+    <input @bind="searchTerm" placeholder="Search..." />
+     <h3>Car List</h3>
+    <button class="btn btn-primary" @onclick="ToggleAddCarModal">Add Car</button>
+    <EditForm class="form-check-inline my-2" Model="@newTask" OnValidSubmit="AddTask">
+        <InputText class="form-control mx-2" @bind-Value="newTask.Task" />
+        <button class="btn btn-outline-primary" type="submit">Add Task</button>
+        @*         <InputText class="form-control d-inline-block mr-2" @bind-Value="newTask.Task" />
+        <button class="btn btn-outline-primary d-inline-block" type="submit">Add Task</button> *@
+    </EditForm>
+
+</div>
+<div class="TaskList">
+    <h3>TaskList</h3>
+
+    @if (taskList.Count > 0)
+    {
+        <div class="progress my-2">
+            <div class="progress-bar" role="progressbar"
+                 style="width: @(percentDone)%"
+                 aria-valuemin="0" aria-valuemax="100">
+                @(percentDone)
+            </div>
+        </div>
+    }
+    <br />
+
+
+ 
+
+
+    <ul class="list-group">
+        @foreach (var task in taskList)
+        {
+            @if (task.IsComplete)
+            {
+                <li class="list-group-item list-group-item-secondary my-1"
+                @onclick="(()=>task.IsComplete = !task.IsComplete)">
+                    <del>@task.Task</del>
+                </li>
+            }
+            else
+            {
+                <li class="list-group-item list-group-item-success my-1"
+                @onclick="(()=>task.IsComplete = !task.IsComplete)">
+                    @task.Task
+                </li>
+
+            }
+            //Origin// <li class="list-group-item list-group-item-success my-1">@task.Task</li>
+        }
+    </ul>
+
+</div>
+@foreach (var car in filteredCars)
+{
+    @* <div class="car-row">
+        @car.ToString() @if (car.User != null)
+        {
+            <span>Assigned to: @car.User.Id</span>
+        }
+    </div> *@
+    <tr style="background-color: @(car.UserId == "3de00zzz-2828-0000-0000-3de000000000" ? "#74992e" : "red")">
+        <!-- ... Other car details ... -->
+        <td>
+            <!-- Grouping buttons for better organization -->
+            <button class="btn btn-primary" @onclick="() => OpenModal(car)">View</button>
+            <button class="btn btn-primary" @onclick="() => OpenUserModal(car)">Assign</button>
+            @if (isAdminOrOrganizer)
+            {
+                <button class="btn btn-danger" @onclick="() => DeleteCar(car.CarId)">Delete</button>
+            }
+        </td>
+        @*                     <td>@(car.User != null && userIdToUserName.ContainsKey(car.UserId) ? userIdToUserName[car.UserId] : "d@d.com")</td>
+    *@
+        <td>@car.CarDetail.Finas</td>
+        <td>@car.CarDetail.Tag</td>
+        <td>@car.CarDetail.Tag</td>
+
+        <td>@car.TeleGeneration</td>
+        <td>@car.Location</td>
+        <td>@car.Miles</td>
+    </tr>
+}
+<!-- ... Rest of the modals and deletion confirmation ... -->
+
+<!-- Styling table headers to make them stand out -->
+<style>
+    .header-btn {
+        font-weight: bold;
+        color: blue;
+    }
+</style>
+    
+
+<ModalComponent @ref="addCarModal" IsOpen="isAddCarModalOpen" Title="Add Car">
+    <ModalContent>
+        <AddCarComponent OnCarAdded="Refresh" />
+    </ModalContent>
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseAddCarModal">Close</button>
+    </ModalFooter>
+</ModalComponent>
+
+<h3>Car List</h3>
+<button class="btn btn-primary" @onclick="ToggleAddCarModal">Add Car</button>
+
+@if (showDeleteConfirmation)
+{
+    <div>
+        Are you sure you want to delete this car?
+        <button @onclick="() => ConfirmDelete(true)">Yes</button>
+        <button @onclick="() => ConfirmDelete(false)">No</button>
+    </div>
+}
+
+<ModalComponent @ref="modal" IsOpen="isModalOpen" Title="Car Details">
+    <ModalContent>
+        <div class="row">
+            @if (selectedCar != null && selectedCar.CarDetail != null)
+            {
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>User</label>
+                                <input class="form-control" @bind="@selectedCar.User.FriendlyName" />
+                            </div>
+                            <div class="form-group">
+                                <label>Finas</label>
+                                <input class="form-control" @bind="@selectedCar.CarDetail.Finas" />
+                            </div>
+                            <div class="form-group">
+                                <label>Finas</label>
+                                <input class="form-control" @bind="@selectedCar.CarDetail.Finas" />
+                            </div>
+                            <div class="form-group">
+                                <label>TeleGeneration</label>
+                                <input class="form-control" @bind="@selectedCar.TeleGeneration" />
+                            </div>
+                            <div class="form-group">
+                                <label>Miles</label>
+                                <input class="form-control" @bind="@selectedCar.Miles" />
+                            </div>
+                            <div class="form-group">
+                                <label>VinLast4</label>
+                                <input class="form-control" @bind="@selectedCar.CarDetail.VinLast4" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Full Vin</label>
+                                <input class="form-control" @bind="@selectedCar.CarDetail.FullVin" />
+                            </div>
+                            <div class="form-group">
+                                <label>Harness Status</label>
+                                <input class="form-control" @bind="@selectedCar.CarDetail.HarnessStatus" />
+                            </div>
+                            <div class="form-group">
+                                <label>Software Version</label>
+                                <input class="form-control" @bind="@selectedCar.CarDetail.SoftwareVersion" />
+                            </div>
+                            <div class="form-group">
+                                <label>Adas</label>
+                                <input class="form-control" @bind="@selectedCar.CarDetail.Adas" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </ModalContent>
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+        <button class="btn btn-primary" @onclick="SaveCar">Save</button>
+    </ModalFooter>
+</ModalComponent>
+
+
+<ModalComponent @ref="userModal" IsOpen="isUserModalOpen" Title="Assign User">
+    <ModalContent>
+        <div>
+            @if (users != null)
+            {
+                <div class="form-group">
+                    <label>Select User</label>
+                    <select class="form-control" @onchange="OnUserSelected">
+                        @foreach (var user in users)
+                        {
+                            <option value="@user.UserName">@user.FriendlyName</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <InputDate class="form-control" @bind-Value="startDate" />
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <InputDate class="form-control" @bind-Value="endDate" />
+                </div>
+            }
+        </div>
+    </ModalContent>
+    <ModalFooter>
+        <button class="btn btn-secondary" @onclick="CloseUserModal">Close</button>
+        <button class="btn btn-primary" @onclick="AssignUser">Assign</button>
+    </ModalFooter>
+</ModalComponent>
+
+@if (cars == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+
+                <!-- Making headers stand out using a class -->
+                <th style="width: 15%; padding: 8px 15px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"><button class="header-btn" @onclick="SortCarsByFinas">By Finas</button></th>
+                <th style="width: 20%; padding: 8px 15px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"><button class="header-btn" @onclick="SortCarsByTag">By Tag</button></th>
+                <th style="width: 20%; padding: 8px 15px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;"><button class="header-btn" @onclick="SortCarsByTeleGen">By TeleGen</button></th>
+                <tr style="background-color: car.UserId == "3de00zzz-2828-0000-0000-3de000000000" ? "#74992e" : "red">
+                
+            </tr>
+                <th>Location</th>
+                <th>Miles</th>
+                <th>Actions</th> <!-- Grouping buttons into an "Actions" column -->
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <tr style="background-color: @(car.UserId == "3de00zzz-2828-0000-0000-3de000000000" ? "#74992e" : "red")">
+                    <!-- ... Other car details ... -->
+                    <td>
+                        <!-- Grouping buttons for better organization -->
+                        <button class="btn btn-primary" @onclick="() => OpenModal(car)">View</button>
+                        <button class="btn btn-primary" @onclick="() => OpenUserModal(car)">Assign</button>
+                        @if (isAdminOrOrganizer)
+                        {
+                            <button class="btn btn-danger" @onclick="() => DeleteCar(car.CarId)">Delete</button>
+                        }
+                    </td>
+@*                     <td>@(car.User != null && userIdToUserName.ContainsKey(car.UserId) ? userIdToUserName[car.UserId] : "d@d.com")</td>
+ *@                    <td>@car.CarDetail.Finas</td>
+                <td>@car.CarDetail.Tag</td>
+                    <td>@car.CarDetail.Tag</td>
+
+                <td>@car.TeleGeneration</td>
+                <td>@car.Location</td>
+                <td>@car.Miles</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@* @if (cars == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th><button @onclick="SortCarsByFinas">By Finas</button></th>
+                <th><button @onclick="SortCarsByTag">By Tag</button></th>
+                <th><button @onclick="SortCarsByTeleGen">By TeleGen</button></th>
+@*                <th><button @onclick="SortCarsByOccupied">By Occupied</button></th>
+               <th>Location</th>
+                <th>Miles</th>
+                <th>Assigned User</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var car in cars)
+            {
+                <h1><HxBadge Color="ThemeColor.Secondary">@car.Model - @car.CarDetail.Finas </HxBadge></h1
+
+
+                       @*//last hx
+
+                        <button class="btn btn-primary" @onclick="() => OpenUserModal(car)">Assign User</button>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => OpenModal(car)">View Details</button>
+                    </td>
+                    <td>
+                        @if (isAdminOrOrganizer)
+                        {
+                            <button class="btn btn-secondary" @onclick="() => DeleteCar(car.CarId)">Delete</button>
+                        }
+                    </td>
+           
+                        <tr style="background-color: @(car.UserId == "3de00zzz-2828-0000-0000-3de000000000" ? "#74992e" : "red")">
+                            <td>@car.CarDetail.Finas</td>
+                            <td>@car.CarDetail.Tag</td>
+                            <td>@car.TeleGeneration</td>
+                            <td>@car.Location</td>
+                            <td>@car.Miles</td>
+                        </tr>
+
+         }
+        </tbody>
+    </table>
+} 
+
+*@
+@code {
+    private List<ApplicationUser> users = new List<ApplicationUser>();
+
+    // Ideally, this would be handled in a service rather than directly in the page/component.
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user.IsInRole("Admin") || user.IsInRole("Organizer"))
+            {
+                isAdminOrOrganizer = true;
+            }
+
+            users = await UserService.GetAllUsersAsync();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while loading the cars: {ex.Message}");
+        }
+        finally
+        {
+            cars = await CarService.GetAllCarsWithDetailsAsync();
+        }
+
+        // allUsers = await DbContext.Users.ToListAsync();
+    }
+
+    // Mock method to fetch tasks per user.
+    // In a real-world scenario, tasks would likely be fetched from the database based on the user's ID or other criteria.
+    private List<TaskModel> GetTasksForUser(ApplicationUser user)
+    {
+        // Fetch tasks for the given user.
+        // This is just a stub. Replace with actual data fetching logic.
+        return new List<TaskModel>();
+    }
+
+    private List<TaskModel> taskList = new List<TaskModel>();
+    private TaskModel newTask = new TaskModel();
+
+    private int percentDone
+    {
+        get { return (taskList.Count(x => x.IsComplete) * 100) / taskList.Count; }
+    }
+
+    private void AddTask()
+    { // this method doesnt need newTask as a parameter because it is already bound to the form (available to the method inherently)
+
+        taskList.Add(newTask);
+        newTask = new TaskModel(); //clear the form after adding a task
+    }
+
+
+
+    private string searchTerm = string.Empty;
+    // Filtered cars based on the search term     private List<Car> filteredCars = new List<Car>(); // List for potentially displaying a subset of cars
+
+    private IEnumerable<Car> filteredCars => cars
+        .Where(car => string.IsNullOrWhiteSpace(searchTerm) ||
+                      car.Make.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                      car.Model.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                      car.Year?.ToString().Contains(searchTerm) == true ||
+                      car.UserId?.Contains(searchTerm) == true);
+
+    [Parameter]
+    public string Id { get; set; } // Not used in the code provided
+
+    // Static list of Squares - not clear what this is for from the provided code.
+    private static List<Square> Squares { get; set; } = new List<Square>();
+
+    // Variables for managing state
+    private bool isAssignmentCompleted = false; // Not used in the provided code
+    int carIdToBeDeleted; // Potentially for identifying which car to delete
+    private DateTime startDate = DateTime.Now; // Start date for assigning user to car
+    private DateTime endDate; // End date for assigning user to car
+
+    // Other various variables
+    private string selectedUser; // Selected user from the modal dropdown
+    private string errorMessage = ""; // Not used in the provided code
+
+    // References to Modal components
+    private ModalComponent modal; 
+    private ModalComponent userModal;
+    private ModalComponent addCarModal;
+
+    // Models and Lists
+    Car newCar = new Car() ; // Model for a new car
+    private Car? selectedCar; // Car currently being viewed/edited
+    private List<Car>? cars = new List<Car>(); // List of cars to display
+  //  private List<ApplicationUser>? users; // List of application users
+
+    // Booleans for controlling UI state
+    private bool showDeleteConfirmation = false; 
+    private bool isUserModalOpen = false; 
+    private bool isModalOpen = false;
+    private bool isAdminOrOrganizer = false; // True if the current user is an admin or organizer
+    private bool isAddCarModalOpen = false;
+    private bool showError = false; // Not used in the code provided
+
+    // Dictionaries for mapping between user IDs and their names
+    private Dictionary<string, string> userIdToUserName; // Not used in the code provided
+    private Dictionary<string, string> userIdToFriendlyName; // Not used in the code provided
+
+    // Class representing a square - not clear what this is for from the provided code.
+    public class Square
+    {
+        public Guid Id { get; set; }
+        public string Color { get; set; }
+        public int PositionX { get; set; }
+        public int PositionY { get; set; }
+    }
+    
+
+    private ApplicationUser? GetUserByUserName(string userName)
+    {
+        return users.FirstOrDefault(u => u.UserName == userName || u.Email == userName);
+    }
+
+    void ToggleAddCarModal()
+    {
+        isAddCarModalOpen = !isAddCarModalOpen;
+        return;
+    }
+
+    void CloseAddCarModal()
+    {
+        isAddCarModalOpen = false;
+        return;
+    }
+
+    private async Task Refresh()
+    {
+        StateHasChanged();
+    }
+
+    private async Task SaveCar()
+    {
+        try
+        {
+            if (selectedCar != null && selectedCar.CarDetail != null)
+            {
+                await CarService.UpdateCarDetailAsync(selectedCar.CarDetail);
+
+                cars = await CarService.GetAllCarsWithDetailsAsync();
+                CloseModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred while saving the car: {ex.Message}");
+        }
+
+        CloseModal();
+        return;
+    }
+
+    
+
+    private void CloseModal()
+    {
+
+        selectedCar = null;
+        isModalOpen = false;
+    }
+
+    private void CloseUserModal()
+    {
+        if (isUserModalOpen)
+        {
+            isUserModalOpen = false;
+            selectedUser = null;
+            startDate = DateTime.Now;
+            endDate = DateTime.Now;
+            StateHasChanged();
+        }
+    }
+
+
+    private void SortCarsByFinas() => SortCars("Finas");
+    private void SortCarsByTeleGen() => SortCars("TeleGeneration");
+    private void SortCarsByTag() => SortCars("Tag");
+
+    private void SortCars(string column)
+    {
+        bool ascending = columnSortDirections[column];
+        switch (column)
+        {
+            case "Finas":
+                cars = ascending ? cars.OrderBy(c => c.CarDetail.Finas).ToList() : cars.OrderByDescending(c => c.CarDetail.Finas).ToList();
+                break;
+            case "Tag":
+                cars = ascending ? cars.OrderBy(c => c.CarDetail.Tag).ToList() : cars.OrderByDescending(c => c.CarDetail.Tag).ToList();
+                break;
+            case "TeleGeneration":
+                cars = ascending ? cars.OrderBy(c => c.TeleGeneration).ToList() : cars.OrderByDescending(c => c.TeleGeneration).ToList();
+                break;
+        }
+
+        columnSortDirections[column] = !ascending;
+    }
+
+    private Dictionary<string, bool> columnSortDirections = new Dictionary<string, bool>
+    {
+        { "Finas", true },
+        { "Tag", true },
+        { "TeleGeneration", true }
+    };
+    private void OnUserSelected(ChangeEventArgs e)
+    {
+        selectedUser = e.Value.ToString();
+    }
+
+
+    private async Task AssignUser()
+    {
+        if (selectedUser != null && selectedCar != null)
+        {
+            var user = GetUserByUserName(selectedUser);
+
+            if (user != null)
+            {
+               // bool result = await CarService.ScheduleEventAsync(selectedCar.CarId, user.Email, startDate, endDate);
+                var result = await CarService.AssignUserToCarAsync(selectedCar.CarId, user.Email, startDate, endDate);
+                if (!result)
+                {
+                    Console.WriteLine("failure to assign car...");
+                }
+            }
+            else
+            {
+
+            }
+
+
+        }
+        if (isAssignmentCompleted)
+        {
+            isUserModalOpen = false;
+            isModalOpen = false;
+        }
+        
+
+        StateHasChanged();
+    }
+    
+    
+       
+
+
+    
+    void DeleteCar(int carId)
+    {
+        try
+        {
+            if (!isAdminOrOrganizer)
+            {
+                showError = true;
+                errorMessage = "You must be an Admin or Organizer to delete a car.";
+                return;
+            }
+            CarService.DeleteCarAsync(carId);
+        }
+        catch (Exception ex)
+        {
+            showError = true;
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
+    void ConfirmDelete(bool confirm)
+    {
+        if (confirm)
+        {
+            CarService.DeleteCarAsync(carIdToBeDeleted);
+        }
+
+        showDeleteConfirmation = false;
+    }
+
+    private void OpenModal(Car car)
+    {
+        selectedCar = car;
+        isModalOpen = true;
+    }
+
+    private void OpenUserModal(Car car)
+    {
+        isUserModalOpen = true;
+
+        selectedCar = car;
+        startDate = DateTime.Now.Date;
+        endDate = DateTime.Now.Date.AddDays(7); // Or use 7 for a week
+    }
+}

@@ -1,0 +1,180 @@
+﻿@page "/blanks"
+@using BlazorApp1.CarModels.Utils
+@using BlazorApp1.Data
+@using BlazorApp1.Components
+@inject IBlankService BlankService
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+@* <h3>Blanks</h3>
+
+@if (blanks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    foreach (var blank in blanks)
+    {
+        <p>@blank.Name: @blank.String <button @onclick="() => EditBlank(blank)">Edit</button> <button @onclick="() => DeleteBlank(blank.Id)">Delete</button></p>
+    }
+}
+
+<FormModalComponent @ref="FormModalRef" TModel="Blank" OnSubmit="AddOrUpdateBlank"></FormModalComponent>
+
+<button @onclick="ShowModal">Add New Blank</button>
+ *@
+   
+
+<h6>Blanks</h6>
+
+@if (blanks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    foreach (var blank in blanks)
+    {
+        <p>@blank.Name: @blank.String <button @onclick="() => EditBlank(blank)">Edit</button> <button @onclick="() => DeleteBlank(blank.Id)">Delete</button></p>
+    }
+}
+
+<FormModalComponent @ref="FormModalRef" TModel="Blank" OnSubmit="AddOrUpdateBlank">
+    <FormTemplate Context="blank">
+        <div>
+            <label>Name:</label>
+            <InputText @bind-Value="blank.Name" />
+        </div>
+        <div>
+            <label>String:</label>
+            <InputText @bind-Value="blank.String" />
+        </div>
+    </FormTemplate>
+</FormModalComponent>
+
+<button @onclick="ShowModal">Add New Blank</button> 
+
+@code {
+    private FormModalComponent<Blank> FormModalRef;
+
+    private IEnumerable<Blank> blanks;
+    private Blank editingBlank;
+
+    protected override async Task OnInitializedAsync()
+    {
+        blanks = await BlankService.GetAllBlanks();
+    }
+
+    private async Task AddOrUpdateBlank(Blank blank)
+    {
+        if (editingBlank == null)
+        {
+            await BlankService.AddBlank(blank);
+        }
+        else
+        {
+            await BlankService.UpdateBlank(blank);
+        }
+
+        using var context = DbContextFactory.CreateDbContext(); // Obtain a new instance
+        blanks = await context.Blanks.ToListAsync(); // Refresh the list
+        editingBlank = null;  // Reset editing mode
+    }
+
+    private void ShowModal()
+    {
+        editingBlank = new Blank();
+        FormModalRef.Show(editingBlank);
+    }
+
+    private void EditBlank(Blank blank)
+    {
+        editingBlank = blank;
+        FormModalRef.Show(editingBlank);
+    }
+
+    private async Task DeleteBlank(int id)
+    {
+        await BlankService.DeleteBlank(id); // Changed the namespace and method call
+
+        using var context = DbContextFactory.CreateDbContext(); // Obtain a new instance
+        blanks = await context.Blanks.ToListAsync(); // Refresh the list
+    }
+}
+
+
+
+@* @page "/blanks"
+@using BlazorApp1.CarModels.Utils;
+@using BlazorApp1.Data;
+@inject IBlankService BlankService
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+
+<h3>Blanks</h3>
+
+@if (blanks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @foreach (var blank in blanks)
+    {
+        <p>@blank.Name: @blank.String</p>
+    }
+}
+
+<h1>Havit</h1>
+<HxAccordion><p>Hello</p></HxAccordion>
+
+ <Radzen.Blazor.RadzenColorPicker></Radzen.Blazor.RadzenColorPicker>
+ 
+<h3>Add a Blank</h3>
+<EditForm Model="@newBlank" OnValidSubmit="AddBlank">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText id="name" @bind-Value="newBlank.Name" placeholder="Name" />
+    <InputText id="string" @bind-Value="newBlank.String" placeholder="String" />
+
+    <button type="submit">Add Blank</button>
+</EditForm> *@
+
+@* @code {
+    private IEnumerable<Blank> blanks;
+    private Blank newBlank = new Blank();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            blanks = await BlankService.GetAllBlanks();
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions, maybe log or show a user-friendly error.
+        }
+    }
+
+    private async Task AddBlank()
+    {
+        try
+        {
+            await BlankService.AddBlank(newBlank);
+
+            using var context = DbContextFactory.CreateDbContext(); // Obtain a new instance
+            blanks = await context.Blanks.ToListAsync(); // Refresh the list
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions.
+        }
+        finally
+        {
+            newBlank = new Blank(); // Reset the form
+        }
+    }
+}
+*@
+
+

@@ -1,0 +1,58 @@
+﻿@page "/etl"
+@*//|- |\\*@
+@rendermode InteractiveServer
+
+@using BlazorApp1.Interfaces;
+
+
+<h3>ETL Execution</h3>
+
+<button class="btn btn-primary" @onclick="ExecuteETL">Execute ETL Flow</button>
+
+@if (executionResults != null)
+{
+        <h4> Results:</h4>
+        <ul>
+        @foreach (var result in executionResults)
+        {
+                    < li > @result </ li >
+        }
+        </ul>
+}
+
+@code {
+    private List<string> executionResults;
+   //List<String> executionResults = new List<string>();
+
+    public void ExecuteETL()
+    {
+        Flow etlFlow = new Flow();
+        //# ===========================================================================
+        //Author: Donovan Zeanah
+        //Purpose: Code Comment
+        //Comment: 
+        //# ===========================================================================
+
+        // Add nodes to the flow
+        etlFlow.AddNode(new ExtractNode());
+        etlFlow.AddNode(new TransformNode());
+
+        // Execute the flow
+        etlFlow.ExecuteFlow();
+
+        // Keep the console window open
+        Console.WriteLine("ETL Flow executed. Press any key to exit.");
+        Console.Read();
+    }
+
+    private void LogResult(string message)
+    {
+        executionResults.Add(message);
+    }
+
+   
+
+    // Similar changes for TransformNode
+}
+
+
