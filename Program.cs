@@ -58,6 +58,9 @@ namespace BlazorApp1
                 options.UseSqlServer(carsConnectionString));
             Console.WriteLine("ApplicationDbContext registered.");
 
+            // Add GuildDbContext with PostgreSQL/SQLite support
+            builder.Services.AddGuildDbContext(builder.Configuration);
+
             builder.Services.AddSingleton(new JsonSerializerOptions
             {
                 WriteIndented = true, // Pretty-print the JSON
