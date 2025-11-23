@@ -361,3 +361,20 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# IDE folders
+.idea/
+.vscode/
+
+# Log files
+*.log
+*.txt.log
+mylog.txt
+
+# Windows shortcuts
+*.lnk
+
+# SQLite databases (development only)
+*.db
+*.db-shm
+*.db-wal
